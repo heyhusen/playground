@@ -1,0 +1,729 @@
+# yaml-language-server: $schema=https://github.com/OAI/OpenAPI-Specification/raw/main/schemas/v3.0/schema.json
+
+openapi: 3.0.3
+info:
+  title: My REST API template
+  description: >
+    A collections of my REST API template for different language. This template
+    follows the  [JSON:API](https://jsonapi.org/) specification, unless there is
+    a specific endpoint specification.
+  contact:
+    name: Ahmad Husen
+    url: https://husen.id
+    email: hi@husen.id
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.1.0
+paths:
+  /auth/login:
+    post:
+      tags:
+        - "auth"
+      summary: Log in to the site.
+      description: >
+        This endpoint follow Bearer Token Usage specification
+        [[RFC 6750]](https://tools.ietf.org/html/rfc6750).
+      operationId: logIn
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - "username"
+                - "password"
+              example:
+                username: johndoe@example.com
+                password: abogoboga
+      responses:
+        "200":
+          $ref: "#/components/responses/BearerAuth"
+        "400":
+          description: Invalid request body.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Error"
+                  - example:
+                      links:
+                        self: "/auth/login"
+                      errors:
+                        - status: 400
+                          title: Bad Request
+                          description: The username is required.
+                          source:
+                            pointer: "/data/attributes/username"
+                        - status: 400
+                          title: Bad Request
+                          description: The password is required.
+                          source:
+                            pointer: "/data/attributes/password"
+        "401":
+          description: Invalid credentials.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Error"
+                  - example:
+                      links:
+                        self: "/auth/login"
+                      errors:
+                        - status: 401
+                          title: Unauthorized
+                          description: These credentials do not match our records.
+        "500":
+          description: Internal server error.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InternalServerError"
+                  - example:
+                      links:
+                        self: "/auth/login"
+      security:
+        - {}
+  /auth/profile:
+    get:
+      tags:
+        - "auth"
+      summary: Get current logged in user.
+      operationId: getProfile
+      responses:
+        "200":
+          description: "Return current logged in user."
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SingleUserResponseData"
+                  - example:
+                      links:
+                        self: "/auth/profile"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "401":
+          $ref: "#/components/responses/InvalidToken"
+        "500":
+          description: Internal server error.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InternalServerError"
+                  - example:
+                      links:
+                        self: "/auth/profile"
+  /auth/refresh:
+    get:
+      tags:
+        - "auth"
+      summary: Refresh access and refresh token.
+      description: >
+        Currently not working automatically due limitation of Swagger UI.
+      operationId: refresh
+      responses:
+        "200":
+          $ref: "#/components/responses/BearerAuth"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "401":
+          $ref: "#/components/responses/InvalidToken"
+        "500":
+          description: Internal server error.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InternalServerError"
+                  - example:
+                      links:
+                        self: "/auth/logout"
+      security:
+        - cookieAuth: []
+  /auth/logout:
+    post:
+      tags:
+        - "auth"
+      summary: Log out current user.
+      description: >
+        Currently not working automatically due limitation of Swagger UI.
+      operationId: logOut
+      responses:
+        "204":
+          description: "User log out successfully."
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "401":
+          $ref: "#/components/responses/InvalidToken"
+        "500":
+          description: Internal server error.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InternalServerError"
+                  - example:
+                      links:
+                        self: "/auth/logout"
+      security:
+        - cookieAuth: []
+  /user:
+    post:
+      tags:
+        - "user"
+      summary: Create an user.
+      operationId: create
+      requestBody:
+        content:
+          "application/vnd.api+json":
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/UserRequestData"
+                - example:
+                    links:
+                      self: "/user"
+      responses:
+        "201":
+          description: Return created user.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SingleUserResponseData"
+                  - example:
+                      links:
+                        self: "/user"
+        "400":
+          description: Invalid request body
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/UserRequestError"
+                  - example:
+                      links:
+                        self: "/user"
+        "401":
+          $ref: "#/components/responses/InvalidToken"
+        "500":
+          description: Internal server error.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InternalServerError"
+                  - example:
+                      links:
+                        self: "/user"
+    get:
+      tags:
+        - "user"
+      summary: Get all users.
+      operationId: findAll
+      responses:
+        "200":
+          description: Return all users.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/AllUserResponseData"
+                  - example:
+                      links:
+                        self: "/user"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "401":
+          $ref: "#/components/responses/InvalidToken"
+        "500":
+          description: Internal server error.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InternalServerError"
+                  - example:
+                      links:
+                        self: "/user"
+  /user/{id}:
+    get:
+      tags:
+        - "user"
+      summary: Get an user.
+      operationId: findOne
+      parameters:
+        - name: id
+          description: This parameter must be a valid UUID v4.
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Return an user.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SingleUserResponseData"
+                  - example:
+                      links:
+                        self: "/user/{id}"
+        "400":
+          description: Invalid id parameter.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InvalidIdParameter"
+                  - example:
+                      links:
+                        self: "/user/{id}"
+        "401":
+          $ref: "#/components/responses/InvalidToken"
+        "404":
+          $ref: "#/components/responses/UserNotFound"
+        "500":
+          description: Internal server error.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InternalServerError"
+                  - example:
+                      links:
+                        self: "/user/{id}"
+    patch:
+      tags:
+        - "user"
+      summary: Update an user.
+      operationId: update
+      parameters:
+        - name: id
+          in: path
+          description: This parameter must be a valid UUID v4.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          "application/vnd.api+json":
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/UserRequestData"
+                - example:
+                    links:
+                      self: "/user/{id}"
+      responses:
+        "200":
+          description: Return an user.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SingleUserResponseData"
+                  - example:
+                      links:
+                        self: "/user/{id}"
+        "400":
+          description: Invalid id parameter or request body.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InvalidIdParameter"
+                  - $ref: "#/components/schemas/UserError"
+                  - example:
+                      links:
+                        self: "/user/{id}"
+        "401":
+          $ref: "#/components/responses/InvalidToken"
+        "404":
+          $ref: "#/components/responses/UserNotFound"
+        "500":
+          description: Internal server error.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InternalServerError"
+                  - example:
+                      links:
+                        self: "/user/{id}"
+    delete:
+      tags:
+        - "user"
+      summary: Delete an user.
+      operationId: remove
+      parameters:
+        - name: id
+          in: path
+          description: This parameter must be a valid UUID v4.
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: User has been deleted successfully.
+        "400":
+          description: Invalid id parameter.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InvalidIdParameter"
+                  - example:
+                      links:
+                        self: "/user/{id}"
+        "401":
+          $ref: "#/components/responses/InvalidToken"
+        "404":
+          $ref: "#/components/responses/UserNotFound"
+        "500":
+          description: Internal server error.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InternalServerError"
+                  - example:
+                      links:
+                        self: "/user/{id}"
+components:
+  schemas:
+    JsonApi:
+      type: object
+      properties:
+        jsonapi:
+          type: object
+          properties:
+            version:
+              type: string
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+      example:
+        jsonapi:
+          version: "1.0"
+    Data:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+    Error:
+      allOf:
+        - $ref: "#/components/schemas/JsonApi"
+        - type: object
+          properties:
+            errors:
+              type: array
+              items:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    default: 400
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                  source:
+                    type: object
+                    properties:
+                      pointer:
+                        type: string
+                      parameter:
+                        type: string
+                required:
+                  - "status"
+                  - "title"
+    InternalServerError:
+      allOf:
+        - $ref: "#/components/schemas/Error"
+        - example:
+            errors:
+              - status: 500
+                title: Internal Server Error
+                description: Something went wrong.
+    InvalidIdParameter:
+      allOf:
+        - $ref: "#/components/schemas/Error"
+        - example:
+            errors:
+              - status: 400
+                title: Bad Request
+                detail: Validation failed (uuid v4 is expected).
+                source:
+                  parameter: id
+    BearerAuthError:
+      type: object
+      properties:
+        error:
+          type: string
+        error_description:
+          type: string
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        nickname:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+        password_confirmation:
+          type: string
+          writeOnly: true
+        photo:
+          type: string
+          writeOnly: true
+        avatar:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          readOnly: true
+        updated_at:
+          type: string
+          readOnly: true
+      required:
+        - "name"
+        - "email"
+        - "password"
+        - "password_confirmation"
+      example:
+        name: John Doe
+        nickname: John
+        email: johndoe@example.com
+        password: abogoboga
+        password_confirmation: abogoboga
+        photo: <your-photo-path>
+        avatar: <your-s3-url-here>
+    UserData:
+      allOf:
+        - $ref: "#/components/schemas/Data"
+        - properties:
+            attributes:
+              $ref: "#/components/schemas/User"
+    SingleUserResponseData:
+      allOf:
+        - $ref: "#/components/schemas/JsonApi"
+        - properties:
+            data:
+              $ref: "#/components/schemas/UserData"
+        - example:
+            data:
+              id: <your-uuid-v4-here>
+              type: users
+              attributes:
+                name: John Doe
+                nickname: John
+                email: johndoe@example.com
+                avatar: <your-s3-url-here>
+                created_at: Date
+                updated_at: Date
+    AllUserResponseData:
+      allOf:
+        - $ref: "#/components/schemas/JsonApi"
+        - properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/UserData"
+        - example:
+            data:
+              - id: <your-uuid-v4-here>
+                type: users
+                attributes:
+                  name: John Doe
+                  nickname: John
+                  email: johndoe@example.com
+                  avatar: <your-s3-url-here>
+                  created_at: Date
+                  updated_at: Date
+    UserRequestData:
+      allOf:
+        - $ref: "#/components/schemas/JsonApi"
+        - properties:
+            data:
+              $ref: "#/components/schemas/UserData"
+        - example:
+            data:
+              id: <your-uuid-v4-here>
+              type: users
+              attributes:
+                name: John Doe
+                nickname: John
+                email: johndoe@example.com
+                password: abogoboga
+                password_confirmation: abogoboga
+                photo: <your-photo-path>
+    UserError:
+      allOf:
+        - $ref: "#/components/schemas/Error"
+        - example:
+            errors:
+              - status: 400
+                title: Bad Request
+                detail: The email must be a valid email address.
+                source:
+                  pointer: "/data/attributes/email"
+              - status: 400
+                title: Bad Request
+                detail: The email has already been taken.
+                source:
+                  pointer: "/data/attributes/email"
+              - status: 400
+                title: Bad Request
+                detail: The password must be at least 8 characters.
+                source:
+                  pointer: "/data/attributes/password"
+              - status: 400
+                title: Bad Request
+                detail: The password_confirmation must be at least 8 characters.
+                source:
+                  pointer: "/data/attributes/password_confirmation"
+              - status: 400
+                title: Bad Request
+                detail: The password_confirmation and password must match.
+                source:
+                  pointer: "/data/attributes/password_confirmation"
+    UserRequestError:
+      allOf:
+        - $ref: "#/components/schemas/UserError"
+        - example:
+            errors:
+              - status: 400
+                title: Bad Request
+                detail: The name is required.
+                source:
+                  pointer: "/data/attributes/name"
+              - status: 400
+                title: Bad Request
+                detail: The email is required.
+                source:
+                  pointer: "/data/attributes/email"
+              - status: 400
+                title: Bad Request
+                detail: The password is required.
+                source:
+                  pointer: "/data/attributes/password"
+              - status: 400
+                title: Bad Request
+                detail: The password_confirmation is required.
+                source:
+                  pointer: "/data/attributes/password_confirmation"
+    UserNotFound:
+      allOf:
+        - $ref: "#/components/schemas/Error"
+        - example:
+            errors:
+              - status: 404
+                title: Not Found
+                detail: The user is not found.
+                source:
+                  parameter: id
+  responses:
+    InvalidRequest:
+      description: The token is missing or malformed.
+      headers:
+        "WWW-Authenticate":
+          $ref: "#/components/headers/bearerAuthError"
+      content:
+        "application/json":
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/BearerAuthError"
+              - example:
+                  error: invalid_request
+                  error_description: The token is missing or malformed.
+    InvalidToken:
+      description: The token is revoked or expired.
+      headers:
+        "WWW-Authenticate":
+          $ref: "#/components/headers/bearerAuthError"
+      content:
+        "application/json":
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/BearerAuthError"
+              - example:
+                  error: invalid_token
+                  error_description: The token has been revoked or expired.
+    BearerAuth:
+      description: >
+        Valid credentials, with a response format that follows
+        [RFC6750](https://datatracker.ietf.org/doc/html/rfc6750#section-4).
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              access_token:
+                type: string
+              token_type:
+                type: string
+                default: Bearer
+              expires_in:
+                type: integer
+              refresh_token:
+                type: string
+            example:
+              access_token: <your-access-token-here>
+              token_type: Bearer
+              expires_in: 3600
+              refresh_token: <your-refresh-token-here>
+    UserNotFound:
+      description: User not found, usually caused by invalid id parameter.
+      content:
+        "application/vnd.api+json":
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/Error"
+              - example:
+                  links:
+                    self: "/user/{id}"
+                  errors:
+                    - status: 404
+                      title: Not Found
+                      detail: The user is not found.
+                      source:
+                        parameter: id
+
+  headers:
+    bearerAuthError:
+      description: >
+            HTTP authentication methods ("challenges") that might be used.
+      schema:
+        type: string
+        example: Bearer realm="Access to the site"
+  securitySchemes:
+    bearerAuth:
+      description: JWT based access token authentication
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    cookieAuth:
+      description: JWT based refresh token authentication
+      type: apiKey
+      in: cookie
+      name: refresh-token
+security:
+  - bearerAuth: []
+

@@ -1,0 +1,23 @@
+{
+	"extends": "@tsconfig/node16-strictest/tsconfig.json",
+	"include": ["./src/**/*.ts"],
+	"exclude": ["./src/test", "./src/**/*.test.ts"],
+	"compilerOptions": {
+		"baseUrl": "./",
+		"outDir": "dist",
+		"incremental": true,
+
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+
+		"moduleResolution": "node",
+
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+
+		"noPropertyAccessFromIndexSignature": false,
+		"removeComments": true
+	}
+}

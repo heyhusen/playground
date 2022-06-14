@@ -1,1 +1,8 @@
+# Log
+*.log
+
+# Editor
 *.sublime-workspace
+
+# Dependency directories
+node_modules

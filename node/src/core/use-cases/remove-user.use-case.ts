@@ -1,0 +1,28 @@
+import { NotFoundException } from '../exceptions/not-found.exception';
+import type { FileService } from '../interfaces/file.interface';
+import type { UserRepository } from '../interfaces/user.interface';
+
+/**
+ * Delete an user.
+ *
+ * If the user is not found, a custom exception will be thrown.
+ *
+ * @param {string}         id             A validated id parameter
+ * @param {UserRepository} userRepository A repository of user
+ * @param {FileService}    fileService    A service for manage file
+ */
+export async function removeUser(
+	id: string,
+	userRepository: UserRepository,
+	fileService: FileService
+) {
+	const record = await userRepository.remove(id);
+
+	if (!record) {
+		throw new NotFoundException('The user is not found.');
+	}
+
+	if (record.photo) {
+		await fileService.remove(record.photo);
+	}
+}
