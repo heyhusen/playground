@@ -12,8 +12,12 @@ import type {
 export function findOneUserController(
 	userRepository: UserRepository,
 	fileService: FileService
-) {
-	return async (req: HttpRequestParams<UserRequestParams>) => {
+): (
+	req: HttpRequestParams<UserRequestParams>
+) => Promise<ResponseModel<UserResponse>> {
+	return async (
+		req: HttpRequestParams<UserRequestParams>
+	): Promise<ResponseModel<UserResponse>> => {
 		if (!req.params) {
 			throw new BadRequestException('An id parameter is expexted.');
 		}
@@ -22,11 +26,9 @@ export function findOneUserController(
 
 		const data = await findOneUser(id, userRepository, fileService);
 
-		const result: ResponseModel<UserResponse> = {
+		return {
 			status: 200,
 			data: { ...data, type: 'users' },
 		};
-
-		return result;
 	};
 }

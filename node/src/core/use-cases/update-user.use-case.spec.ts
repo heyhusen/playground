@@ -1,10 +1,10 @@
-import type { File } from '../entities/common.entity';
 import { NotFoundException } from '../exceptions/not-found.exception';
 import type { FileService } from '../interfaces/file.interface';
 import type { HashService } from '../interfaces/hash.interface';
 import type {
 	UpdateUserDto,
 	UserRepository,
+	UserResult,
 	UserTable,
 	UserTableInput,
 } from '../interfaces/user.interface';
@@ -37,12 +37,13 @@ describe('updateUser', () => {
 			findOneByEmail: jest.fn(),
 			update: jest.fn((id: string, data: Partial<UserTableInput>) => {
 				if (id !== user.id) {
-					return Promise.resolve(null);
+					return Promise.resolve<null>(null);
 				}
 
-				return Promise.resolve({ ...user, ...data });
+				return Promise.resolve<UserTable>({ ...user, ...data });
 			}),
 			remove: jest.fn(),
+			truncate: jest.fn(),
 		};
 
 		hashService = {
@@ -51,16 +52,14 @@ describe('updateUser', () => {
 		};
 
 		fileService = {
-			upload: jest.fn((file?: File | undefined, originalName = '') => {
-				let filename = originalName;
-
-				if (file) {
-					filename = `${file.name}.${file.extension}`;
+			upload: jest.fn(),
+			getUrl: jest.fn().mockImplementation(() => {
+				if (!user.photo) {
+					return null;
 				}
 
-				return Promise.resolve(filename);
+				return Promise.resolve('avatar.png');
 			}),
-			getUrl: jest.fn().mockReturnValue(Promise.resolve('avatar.png')),
 			remove: jest.fn(),
 		};
 	});
@@ -85,7 +84,7 @@ describe('updateUser', () => {
 		const { password, ...result } = user;
 
 		expect(hashService.create).toBeCalledTimes(0);
-		expect(data).toEqual({ ...result, ...dto, avatar: null });
+		expect(data).toEqual<UserResult>({ ...result, ...dto, avatar: null });
 	});
 
 	test("should only update user's nickname", async () => {
@@ -102,7 +101,7 @@ describe('updateUser', () => {
 		const { password, ...result } = user;
 
 		expect(hashService.create).toBeCalledTimes(0);
-		expect(data).toEqual({ ...result, ...dto, avatar: null });
+		expect(data).toEqual<UserResult>({ ...result, ...dto, avatar: null });
 	});
 
 	test("should only update user's email", async () => {
@@ -119,7 +118,7 @@ describe('updateUser', () => {
 		const { password, ...result } = user;
 
 		expect(hashService.create).toBeCalledTimes(0);
-		expect(data).toEqual({ ...result, ...dto, avatar: null });
+		expect(data).toEqual<UserResult>({ ...result, ...dto, avatar: null });
 	});
 
 	test("should only update user's password", async () => {
@@ -130,39 +129,9 @@ describe('updateUser', () => {
 		expect(hashService.create).toBeCalledTimes(1);
 	});
 
-	test("should only upload new user's avatar", async () => {
-		dto = {};
-
-		fileService.upload = jest
-			.fn()
-			.mockReturnValue(Promise.resolve('new-photo.png'));
-
-		const data = await updateUser(
-			'id',
-			dto,
-			userRepository,
-			hashService,
-			fileService
-		);
-
-		const { password, ...result } = user;
-
-		expect(hashService.create).toBeCalledTimes(0);
-		expect(data).toEqual({
-			...result,
-			...dto,
-			photo: 'new-photo.png',
-			avatar: 'avatar.png',
-		});
-	});
-
 	test("should only update existing user's avatar", async () => {
 		dto = {};
-		user = { ...user, photo: 'old-photo.png' };
-
-		fileService.upload = jest
-			.fn()
-			.mockReturnValue(Promise.resolve('new-photo.png'));
+		user = { ...user, photo: 'photo.png' };
 
 		const data = await updateUser(
 			'id',
@@ -175,10 +144,9 @@ describe('updateUser', () => {
 		const { password, ...result } = user;
 
 		expect(hashService.create).toBeCalledTimes(0);
-		expect(data).toEqual({
+		expect(data).toEqual<UserResult>({
 			...result,
-			...dto,
-			photo: 'new-photo.png',
+			photo: 'photo.png',
 			avatar: 'avatar.png',
 		});
 	});

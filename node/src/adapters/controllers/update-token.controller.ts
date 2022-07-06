@@ -10,13 +10,17 @@ export function updateTokenController(
 	tokenService: TokenService,
 	redisService: RedisService,
 	expiresIn: number
-) {
-	return async (req: HttpRequestUser<UserRefreshRequest>) => {
+): (
+	req: HttpRequestUser<UserRefreshRequest>
+) => Promise<ResponseModel<AuthResponse>> {
+	return async (
+		req: HttpRequestUser<UserRefreshRequest>
+	): Promise<ResponseModel<AuthResponse>> => {
 		const { ...user } = req.user;
 
 		const data = await updateToken(user, tokenService, redisService, expiresIn);
 
-		const result: ResponseModel<AuthResponse> = {
+		return {
 			status: 200,
 			cookie: {
 				name: 'refresh_token',
@@ -30,7 +34,5 @@ export function updateTokenController(
 				refresh_token: data.refreshToken,
 			},
 		};
-
-		return result;
 	};
 }

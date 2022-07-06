@@ -1,4 +1,5 @@
-import { AuthException } from '../../core/exceptions/auth.exception';
+import type { UserRefreshRequest } from 'src/core/interfaces/auth.interface';
+import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type { RedisService } from '../../core/interfaces/redis.interface';
 import type { TokenService } from '../../core/interfaces/token.interface';
 import { verifyRefreshToken } from '../../core/use-cases/verify-refresh-token.use-case';
@@ -10,14 +11,12 @@ import type {
 export function verifyRefreshTokenController(
 	tokenService: TokenService,
 	redisService: RedisService
-) {
-	return async (req: HttpRequestCookie<RefreshTokenCookie>) => {
+): (req: HttpRequestCookie<RefreshTokenCookie>) => Promise<UserRefreshRequest> {
+	return async (
+		req: HttpRequestCookie<RefreshTokenCookie>
+	): Promise<UserRefreshRequest> => {
 		if (!req.cookies || !req.cookies.refresh_token) {
-			throw new AuthException(
-				400,
-				'invalid_request',
-				'The token is missing or malformed.'
-			);
+			throw new BadRequestException('The token is missing or malformed.');
 		}
 
 		const token = req.cookies.refresh_token;

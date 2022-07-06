@@ -1,28 +1,47 @@
 import type { NextFunction, Request, Response } from 'express';
-import type { HttpError } from 'http-errors';
-import createHttpError from 'http-errors';
-import { AuthException } from '../../../core/exceptions/auth.exception';
+import { ValidationError } from 'express-json-validator-middleware';
+import type {
+	BearerTokenError,
+	JsonApiError,
+	JsonApiErrorObject,
+} from '../../../adapters/interfaces/http.interface';
+import { BearerTokenException } from '../../../core/exceptions/bearer-token.exception';
+import { NotFoundException } from '../../../core/exceptions/not-found.exception';
+import type { HttpError } from '../../../core/interfaces/http.interface';
 
 export function notFoundHandler() {
 	return (_req: Request, _res: Response, next: NextFunction) => {
-		next(createHttpError(404, 'Resource not found.'));
+		next(new NotFoundException('Resource not found.'));
 	};
 }
 
 export function errorHandler() {
-	return (
-		err: HttpError,
-		_req: Request,
-		res: Response,
-		_next: NextFunction
-	) => {
-		const { status, name, message } = err;
+	return (err: HttpError, req: Request, res: Response, _next: NextFunction) => {
+		const { name, message } = err;
+		let { status } = err;
 
-		let response: object = {
+		let response: JsonApiError | BearerTokenError = {
+			jsonapi: { version: '1.0' },
+			links: { self: req.path },
 			errors: [{ status, title: name, detail: message }],
 		};
 
-		if (err instanceof AuthException) {
+		if (err instanceof ValidationError) {
+			if (err.validationErrors.body) {
+				response = {
+					...response,
+					errors: err.validationErrors.body.map<JsonApiErrorObject>((item) => {
+						return {
+							status: 400,
+							title: 'Bad Request',
+							detail: item.message as string,
+						};
+					}),
+				};
+			}
+
+			status = 400;
+		} else if (err instanceof BearerTokenException) {
 			response = { error: name, error_description: message };
 		}
 

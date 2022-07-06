@@ -30,8 +30,9 @@ describe('removeUser', () => {
 					return Promise.resolve(null);
 				}
 
-				return Promise.resolve(user);
+				return Promise.resolve<UserTable>(user);
 			}),
+			truncate: jest.fn(),
 		};
 
 		fileService = {

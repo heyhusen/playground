@@ -1,9 +1,18 @@
-import type { UserTable } from '../../core/interfaces/user.interface';
-import type { User } from '../../core/entities/user.entity';
+import type {
+	CreateUserDto,
+	UpdateUserDto,
+	UserResult,
+	UserTable,
+} from '../../core/interfaces/user.interface';
 
 export type UserRequestParams = Pick<UserTable, 'id'>;
 
-export type UserResponse = Omit<UserTable, 'password'> &
-	Pick<User, 'avatar'> & {
-		type: 'users';
-	};
+export type CreateUser = Omit<CreateUserDto, 'photo'>;
+
+export type UpdateUser = Omit<UpdateUserDto, 'photo'>;
+
+export interface UserResponse extends UserResult {
+	type: 'users';
+}
+
+export type UserData = Omit<UserResponse, 'id' | 'type'>;

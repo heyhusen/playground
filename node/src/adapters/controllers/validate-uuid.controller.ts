@@ -5,7 +5,7 @@ import type { HttpRequestParams } from '../interfaces/http.interface';
 
 export function validateUuidController(
 	req: HttpRequestParams<RequestIdParams>
-) {
+): boolean {
 	if (!req.params) {
 		throw new BadRequestException('An id parameter is expexted.');
 	}

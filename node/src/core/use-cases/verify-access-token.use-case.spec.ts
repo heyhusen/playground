@@ -1,3 +1,4 @@
+import type { UserRequest } from '../interfaces/auth.interface';
 import type { Payload, TokenService } from '../interfaces/token.interface';
 import { verifyAccessToken } from './verify-access-token.use-case';
 
@@ -20,6 +21,9 @@ describe('verifyAccessToken', () => {
 	test('should return user object', () => {
 		const data = verifyAccessToken(token, tokenService);
 
-		expect(data).toEqual({ userId: payload.sub, username: payload.username });
+		expect(data).toEqual<UserRequest>({
+			userId: payload.sub,
+			username: payload.username,
+		});
 	});
 });

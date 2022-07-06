@@ -1,10 +1,12 @@
 import type { LogInDto, UserRequest } from './auth.interface';
 
-export type Payload = Pick<LogInDto, 'username'> & {
+export interface Payload extends Pick<LogInDto, 'username'> {
 	sub: string;
-};
+}
 
-export type RefreshPayload = Payload & { jti: string };
+export interface RefreshPayload extends Payload {
+	jti: string;
+}
 
 export interface TokenService {
 	generateAccessToken: (payload: Payload) => string;
@@ -13,6 +15,6 @@ export interface TokenService {
 	verifyRefreshToken: (token: string) => RefreshPayload;
 }
 
-export type RefreshTokenRecord = Pick<UserRequest, 'userId'> & {
+export interface RefreshTokenRecord extends Pick<UserRequest, 'userId'> {
 	isRevoked: boolean;
-};
+}

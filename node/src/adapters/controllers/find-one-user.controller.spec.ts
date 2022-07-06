@@ -2,11 +2,16 @@ import { BadRequestException } from '../../core/exceptions/bad-request.exception
 import type { FileService } from '../../core/interfaces/file.interface';
 import type {
 	UserRepository,
+	UserResult,
 	UserTable,
 } from '../../core/interfaces/user.interface';
 import { findOneUser } from '../../core/use-cases/find-one-user.use-case';
+import type { ResponseModel } from '../interfaces/common.interface';
 import type { HttpRequestParams } from '../interfaces/http.interface';
-import type { UserRequestParams } from '../interfaces/user.interface';
+import type {
+	UserRequestParams,
+	UserResponse,
+} from '../interfaces/user.interface';
 import { findOneUserController } from './find-one-user.controller';
 
 jest.mock('../../core/use-cases/find-one-user.use-case');
@@ -19,6 +24,7 @@ describe('findOneUserController', () => {
 		findOneByEmail: jest.fn(),
 		update: jest.fn(),
 		remove: jest.fn(),
+		truncate: jest.fn(),
 	};
 	const fileService: FileService = {
 		upload: jest.fn(),
@@ -41,13 +47,13 @@ describe('findOneUserController', () => {
 		updated_at: '2022-06-11 01:55:13',
 	};
 
-	const mockedFindAllUsers = jest.mocked(findOneUser, true);
+	const mockedFindOneUser = jest.mocked(findOneUser, true);
 
 	beforeEach(() => {
-		mockedFindAllUsers.mockImplementation(() => {
+		mockedFindOneUser.mockImplementation(() => {
 			const { password, ...result } = user;
 
-			return Promise.resolve({
+			return Promise.resolve<UserResult>({
 				...result,
 				avatar: user.photo ? 'avatar.png' : null,
 			});
@@ -66,7 +72,7 @@ describe('findOneUserController', () => {
 		const data = await controller(request);
 		const { password, ...result } = user;
 
-		expect(data).toEqual({
+		expect(data).toEqual<ResponseModel<UserResponse>>({
 			status: 200,
 			data: { ...result, avatar: null, type: 'users' },
 		});
@@ -78,7 +84,7 @@ describe('findOneUserController', () => {
 		const data = await controller(request);
 		const { password, ...result } = user;
 
-		expect(data).toEqual({
+		expect(data).toEqual<ResponseModel<UserResponse>>({
 			status: 200,
 			data: { ...result, avatar: 'avatar.png', type: 'users' },
 		});

@@ -1,6 +1,10 @@
 import { NotFoundException } from '../exceptions/not-found.exception';
 import type { FileService } from '../interfaces/file.interface';
-import type { UserRepository, UserTable } from '../interfaces/user.interface';
+import type {
+	UserRepository,
+	UserResult,
+	UserTable,
+} from '../interfaces/user.interface';
 import { findOneUser } from './find-one-user.use-case';
 
 describe('findOneUser', () => {
@@ -27,11 +31,12 @@ describe('findOneUser', () => {
 					return Promise.resolve(null);
 				}
 
-				return Promise.resolve(user);
+				return Promise.resolve<UserTable>(user);
 			}),
 			findOneByEmail: jest.fn(),
 			update: jest.fn(),
 			remove: jest.fn(),
+			truncate: jest.fn(),
 		};
 
 		fileService = {
@@ -53,7 +58,7 @@ describe('findOneUser', () => {
 
 		expect(userRepository.findOne).toBeCalledTimes(1);
 		expect(fileService.getUrl).toBeCalledTimes(0);
-		expect(data).toEqual({ ...result, avatar: null });
+		expect(data).toEqual<UserResult>({ ...result, avatar: null });
 	});
 
 	test('should return an user with avatar', async () => {
@@ -66,7 +71,7 @@ describe('findOneUser', () => {
 
 		expect(userRepository.findOne).toBeCalledTimes(1);
 		expect(fileService.getUrl).toBeCalledTimes(1);
-		expect(data).toEqual({
+		expect(data).toEqual<UserResult>({
 			...result,
 			photo: 'photo.png',
 			avatar: 'avatar.png',

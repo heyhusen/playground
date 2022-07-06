@@ -6,8 +6,8 @@ import type {
 import { db } from '../ports/database';
 
 export const userRepository: UserRepository = {
-	create: async (input: UserTableInput) => {
-		const record = await db<UserTable>('users')
+	create: async (input: UserTableInput): Promise<UserTable | null> => {
+		const records = await db<UserTable>('users')
 			.insert(input)
 			.returning([
 				'id',
@@ -18,14 +18,13 @@ export const userRepository: UserRepository = {
 				'photo',
 				'created_at',
 				'updated_at',
-			])
-			.first();
+			]);
 
-		if (!record) {
+		if (records.length < 1) {
 			return null;
 		}
 
-		const result: UserTable = record;
+		const result = records[0] as UserTable;
 
 		return result;
 	},
@@ -131,15 +130,18 @@ export const userRepository: UserRepository = {
 				'photo',
 				'created_at',
 				'updated_at',
-			])
-			.first();
+			]);
 
-		if (!record) {
+		if (record.length < 1) {
 			return null;
 		}
 
-		const result: UserTable = record;
+		const result = record[0] as UserTable;
 
 		return result;
+	},
+
+	truncate: async () => {
+		await db<UserTable>('users').truncate();
 	},
 };

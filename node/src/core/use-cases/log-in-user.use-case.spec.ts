@@ -1,5 +1,5 @@
 import { UnauthorizedException } from '../exceptions/unauthorized.exception';
-import type { LogInDto } from '../interfaces/auth.interface';
+import type { LogInDto, AuthResult } from '../interfaces/auth.interface';
 import type { HashService } from '../interfaces/hash.interface';
 import type { RedisService } from '../interfaces/redis.interface';
 import type { TokenService } from '../interfaces/token.interface';
@@ -40,10 +40,11 @@ describe('logInUser', () => {
 					return Promise.resolve(null);
 				}
 
-				return Promise.resolve(user);
+				return Promise.resolve<UserTable>(user);
 			}),
 			update: jest.fn(),
 			remove: jest.fn(),
+			truncate: jest.fn(),
 		};
 
 		hashService = {
@@ -130,7 +131,7 @@ describe('logInUser', () => {
 		expect(hashService.verify).toBeCalledTimes(1);
 		expect(tokenService.generateAccessToken).toBeCalledTimes(1);
 		expect(tokenService.generateRefreshToken).toBeCalledTimes(1);
-		expect(data).toEqual({
+		expect(data).toEqual<AuthResult>({
 			accessToken: 'accessToken',
 			refreshToken: 'refreshToken',
 		});

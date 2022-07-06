@@ -1,4 +1,5 @@
-import { AuthException } from '../../core/exceptions/auth.exception';
+import type { UserRequest } from 'src/core/interfaces/auth.interface';
+import { BearerTokenException } from '../../core/exceptions/bearer-token.exception';
 import type { TokenService } from '../../core/interfaces/token.interface';
 import { verifyAccessToken } from '../../core/use-cases/verify-access-token.use-case';
 import type {
@@ -6,10 +7,12 @@ import type {
 	HttpRequest,
 } from '../interfaces/http.interface';
 
-export function verifyAccessTokenController(tokenService: TokenService) {
-	return (req: HttpRequest<BearerTokenHeader>) => {
+export function verifyAccessTokenController(
+	tokenService: TokenService
+): (req: HttpRequest<BearerTokenHeader>) => UserRequest {
+	return (req: HttpRequest<BearerTokenHeader>): UserRequest => {
 		if (!req.headers || !req.headers.authorization) {
-			throw new AuthException(
+			throw new BearerTokenException(
 				400,
 				'invalid_request',
 				'The request is missing a required authorization header.'
@@ -20,7 +23,11 @@ export function verifyAccessTokenController(tokenService: TokenService) {
 		const token = bearer[1];
 
 		if (!token) {
-			throw new AuthException(401, 'invalid_token', 'The token is malformed.');
+			throw new BearerTokenException(
+				401,
+				'invalid_token',
+				'The token is malformed.'
+			);
 		}
 
 		const data = verifyAccessToken(token, tokenService);

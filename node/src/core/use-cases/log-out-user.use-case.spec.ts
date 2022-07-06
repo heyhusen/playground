@@ -1,4 +1,4 @@
-import { AuthException } from '../exceptions/auth.exception';
+import { BearerTokenException } from '../exceptions/bearer-token.exception';
 import type { RedisService } from '../interfaces/redis.interface';
 import { logOutUser } from './log-out-user.use-case';
 
@@ -25,7 +25,7 @@ describe('logOutUser', () => {
 
 	test('should throw error when refresh token is expired', async () => {
 		await expect(logOutUser('invalid-jti', redisService)).rejects.toThrow(
-			new AuthException(401, 'invalid_token', 'The token is expired.')
+			new BearerTokenException(401, 'invalid_token', 'The token is expired.')
 		);
 	});
 

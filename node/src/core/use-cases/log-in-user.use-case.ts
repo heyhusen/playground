@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 import { UnauthorizedException } from '../exceptions/unauthorized.exception';
-import type { LogInDto } from '../interfaces/auth.interface';
+import type { LogInDto, AuthResult } from '../interfaces/auth.interface';
 import type { HashService } from '../interfaces/hash.interface';
 import type { RedisService } from '../interfaces/redis.interface';
 import type {
@@ -15,12 +15,13 @@ import type { UserRepository } from '../interfaces/user.interface';
  * If the user is not found in the database or if the password is invalid, an
  * exception will be thrown.
  *
- * @param {LogInDto}       dto            A validated data transfer object
- * @param {UserRepository} userRepository A repository of user
- * @param {HashService}    hashService    A service for manage hash
- * @param {TokenService}   tokenService   A service for manage token
- * @param {RedisService}   redisService   A service for manage data on redis
- * @param {number}         expiresIn      A number for refresh token expiration
+ * @param {LogInDto}       				dto            A validated data transfer object
+ * @param {UserRepository} 				userRepository A repository of user
+ * @param {HashService}    				hashService    A service for manage hash
+ * @param {TokenService}   				tokenService   A service for manage token
+ * @param {RedisService}   				redisService   A service for manage data on redis
+ * @param {number}         				expiresIn      A number for refresh token expiration
+ * @return {Promise<AuthResult>}                An authenticated result object
  */
 export async function logInUser(
 	dto: LogInDto,
@@ -29,7 +30,7 @@ export async function logInUser(
 	tokenService: TokenService,
 	redisService: RedisService,
 	expiresIn: number
-) {
+): Promise<AuthResult> {
 	const { username, password } = dto;
 
 	const record = await userRepository.findOneByEmail(username);

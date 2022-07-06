@@ -1,9 +1,18 @@
 import type { CreateUserDto } from './user.interface';
 
-export type LogInDto = Pick<CreateUserDto, 'password'> & { username: string };
+export interface LogInDto extends Pick<CreateUserDto, 'password'> {
+	username: string;
+}
 
-export type UserRequest = Pick<LogInDto, 'username'> & {
+export interface UserRequest extends Pick<LogInDto, 'username'> {
 	userId: string;
-};
+}
 
-export type UserRefreshRequest = UserRequest & { tokenId: string };
+export interface UserRefreshRequest extends UserRequest {
+	tokenId: string;
+}
+
+export interface AuthResult {
+	accessToken: string;
+	refreshToken: string;
+}

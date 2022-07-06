@@ -1,7 +1,12 @@
-import type { UserRefreshRequest } from '../../core/interfaces/auth.interface';
+import type {
+	AuthResult,
+	UserRefreshRequest,
+} from '../../core/interfaces/auth.interface';
 import type { RedisService } from '../../core/interfaces/redis.interface';
 import type { TokenService } from '../../core/interfaces/token.interface';
 import { updateToken } from '../../core/use-cases/update-token.use-case';
+import type { AuthResponse } from '../interfaces/auth.interface';
+import type { ResponseModel } from '../interfaces/common.interface';
 import type { HttpRequestUser } from '../interfaces/http.interface';
 import { updateTokenController } from './update-token.controller';
 
@@ -45,7 +50,7 @@ describe('updateTokenController', () => {
 
 	beforeEach(() => {
 		mockedUpdateToken.mockReturnValue(
-			Promise.resolve({
+			Promise.resolve<AuthResult>({
 				accessToken: 'accessToken',
 				refreshToken: 'refreshToken',
 			})
@@ -62,7 +67,7 @@ describe('updateTokenController', () => {
 			redisService,
 			expiresIn
 		);
-		expect(data).toEqual({
+		expect(data).toEqual<ResponseModel<AuthResponse>>({
 			status: 200,
 			cookie: {
 				name: 'refresh_token',

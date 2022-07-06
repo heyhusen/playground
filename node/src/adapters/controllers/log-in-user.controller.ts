@@ -15,8 +15,10 @@ export function logInUserController(
 	tokenService: TokenService,
 	redisService: RedisService,
 	expiresIn: number
-) {
-	return async (req: HttpRequestBody<LogInDto>) => {
+): (req: HttpRequestBody<LogInDto>) => Promise<ResponseModel<AuthResponse>> {
+	return async (
+		req: HttpRequestBody<LogInDto>
+	): Promise<ResponseModel<AuthResponse>> => {
 		if (!req.body) {
 			throw new BadRequestException('Request body is empty.');
 		}
@@ -32,7 +34,7 @@ export function logInUserController(
 			expiresIn
 		);
 
-		const result: ResponseModel<AuthResponse> = {
+		return {
 			status: 200,
 			cookie: {
 				name: 'refresh_token',
@@ -46,7 +48,5 @@ export function logInUserController(
 				refresh_token: data.refreshToken,
 			},
 		};
-
-		return result;
 	};
 }

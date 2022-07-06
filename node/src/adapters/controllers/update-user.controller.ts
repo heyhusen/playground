@@ -17,17 +17,19 @@ export function updateUserController(
 	userRepository: UserRepository,
 	hashService: HashService,
 	fileService: FileService
-) {
+): (
+	req: HttpRequest<unknown, UserRequestParams, Omit<UpdateUserDto, 'photo'>>
+) => Promise<ResponseModel<UserResponse>> {
 	return async (
 		req: HttpRequest<unknown, UserRequestParams, Omit<UpdateUserDto, 'photo'>>
-	) => {
+	): Promise<ResponseModel<UserResponse>> => {
 		if (!req.params) {
 			throw new BadRequestException('An id parameter is expected.');
 		}
 
 		const { id } = req.params;
 
-		const dto = { ...req.body, photo: req.file };
+		const dto = { ...req.body };
 
 		const data = await updateUser(
 			id,
@@ -37,11 +39,9 @@ export function updateUserController(
 			fileService
 		);
 
-		const result: ResponseModel<UserResponse> = {
+		return {
 			status: 200,
 			data: { ...data, type: 'users' },
 		};
-
-		return result;
 	};
 }

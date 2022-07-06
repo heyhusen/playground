@@ -4,6 +4,7 @@ import type { HashService } from '../interfaces/hash.interface';
 import type {
 	UpdateUserDto,
 	UserRepository,
+	UserResult,
 	UserTableInput,
 } from '../interfaces/user.interface';
 
@@ -12,11 +13,12 @@ import type {
  *
  * If the user is not found, a custom exception will be thrown.
  *
- * @param {string}         id             A validated id parameter
- * @param {UpdateUserDto}  dto            A validated data transfer object
- * @param {UserRepository} userRepository A repository of user
- * @param {HashService}    hashService    A service for manage hash
- * @param {FileService}    fileService    A service for manage file
+ * @param {string}         			id             	A validated id parameter
+ * @param {UpdateUserDto}  			dto            	A validated data transfer object
+ * @param {UserRepository} 			userRepository 	A repository of user
+ * @param {HashService}    			hashService    	A service for manage hash
+ * @param {FileService}    			fileService    	A service for manage file
+ * @return {Promise<UserResult>}                An updated user entity
  */
 export async function updateUser(
 	id: string,
@@ -24,8 +26,8 @@ export async function updateUser(
 	userRepository: UserRepository,
 	hashService: HashService,
 	fileService: FileService
-) {
-	const { name, nickname, email, password, photo: file } = dto;
+): Promise<UserResult> {
+	const { name, nickname, email, password } = dto;
 
 	let input: Partial<UserTableInput> = {};
 
@@ -51,18 +53,10 @@ export async function updateUser(
 		throw new NotFoundException('The user is not found.');
 	}
 
-	const photo = await fileService.upload(
-		file,
-		record.photo ? record.photo : ''
-	);
-
-	await userRepository.update(id, { photo });
-
 	const { password: ignorePassword, ...data } = record;
 
 	return {
 		...data,
-		photo,
-		avatar: photo ? await fileService.getUrl(photo) : null,
+		avatar: record.photo ? await fileService.getUrl(record.photo) : null,
 	};
 }

@@ -1,4 +1,7 @@
-import type { UserRefreshRequest } from '../interfaces/auth.interface';
+import type {
+	AuthResult,
+	UserRefreshRequest,
+} from '../interfaces/auth.interface';
 import type { RedisService } from '../interfaces/redis.interface';
 import type { TokenService } from '../interfaces/token.interface';
 import { updateToken } from './update-token.use-case';
@@ -37,7 +40,7 @@ describe('updateToken', () => {
 		expect(redisService.del).toBeCalledTimes(1);
 		expect(redisService.set).toBeCalledTimes(1);
 		expect(tokenService.generateRefreshToken).toBeCalledTimes(1);
-		expect(data).toEqual({
+		expect(data).toEqual<AuthResult>({
 			accessToken: 'accessToken',
 			refreshToken: 'refreshToken',
 		});

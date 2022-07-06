@@ -3,10 +3,13 @@ import type { UserRequest } from '../../core/interfaces/auth.interface';
 import type { FileService } from '../../core/interfaces/file.interface';
 import type {
 	UserRepository,
+	UserResult,
 	UserTable,
 } from '../../core/interfaces/user.interface';
 import { findOneUser } from '../../core/use-cases/find-one-user.use-case';
+import type { ResponseModel } from '../interfaces/common.interface';
 import type { HttpRequestUser } from '../interfaces/http.interface';
+import type { UserResponse } from '../interfaces/user.interface';
 import { userProfileController } from './user-profile.controller';
 
 jest.mock('../../core/use-cases/find-one-user.use-case');
@@ -19,6 +22,7 @@ describe('userProfileController', () => {
 		findOneByEmail: jest.fn(),
 		update: jest.fn(),
 		remove: jest.fn(),
+		truncate: jest.fn(),
 	};
 	const fileService: FileService = {
 		upload: jest.fn(),
@@ -52,7 +56,11 @@ describe('userProfileController', () => {
 		mockedFindOneUser.mockImplementation(() => {
 			const { password, ...result } = user;
 
-			return Promise.resolve({ ...result, photo: null, avatar: null });
+			return Promise.resolve<UserResult>({
+				...result,
+				photo: null,
+				avatar: null,
+			});
 		});
 	});
 
@@ -68,7 +76,7 @@ describe('userProfileController', () => {
 		const data = await controller(request);
 		const { password, ...result } = user;
 
-		expect(data).toEqual({
+		expect(data).toEqual<ResponseModel<UserResponse>>({
 			status: 200,
 			data: { ...result, photo: null, avatar: null, type: 'users' },
 		});

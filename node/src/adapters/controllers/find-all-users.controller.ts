@@ -8,16 +8,14 @@ import type { UserResponse } from '../interfaces/user.interface';
 export function findAllUsersController(
 	userRepository: UserRepository,
 	fileService: FileService
-) {
-	return async (_req: HttpRequest) => {
+): (req: HttpRequest) => Promise<ResponseModel<UserResponse[]>> {
+	return async (_req: HttpRequest): Promise<ResponseModel<UserResponse[]>> => {
 		const data = await findAllUsers(userRepository, fileService);
 
-		const result: ResponseModel<UserResponse[]> = {
+		return {
 			status: 200,
 			data:
 				data.length > 0 ? data.map((obj) => ({ ...obj, type: 'users' })) : [],
 		};
-
-		return result;
 	};
 }

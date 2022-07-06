@@ -1,5 +1,9 @@
 import type { FileService } from '../interfaces/file.interface';
-import type { UserRepository, UserTable } from '../interfaces/user.interface';
+import type {
+	UserRepository,
+	UserResult,
+	UserTable,
+} from '../interfaces/user.interface';
 import { findAllUsers } from './find-all-users.use-case';
 
 describe('findAllUsers', () => {
@@ -20,11 +24,12 @@ describe('findAllUsers', () => {
 	beforeEach(() => {
 		userRepository = {
 			create: jest.fn(),
-			findAll: jest.fn().mockReturnValue(Promise.resolve([user])),
+			findAll: jest.fn().mockReturnValue(Promise.resolve<UserTable[]>([user])),
 			findOne: jest.fn(),
 			findOneByEmail: jest.fn(),
 			update: jest.fn(),
 			remove: jest.fn(),
+			truncate: jest.fn(),
 		};
 
 		fileService = {
@@ -50,7 +55,9 @@ describe('findAllUsers', () => {
 
 		expect(userRepository.findAll).toBeCalledTimes(1);
 		expect(fileService.getUrl).toBeCalledTimes(0);
-		expect(data).toEqual(expect.arrayContaining([{ ...result, avatar: null }]));
+		expect(data).toEqual(
+			expect.arrayContaining<UserResult>([{ ...result, avatar: null }])
+		);
 	});
 
 	test('should return all users with avatar', async () => {
@@ -64,7 +71,7 @@ describe('findAllUsers', () => {
 		expect(userRepository.findAll).toBeCalledTimes(1);
 		expect(fileService.getUrl).toBeCalledTimes(1);
 		expect(data).toEqual(
-			expect.arrayContaining([
+			expect.arrayContaining<UserResult>([
 				{ ...result, photo: 'photo.png', avatar: 'avatar.png' },
 			])
 		);

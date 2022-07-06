@@ -1,4 +1,5 @@
-import { AuthException } from '../../core/exceptions/auth.exception';
+import { BearerTokenException } from '../../core/exceptions/bearer-token.exception';
+import type { UserRefreshRequest } from '../../core/interfaces/auth.interface';
 import type { RedisService } from '../../core/interfaces/redis.interface';
 import type { TokenService } from '../../core/interfaces/token.interface';
 import { verifyRefreshToken } from '../../core/use-cases/verify-refresh-token.use-case';
@@ -39,7 +40,7 @@ describe('verifyRefreshTokenController', () => {
 
 	beforeAll(() => {
 		mockedVerifyRefreshToken.mockReturnValue(
-			Promise.resolve({
+			Promise.resolve<UserRefreshRequest>({
 				userId: 'id',
 				username: 'johndoe@example.com',
 				tokenId: 'tokenId',
@@ -49,7 +50,7 @@ describe('verifyRefreshTokenController', () => {
 
 	test('should throw error when token is undefined', async () => {
 		await expect(controller(request)).rejects.toThrow(
-			new AuthException(
+			new BearerTokenException(
 				400,
 				'invalid_request',
 				'The token is missing or malformed.'
@@ -61,7 +62,7 @@ describe('verifyRefreshTokenController', () => {
 		request = { ...request, cookies: { refresh_token: '' } };
 
 		await expect(controller(request)).rejects.toThrow(
-			new AuthException(
+			new BearerTokenException(
 				400,
 				'invalid_request',
 				'The token is missing or malformed.'
@@ -81,7 +82,7 @@ describe('verifyRefreshTokenController', () => {
 			redisService
 		);
 
-		expect(data).toEqual({
+		expect(data).toEqual<UserRefreshRequest>({
 			userId: 'id',
 			username: 'johndoe@example.com',
 			tokenId: 'tokenId',

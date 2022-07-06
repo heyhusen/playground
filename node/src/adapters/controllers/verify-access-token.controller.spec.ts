@@ -1,4 +1,5 @@
-import { AuthException } from '../../core/exceptions/auth.exception';
+import { BearerTokenException } from '../../core/exceptions/bearer-token.exception';
+import type { UserRequest } from '../../core/interfaces/auth.interface';
 import type { TokenService } from '../../core/interfaces/token.interface';
 import { verifyAccessToken } from '../../core/use-cases/verify-access-token.use-case';
 import type {
@@ -34,7 +35,7 @@ describe('verifyAccessTokenController', () => {
 		expect(() => {
 			controller(request);
 		}).toThrow(
-			new AuthException(
+			new BearerTokenException(
 				400,
 				'invalid_request',
 				'The request is missing a required authorization header.'
@@ -48,7 +49,7 @@ describe('verifyAccessTokenController', () => {
 		expect(() => {
 			controller(request);
 		}).toThrow(
-			new AuthException(
+			new BearerTokenException(
 				400,
 				'invalid_request',
 				'The request is missing a required authorization header.'
@@ -62,7 +63,7 @@ describe('verifyAccessTokenController', () => {
 		expect(() => {
 			controller(request);
 		}).toThrow(
-			new AuthException(401, 'invalid_token', 'The token is malformed.')
+			new BearerTokenException(401, 'invalid_token', 'The token is malformed.')
 		);
 	});
 
@@ -74,7 +75,7 @@ describe('verifyAccessTokenController', () => {
 		expect(verifyAccessToken).toBeCalledTimes(1);
 		expect(verifyAccessToken).toBeCalledWith('valid_token', tokenService);
 
-		expect(data).toEqual({
+		expect(data).toEqual<UserRequest>({
 			userId: 'id',
 			username: 'johndoe@example.com',
 		});

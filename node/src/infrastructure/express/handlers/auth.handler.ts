@@ -3,6 +3,8 @@ import { logInUserController } from '../../../adapters/controllers/log-in-user.c
 import { logOutUserController } from '../../../adapters/controllers/log-out-user.controller';
 import { updateTokenController } from '../../../adapters/controllers/update-token.controller';
 import { userProfileController } from '../../../adapters/controllers/user-profile.controller';
+import type { JsonApiData } from '../../../adapters/interfaces/http.interface';
+import type { UserResponse } from '../../../adapters/interfaces/user.interface';
 import type {
 	LogInDto,
 	UserRefreshRequest,
@@ -46,12 +48,21 @@ export async function logIn(
 	res.status(status).json(data);
 }
 
-export async function profile(req: Request, res: Response) {
+export async function profile(
+	req: Request,
+	res: Response<JsonApiData<Omit<UserResponse, 'id' | 'type'>>>
+) {
 	const controller = userProfileController(userRepository, fileService);
 
 	const { status, data } = await controller({ user: req.user as UserRequest });
 
-	res.status(status).json(data);
+	const { id, type, ...attributes } = data as UserResponse;
+
+	res.status(status).json({
+		jsonapi: { version: '1.0' },
+		links: { self: req.originalUrl },
+		data: { id, type, attributes },
+	});
 }
 
 export async function updateToken(req: Request, res: Response) {

@@ -7,16 +7,18 @@ import type { TokenService } from '../interfaces/token.interface';
  * If token is invalid, a custom exception will be thrown. This exception
  * implement RFC6750.
  *
- * @param {string}       token       	A validated access token
- * @param {TokenService} tokenService A service for manage token
+ * @param {string}       token       	 A validated access token
+ * @param {TokenService} tokenService  A service for manage token
+ * @return {UserRequest}               An user object
  */
-export function verifyAccessToken(token: string, tokenService: TokenService) {
+export function verifyAccessToken(
+	token: string,
+	tokenService: TokenService
+): UserRequest {
 	const payload = tokenService.verifyAccessToken(token);
 
-	const result: UserRequest = {
+	return {
 		userId: payload.sub,
 		username: payload.username,
 	};
-
-	return result;
 }

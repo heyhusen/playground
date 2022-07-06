@@ -1,8 +1,8 @@
+import type { File } from '../../core/entities/common.entity';
 import type {
 	UserRefreshRequest,
 	UserRequest,
 } from '../../core/interfaces/auth.interface';
-import type { File } from '../../core/entities/common.entity';
 
 export interface HttpRequest<
 	Header = Record<string, unknown>,
@@ -51,4 +51,47 @@ export interface BearerTokenHeader {
 
 export interface RefreshTokenCookie {
 	refresh_token: string | undefined;
+}
+
+export interface JsonApi {
+	jsonapi: {
+		version: string;
+	};
+	links: {
+		self: string;
+	};
+}
+
+export interface JsonApiDataObject<Attributes = Record<string, unknown>> {
+	type: string;
+	id: string;
+	attributes: Attributes;
+}
+
+export interface JsonApiData<Attributes = Record<string, unknown>>
+	extends JsonApi {
+	data:
+		| JsonApiDataObject<Attributes>
+		| JsonApiDataObject<Attributes>[]
+		| []
+		| null;
+}
+
+export interface JsonApiErrorObject {
+	status: number;
+	title: string;
+	detail: string;
+	source?: {
+		pointer?: string;
+		parameter?: string;
+	};
+}
+
+export interface JsonApiError extends JsonApi {
+	errors: JsonApiErrorObject[];
+}
+
+export interface BearerTokenError {
+	error: string;
+	error_description: string;
 }

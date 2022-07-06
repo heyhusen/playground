@@ -1,10 +1,15 @@
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
-import type { LogInDto } from '../../core/interfaces/auth.interface';
+import type {
+	LogInDto,
+	AuthResult,
+} from '../../core/interfaces/auth.interface';
 import type { HashService } from '../../core/interfaces/hash.interface';
 import type { RedisService } from '../../core/interfaces/redis.interface';
 import type { TokenService } from '../../core/interfaces/token.interface';
 import type { UserRepository } from '../../core/interfaces/user.interface';
 import { logInUser } from '../../core/use-cases/log-in-user.use-case';
+import type { AuthResponse } from '../interfaces/auth.interface';
+import type { ResponseModel } from '../interfaces/common.interface';
 import type { HttpRequestBody } from '../interfaces/http.interface';
 import { logInUserController } from './log-in-user.controller';
 
@@ -18,6 +23,7 @@ describe('logInUserController', () => {
 		findOneByEmail: jest.fn(),
 		update: jest.fn(),
 		remove: jest.fn(),
+		truncate: jest.fn(),
 	};
 	const hashService: HashService = {
 		create: jest.fn(),
@@ -55,7 +61,7 @@ describe('logInUserController', () => {
 
 	beforeAll(() => {
 		mockedLogInUser.mockReturnValue(
-			Promise.resolve({
+			Promise.resolve<AuthResult>({
 				accessToken: 'accessToken',
 				refreshToken: 'refreshToken',
 			})
@@ -82,7 +88,7 @@ describe('logInUserController', () => {
 			redisService,
 			expiresIn
 		);
-		expect(data).toEqual({
+		expect(data).toEqual<ResponseModel<AuthResponse>>({
 			status: 200,
 			cookie: {
 				name: 'refresh_token',

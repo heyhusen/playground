@@ -1,4 +1,5 @@
-import { AuthException } from '../exceptions/auth.exception';
+import { UnauthorizedException } from '../exceptions/unauthorized.exception';
+import type { UserRefreshRequest } from '../interfaces/auth.interface';
 import type { RedisService } from '../interfaces/redis.interface';
 import type {
 	RefreshPayload,
@@ -48,9 +49,7 @@ describe('verifyRefreshToken', () => {
 
 		await expect(
 			verifyRefreshToken('token', tokenService, redisService)
-		).rejects.toThrow(
-			new AuthException(401, 'invalid_token', 'The token has been expired.')
-		);
+		).rejects.toThrow(new UnauthorizedException('The token has been expired.'));
 	});
 
 	test('should throw error when token is revoked', async () => {
@@ -58,9 +57,7 @@ describe('verifyRefreshToken', () => {
 
 		await expect(
 			verifyRefreshToken('token', tokenService, redisService)
-		).rejects.toThrow(
-			new AuthException(401, 'invalid_token', 'The token has been revoked.')
-		);
+		).rejects.toThrow(new UnauthorizedException('The token has been revoked.'));
 	});
 
 	test('should return user object', async () => {
@@ -68,7 +65,7 @@ describe('verifyRefreshToken', () => {
 
 		const data = await verifyRefreshToken('token', tokenService, redisService);
 
-		expect(data).toEqual({
+		expect(data).toEqual<UserRefreshRequest>({
 			userId: payload.sub,
 			tokenId: payload.jti,
 			username: payload.username,

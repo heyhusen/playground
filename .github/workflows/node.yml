@@ -4,9 +4,15 @@ on:
   push:
     branches:
       - "main"
+    paths:
+      - "node/**"
+      - ".github/workflows/node.yml"
   pull_request:
     branches:
       - "main"
+    paths:
+      - "node/**"
+      - ".github/workflows/node.yml"
 
 jobs:
   build:
@@ -58,5 +64,11 @@ jobs:
       - name: Run tests
         run: |
           cd ${{ env.FOLDER }}
+          cp .env.example .env
+          docker compose up -d
+          sleep 30s
+          pnpm migrate:up
+          pnpm seed:run
           pnpm test
+          docker compose down -v
 

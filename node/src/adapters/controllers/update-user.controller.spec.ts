@@ -1,5 +1,3 @@
-import { Readable } from 'stream';
-import type { File } from '../../core/entities/common.entity';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type { FileService } from '../../core/interfaces/file.interface';
 import type { HashService } from '../../core/interfaces/hash.interface';
@@ -23,6 +21,7 @@ describe('updateUserController', () => {
 		findOneByEmail: jest.fn(),
 		update: jest.fn(),
 		remove: jest.fn(),
+		truncate: jest.fn(),
 	};
 	const hashService: HashService = {
 		create: jest.fn(),
@@ -36,14 +35,6 @@ describe('updateUserController', () => {
 
 	let dto: UpdateUserDto = {};
 
-	const photo: File = {
-		name: 'photo',
-		extension: 'png',
-		size: 24,
-		type: 'image/png',
-		content: Readable.from(['this is content']),
-	};
-
 	let request: HttpRequest<
 		unknown,
 		UserRequestParams,
@@ -52,7 +43,7 @@ describe('updateUserController', () => {
 		body: dto,
 	};
 
-	const user: UserTable = {
+	let user: UserTable = {
 		id: 'id',
 		name: 'John Doe',
 		nickname: null,
@@ -80,8 +71,7 @@ describe('updateUserController', () => {
 				name: dto.name ? dto.name : result.name,
 				// nickname: dto.nickname ? dto.nickname : result.nickname,
 				email: dto.email ? dto.email : result.email,
-				photo: dto.photo ? 'photo.png' : null,
-				avatar: dto.photo ? 'avatar.png' : null,
+				avatar: user.photo ? 'avatar.png' : null,
 			});
 		});
 	});
@@ -102,7 +92,6 @@ describe('updateUserController', () => {
 			status: 200,
 			data: {
 				...result,
-				photo: null,
 				avatar: null,
 				type: 'users',
 			},
@@ -120,7 +109,6 @@ describe('updateUserController', () => {
 			data: {
 				...result,
 				name: 'Jane Doe',
-				photo: null,
 				avatar: null,
 				type: 'users',
 			},
@@ -137,7 +125,6 @@ describe('updateUserController', () => {
 			data: {
 				...result,
 				email: 'janedoe@example.com',
-				photo: null,
 				avatar: null,
 				type: 'users',
 			},
@@ -145,7 +132,9 @@ describe('updateUserController', () => {
 	});
 
 	test("should only update user's avatar", async () => {
-		dto = { photo };
+		dto = {};
+		user = { ...user, photo: 'photo.png' };
+
 		const data = await controller(request);
 		const { password, ...result } = user;
 
@@ -153,7 +142,6 @@ describe('updateUserController', () => {
 			status: 200,
 			data: {
 				...result,
-				photo: 'photo.png',
 				avatar: 'avatar.png',
 				type: 'users',
 			},

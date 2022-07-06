@@ -9,21 +9,24 @@ import { updateUserController } from '../../../adapters/controllers/update-user.
 import type {
 	HttpRequest,
 	HttpRequestBody,
+	JsonApiData,
 } from '../../../adapters/interfaces/http.interface';
-import type { UserRequestParams } from '../../../adapters/interfaces/user.interface';
 import type {
-	CreateUserDto,
-	UpdateUserDto,
-} from '../../../core/interfaces/user.interface';
+	CreateUser,
+	UpdateUser,
+	UserData,
+	UserRequestParams,
+	UserResponse,
+} from '../../../adapters/interfaces/user.interface';
 import { userRepository } from '../../repositories/user.repository';
 import { fileService } from '../../services/file.service';
 import { hashService } from '../../services/hash.service';
 
 export async function create(
-	req: Request<unknown, unknown, Omit<CreateUserDto, 'photo'>>,
-	res: Response
+	req: Request<unknown, unknown, CreateUser>,
+	res: Response<JsonApiData<UserData>>
 ) {
-	let request: HttpRequestBody<Omit<CreateUserDto, 'photo'>> = {
+	let request: HttpRequestBody<CreateUser> = {
 		body: req.body,
 	};
 
@@ -42,42 +45,82 @@ export async function create(
 		};
 	}
 
-	const controller = createUserController(
-		userRepository,
-		hashService,
-		fileService
-	);
+	const controller = createUserController(userRepository, hashService);
 
 	const { status, data } = await controller(request);
 
-	res.status(status).json(data);
+	const { id, type, ...attributes } = data as UserResponse;
+
+	res.status(status).json({
+		jsonapi: {
+			version: '1.0',
+		},
+		links: {
+			self: req.originalUrl,
+		},
+		data: {
+			id,
+			type,
+			attributes,
+		},
+	});
 }
 
-export async function findAll(_req: Request, res: Response) {
+export async function findAll(
+	req: Request,
+	res: Response<JsonApiData<UserData>>
+) {
 	const controller = findAllUsersController(userRepository, fileService);
 
 	const { status, data } = await controller({});
 
-	res.status(status).json(data);
+	res.status(status).json({
+		jsonapi: {
+			version: '1.0',
+		},
+		links: {
+			self: req.originalUrl,
+		},
+		data: (data as UserResponse[]).map(({ id, type, ...obj }) => {
+			return {
+				id,
+				type,
+				attributes: obj,
+			};
+		}),
+	});
 }
 
-export async function findOne(req: Request<UserRequestParams>, res: Response) {
+export async function findOne(
+	req: Request<UserRequestParams>,
+	res: Response<JsonApiData<UserData>>
+) {
 	const controller = findOneUserController(userRepository, fileService);
 
 	const { status, data } = await controller({ params: req.params });
 
-	res.status(status).json(data);
+	const { id, type, ...attributes } = data as UserResponse;
+
+	res.status(status).json({
+		jsonapi: {
+			version: '1.0',
+		},
+		links: {
+			self: req.originalUrl,
+		},
+		data: {
+			id,
+			type,
+			attributes,
+		},
+	});
 }
 
 export async function update(
-	req: Request<UserRequestParams, unknown, Omit<UpdateUserDto, 'photo'>>,
-	res: Response
+	req: Request<UserRequestParams, unknown, UpdateUser>,
+	res: Response<JsonApiData<UserData>>
 ) {
-	let request: HttpRequest<
-		unknown,
-		UserRequestParams,
-		Omit<UpdateUserDto, 'photo'>
-	> = {
+	let request: HttpRequest<unknown, UserRequestParams, UpdateUser> = {
 		params: req.params,
 		body: req.body,
 	};
@@ -105,7 +148,21 @@ export async function update(
 
 	const { status, data } = await controller(request);
 
-	res.status(status).json(data);
+	const { id, type, ...attributes } = data as UserResponse;
+
+	res.status(status).json({
+		jsonapi: {
+			version: '1.0',
+		},
+		links: {
+			self: req.originalUrl,
+		},
+		data: {
+			id,
+			type,
+			attributes,
+		},
+	});
 }
 
 export async function remove(req: Request<UserRequestParams>, res: Response) {

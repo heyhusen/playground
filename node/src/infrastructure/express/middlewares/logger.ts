@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
-import type { HttpError } from 'http-errors';
+import type { HttpError } from '../../../core/interfaces/http.interface';
 import { log } from '../../ports/logger';
 
 export function httpLogger() {

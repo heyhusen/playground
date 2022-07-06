@@ -2,6 +2,7 @@ import { UnauthorizedException } from '../../core/exceptions/unauthorized.except
 import type { UserRefreshRequest } from '../../core/interfaces/auth.interface';
 import type { RedisService } from '../../core/interfaces/redis.interface';
 import { logOutUser } from '../../core/use-cases/log-out-user.use-case';
+import type { ResponseModel } from '../interfaces/common.interface';
 import type { HttpRequestUser } from '../interfaces/http.interface';
 import { logOutUserController } from './log-out-user.controller';
 
@@ -41,6 +42,6 @@ describe('logOutUserController', () => {
 
 		const data = await controller(request);
 
-		expect(data).toEqual({ status: 200 });
+		expect(data).toEqual<ResponseModel>({ status: 204 });
 	});
 });

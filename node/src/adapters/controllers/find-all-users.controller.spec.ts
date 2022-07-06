@@ -1,10 +1,12 @@
 import type { FileService } from '../../core/interfaces/file.interface';
 import type {
 	UserRepository,
+	UserResult,
 	UserTable,
 } from '../../core/interfaces/user.interface';
 import { findAllUsers } from '../../core/use-cases/find-all-users.use-case';
 import type { HttpRequest } from '../interfaces/http.interface';
+import type { UserResponse } from '../interfaces/user.interface';
 import { findAllUsersController } from './find-all-users.controller';
 
 jest.mock('../../core/use-cases/find-all-users.use-case');
@@ -17,6 +19,7 @@ describe('findAllUsersController', () => {
 		findOneByEmail: jest.fn(),
 		update: jest.fn(),
 		remove: jest.fn(),
+		truncate: jest.fn(),
 	};
 	const fileService: FileService = {
 		upload: jest.fn(),
@@ -51,7 +54,7 @@ describe('findAllUsersController', () => {
 		mockedFindAllUsers.mockImplementation(() => {
 			const { password, ...result } = user;
 
-			return Promise.resolve([
+			return Promise.resolve<UserResult[]>([
 				{ ...result, avatar: user.photo ? 'avatar.png' : null },
 			]);
 		});
@@ -72,7 +75,9 @@ describe('findAllUsersController', () => {
 
 		expect(data.status).toEqual(200);
 		expect(data.data).toEqual(
-			expect.arrayContaining([{ ...result, avatar: null, type: 'users' }])
+			expect.arrayContaining<UserResponse>([
+				{ ...result, avatar: null, type: 'users' },
+			])
 		);
 	});
 
@@ -84,7 +89,7 @@ describe('findAllUsersController', () => {
 
 		expect(data.status).toEqual(200);
 		expect(data.data).toEqual(
-			expect.arrayContaining([
+			expect.arrayContaining<UserResponse>([
 				{ ...result, avatar: 'avatar.png', type: 'users' },
 			])
 		);

@@ -2,6 +2,7 @@ import { BadRequestException } from '../../core/exceptions/bad-request.exception
 import type { FileService } from '../../core/interfaces/file.interface';
 import type { UserRepository } from '../../core/interfaces/user.interface';
 import { removeUser } from '../../core/use-cases/remove-user.use-case';
+import type { ResponseModel } from '../interfaces/common.interface';
 import type { HttpRequestParams } from '../interfaces/http.interface';
 import type { UserRequestParams } from '../interfaces/user.interface';
 import { removeUserController } from './remove-user.controller';
@@ -16,6 +17,7 @@ describe('removeUserController', () => {
 		findOneByEmail: jest.fn(),
 		update: jest.fn(),
 		remove: jest.fn(),
+		truncate: jest.fn(),
 	};
 	const fileService: FileService = {
 		upload: jest.fn(),
@@ -46,6 +48,6 @@ describe('removeUserController', () => {
 
 		expect(removeUser).toBeCalledTimes(1);
 		expect(removeUser).toBeCalledWith('id', userRepository, fileService);
-		expect(data).toEqual({ status: 200 });
+		expect(data).toEqual<ResponseModel>({ status: 204 });
 	});
 });

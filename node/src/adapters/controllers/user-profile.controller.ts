@@ -10,8 +10,10 @@ import type { UserResponse } from '../interfaces/user.interface';
 export function userProfileController(
 	userRepository: UserRepository,
 	fileService: FileService
-) {
-	return async (req: HttpRequestUser<UserRequest>) => {
+): (req: HttpRequestUser<UserRequest>) => Promise<ResponseModel<UserResponse>> {
+	return async (
+		req: HttpRequestUser<UserRequest>
+	): Promise<ResponseModel<UserResponse>> => {
 		if (!req.user) {
 			throw new UnauthorizedException('User request is unauthorized.');
 		}
@@ -20,11 +22,9 @@ export function userProfileController(
 
 		const data = await findOneUser(userId, userRepository, fileService);
 
-		const result: ResponseModel<UserResponse> = {
+		return {
 			status: 200,
 			data: { ...data, type: 'users' },
 		};
-
-		return result;
 	};
 }
