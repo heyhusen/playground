@@ -10,7 +10,7 @@ importers:
       '@jest/types': 28.1.1
       '@lukeed/ms': 2.0.0
       '@tsconfig/node16-strictest': 1.0.3
-      '@types/cache-manager': 4.0.0
+      '@types/cache-manager': 4.0.1
       '@types/cache-manager-ioredis': 2.0.2
       '@types/jest': 28.1.4
       '@types/node': 17.0.43
@@ -58,7 +58,7 @@ importers:
     devDependencies:
       '@jest/types': 28.1.1
       '@tsconfig/node16-strictest': 1.0.3
-      '@types/cache-manager': 4.0.0
+      '@types/cache-manager': 4.0.1
       '@types/cache-manager-ioredis': 2.0.2
       '@types/jest': 28.1.4
       '@types/node': 17.0.43
@@ -1812,12 +1812,12 @@ packages:
   /@types/cache-manager-ioredis/2.0.2:
     resolution: {integrity: sha512-mcn1k5bCJ/iAIymLRq4d6KSvEdrdspuo8KEIIPkPEl5WP+2CC7NWtRJmgFBoNqCgNxr++B62kOmIH1HYXAiBdA==}
     dependencies:
-      '@types/cache-manager': 4.0.0
+      '@types/cache-manager': 4.0.1
       '@types/ioredis': 4.28.10
     dev: true
 
-  /@types/cache-manager/4.0.0:
-    resolution: {integrity: sha512-uGnPOCM3PtlqZagds3i8mNyEwKLgZpKgswqmlF2ahmh4D1TN1aLYxYez2PDFDy42IGwLTbuHWSiF62I2jouM7g==}
+  /@types/cache-manager/4.0.1:
+    resolution: {integrity: sha512-w4Gm7qg4ohvk0k4CLhOoqnMohWEyeyAOTovPgkguhuDCfVEV1wN/HWEd1XzB1S9/NV9pUcZcc498qU4E15ck6A==}
     dev: true
 
   /@types/connect/3.4.35:
