@@ -28,7 +28,7 @@ importers:
       eslint-config-prettier: 8.5.0
       eslint-plugin-import: 2.26.0
       eslint-plugin-prettier: 4.0.0
-      fast-jwt: 1.5.4
+      fast-jwt: 1.6.0
       ioredis: 5.0.6
       jest: 28.1.1
       knex: 2.1.0
@@ -50,7 +50,7 @@ importers:
       argon2: 0.28.5
       cache-manager: 4.0.1
       cache-manager-ioredis: 2.1.0
-      fast-jwt: 1.5.4
+      fast-jwt: 1.6.0
       ioredis: 5.0.6
       knex: 2.1.0_pg@8.7.3
       pg: 8.7.3
@@ -3355,8 +3355,8 @@ packages:
       string-similarity: 4.0.4
     dev: false
 
-  /fast-jwt/1.5.4:
-    resolution: {integrity: sha512-Rhu6YhZzskOjAUx/yD4PsnhCAqGhtvLqrtxvTEewE+GKaoJfC/IX+B+WDiDyR+jwfyB3ToXuMo0w0qDs9SHG/w==}
+  /fast-jwt/1.6.0:
+    resolution: {integrity: sha512-XFjyWeaDpUAtJi9QJz8tul6ducfYJ6A7gPJczdSRD5/2XR9OkjFonJ3t9yjMtUSIkeCNAK+wMXmuh8Nz7mw+2g==}
     engines: {node: ^18 || ^17 || ^16 || ^14 || ^12}
     dependencies:
       asn1.js: 5.4.1
