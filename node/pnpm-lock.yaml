@@ -30,7 +30,7 @@ importers:
       eslint-plugin-prettier: 4.0.0
       fast-jwt: 1.5.4
       ioredis: 5.0.6
-      jest: 28.1.1
+      jest: 28.1.2
       knex: 2.1.0
       npm-run-all: 4.1.5
       pg: 8.7.3
@@ -73,12 +73,12 @@ importers:
       eslint-config-prettier: 8.5.0_eslint@8.17.0
       eslint-plugin-import: 2.26.0_wyrfqmvemfacbroyi3ypviy7f4
       eslint-plugin-prettier: 4.0.0_hsbo72uvra2cjko46y2c4fgzzm
-      jest: 28.1.1_nlpuykmyiuavekpei73tjpgqle
+      jest: 28.1.2_nlpuykmyiuavekpei73tjpgqle
       npm-run-all: 4.1.5
       prettier: 2.7.1
       rimraf: 3.0.2
       supertest: 6.2.4
-      ts-jest: 28.0.5_vz6zla63wvofljfl6elifyg77e
+      ts-jest: 28.0.5_burdcpru4gmol7mmtlcoahzthu
       ts-node: 10.8.1_sg2ukyc6p547g74ru6fclbyzsu
       ts-node-dev: 2.0.0_sg2ukyc6p547g74ru6fclbyzsu
       typescript: 4.7.3
@@ -4370,8 +4370,8 @@ packages:
       supports-color: 8.1.1
     dev: true
 
-  /jest/28.1.1_nlpuykmyiuavekpei73tjpgqle:
-    resolution: {integrity: sha512-qw9YHBnjt6TCbIDMPMpJZqf9E12rh6869iZaN08/vpOGgHJSAaLLUn6H8W3IAEuy34Ls3rct064mZLETkxJ2XA==}
+  /jest/28.1.2_nlpuykmyiuavekpei73tjpgqle:
+    resolution: {integrity: sha512-Tuf05DwLeCh2cfWCQbcz9UxldoDyiR1E9Igaei5khjonKncYdc6LDfynKCEWozK0oLE3GD+xKAo2u8x/0s6GOg==}
     engines: {node: ^12.13.0 || ^14.15.0 || ^16.10.0 || >=17.0.0}
     hasBin: true
     peerDependencies:
@@ -5804,7 +5804,7 @@ packages:
     resolution: {integrity: sha512-XrHUvV5HpdLmIj4uVMxHggLbFSZYIn7HEWsqePZcI50pco+MPqJ50wMGY794X7AOOhxOBAjbkqfAbEe/QMp2Lw==}
     dev: false
 
-  /ts-jest/28.0.5_vz6zla63wvofljfl6elifyg77e:
+  /ts-jest/28.0.5_burdcpru4gmol7mmtlcoahzthu:
     resolution: {integrity: sha512-Sx9FyP9pCY7pUzQpy4FgRZf2bhHY3za576HMKJFs+OnQ9jS96Du5vNsDKkyedQkik+sEabbKAnCliv9BEsHZgQ==}
     engines: {node: ^12.13.0 || ^14.15.0 || ^16.10.0 || >=17.0.0}
     hasBin: true
@@ -5824,7 +5824,7 @@ packages:
     dependencies:
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
-      jest: 28.1.1_nlpuykmyiuavekpei73tjpgqle
+      jest: 28.1.2_nlpuykmyiuavekpei73tjpgqle
       jest-util: 28.1.1
       json5: 2.2.1
       lodash.memoize: 4.1.2
