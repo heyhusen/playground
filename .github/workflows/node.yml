@@ -66,7 +66,7 @@ jobs:
           cd ${{ env.FOLDER }}
           cp .env.example .env
           docker compose up -d
-          sleep 30s
+          sleep 10s
           pnpm migrate:up
           pnpm seed:run
           pnpm test

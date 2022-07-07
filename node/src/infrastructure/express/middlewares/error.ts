@@ -1,3 +1,4 @@
+import type { ErrorObject } from 'ajv';
 import type { NextFunction, Request, Response } from 'express';
 import { ValidationError } from 'express-json-validator-middleware';
 import type {
@@ -15,6 +16,18 @@ export function notFoundHandler() {
 	};
 }
 
+function createErrorArray(arr: ErrorObject[]): JsonApiErrorObject[] {
+	return arr
+		.filter((item) => item.keyword !== 'if')
+		.map<JsonApiErrorObject>((item) => {
+			return {
+				status: 400,
+				title: 'Bad Request',
+				detail: item.message as string,
+			};
+		});
+}
+
 export function errorHandler() {
 	return (err: HttpError, req: Request, res: Response, _next: NextFunction) => {
 		const { name, message } = err;
@@ -27,16 +40,20 @@ export function errorHandler() {
 		};
 
 		if (err instanceof ValidationError) {
-			if (err.validationErrors.body) {
+			if (err.validationErrors.params) {
 				response = {
 					...response,
-					errors: err.validationErrors.body.map<JsonApiErrorObject>((item) => {
-						return {
-							status: 400,
-							title: 'Bad Request',
-							detail: item.message as string,
-						};
-					}),
+					errors: createErrorArray(err.validationErrors.params),
+				};
+			} else if (err.validationErrors.query) {
+				response = {
+					...response,
+					errors: createErrorArray(err.validationErrors.query),
+				};
+			} else if (err.validationErrors.body) {
+				response = {
+					...response,
+					errors: createErrorArray(err.validationErrors.body),
 				};
 			}
 

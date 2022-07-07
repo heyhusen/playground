@@ -105,14 +105,13 @@ export const userRepository: UserRepository = {
 				'photo',
 				'created_at',
 				'updated_at',
-			])
-			.first();
+			]);
 
-		if (!record) {
+		if (record.length < 1) {
 			return null;
 		}
 
-		const result: UserTable = record;
+		const result = record[0] as UserTable;
 
 		return result;
 	},

@@ -16,7 +16,9 @@ export const log = createLogger({
 	level: level(),
 	format: ecsFormat({ convertReqRes: true }),
 	transports: [
-		new transports.Console(),
+		new transports.Console({
+			silent: process.env.NODE_ENV === 'testing',
+		}),
 		new transports.File({ filename: './logs/error.json', level: 'error' }),
 		new transports.File({ filename: './logs/all.json' }),
 	],

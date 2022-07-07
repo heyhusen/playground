@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import expressAsyncHandler from 'express-async-handler';
+import asyncHandler from 'express-async-handler';
 import {
 	create,
 	findAll,
@@ -7,75 +7,39 @@ import {
 	remove,
 	update,
 } from '../handlers/user.handler';
-import { validateUuid } from '../middlewares/validate-uuid';
-import { validator } from '../middlewares/validator';
+import { uniqueUserEmail } from '../middlewares/unique-user-email';
+import { validate } from '../middlewares/validator';
+import { idParamSchema } from '../schemas/common.schema';
+import { createUserSchema, updateUserSchema } from '../schemas/user.schema';
 
 const userRouter = Router();
 
-userRouter.get('/', expressAsyncHandler(findAll));
+userRouter.get('/', asyncHandler(findAll));
 
 userRouter.post(
 	'/',
-	[
-		validator.validate({
-			body: {
-				type: 'object',
-				properties: {
-					name: {
-						type: 'string',
-						minLength: 1,
-					},
-					email: {
-						type: 'string',
-						minLength: 1,
-						format: 'email',
-						errorMessage: {
-							minLength: 'The email is required.',
-							format: 'The email must be a valid email address.',
-						},
-					},
-					password: {
-						type: 'string',
-						minLength: 8,
-						errorMessage: {
-							minLength: 'The password must be at least 8 characters.',
-						},
-					},
-					password_confirmation: {
-						type: 'string',
-						minLength: 8,
-						const: {
-							$data: '1/password',
-						},
-						errorMessage: {
-							minLength:
-								'The password confirmation must be at least 8 characters.',
-							const: 'The password confirmation does not match.',
-						},
-					},
-				},
-				required: ['name', 'email', 'password', 'password_confirmation'],
-				errorMessage: {
-					required: {
-						name: 'The name is required.',
-						email: 'The email is required.',
-						password: 'The password is required.',
-						password_confirmation: 'The password confirmation is required.',
-					},
-					properties: {
-						name: 'The name is required.',
-					},
-				},
-			},
-		}),
-	],
-	expressAsyncHandler(create)
+	[validate(createUserSchema)],
+	uniqueUserEmail(),
+	asyncHandler(create)
 );
 
-userRouter.get('/:id', validateUuid(), expressAsyncHandler(findOne));
+userRouter.get(
+	'/:id',
+	validate(idParamSchema, 'params'),
+	asyncHandler(findOne)
+);
 
-userRouter.patch('/:id', validateUuid(), expressAsyncHandler(update));
+userRouter.patch(
+	'/:id',
+	[validate(idParamSchema, 'params'), validate(updateUserSchema)],
+	uniqueUserEmail(),
+	asyncHandler(update)
+);
 
-userRouter.delete('/:id', validateUuid(), expressAsyncHandler(remove));
+userRouter.delete(
+	'/:id',
+	validate(idParamSchema, 'params'),
+	asyncHandler(remove)
+);
 
 export { userRouter };

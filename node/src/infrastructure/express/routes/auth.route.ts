@@ -1,59 +1,29 @@
 import cookieParser from 'cookie-parser';
 import { Router } from 'express';
-import expressAsyncHandler from 'express-async-handler';
+import asyncHandler from 'express-async-handler';
 import { logIn, logout, profile, updateToken } from '../handlers/auth.handler';
 import { accessToken, refreshToken } from '../middlewares/auth';
-import { validator } from '../middlewares/validator';
+import { validate } from '../middlewares/validator';
+import { logInSchema } from '../schemas/auth.schema';
 
 const authRouter = Router();
 
-authRouter.post(
-	'/login',
-	[
-		validator.validate({
-			body: {
-				type: 'object',
-				properties: {
-					username: {
-						type: 'string',
-						minLength: 1,
-					},
-					password: {
-						type: 'string',
-						minLength: 1,
-					},
-				},
-				required: ['username', 'password'],
-				errorMessage: {
-					required: {
-						username: 'The username is required.',
-						password: 'The password is required.',
-					},
-					properties: {
-						username: 'The username is required.',
-						password: 'The password is required.',
-					},
-				},
-			},
-		}),
-	],
-	expressAsyncHandler(logIn)
-);
+authRouter.post('/login', [validate(logInSchema)], asyncHandler(logIn));
 
-authRouter.get('/profile', accessToken(), expressAsyncHandler(profile));
+authRouter.get('/profile', accessToken(), asyncHandler(profile));
 
 authRouter.get(
 	'/refresh',
 	cookieParser(),
 	refreshToken(),
-	expressAsyncHandler(updateToken)
+	asyncHandler(updateToken)
 );
 
 authRouter.post(
 	'/logout',
 	cookieParser(),
 	refreshToken(),
-	expressAsyncHandler(logout)
+	asyncHandler(logout)
 );
 
 export { authRouter };
