@@ -31,7 +31,7 @@ importers:
       fast-jwt: 1.6.0
       ioredis: 5.3.2
       jest: 28.1.2
-      knex: 2.1.0
+      knex: 2.4.0
       npm-run-all: 4.1.5
       pg: 8.7.3
       prettier: 2.7.1
@@ -52,7 +52,7 @@ importers:
       cache-manager-ioredis: 2.1.0
       fast-jwt: 1.6.0
       ioredis: 5.3.2
-      knex: 2.1.0_pg@8.7.3
+      knex: 2.4.0_pg@8.7.3
       pg: 8.7.3
       winston: 3.8.1
     devDependencies:
@@ -2688,8 +2688,8 @@ packages:
       color-string: 1.9.1
     dev: false
 
-  /colorette/2.0.16:
-    resolution: {integrity: sha512-hUewv7oMjCp+wkBv5Rm0v87eJhq4woh5rSR+42YSQJKecCqgIqNkZ6lAlQms/BwHPJA5NKMRlpxPRv0n8HQW6g==}
+  /colorette/2.0.19:
+    resolution: {integrity: sha512-3tlv/dIP7FWvj3BsbHrGLJ6l/oKh1O3TcgBqMn+yyCagOxc23fyzDS6HypQbgxWbkpDnf52p1LuR4eWDQ/K9WQ==}
     dev: false
 
   /colorspace/1.1.4:
@@ -4518,8 +4518,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /knex/2.1.0_pg@8.7.3:
-    resolution: {integrity: sha512-vVsnD6UJdSJy55TvCXfFF9syfwyXNxfE9mvr2hJL/4Obciy2EPGoqjDpgRSlMruHuPWDOeYAG25nyrGvU+jJog==}
+  /knex/2.4.0_pg@8.7.3:
+    resolution: {integrity: sha512-i0GWwqYp1Hs2yvc2rlDO6nzzkLhwdyOZKRdsMTB8ZxOs2IXQyL5rBjSbS1krowCh6V65T4X9CJaKtuIfkaPGSA==}
     engines: {node: '>=12'}
     hasBin: true
     peerDependencies:
@@ -4546,7 +4546,7 @@ packages:
       tedious:
         optional: true
     dependencies:
-      colorette: 2.0.16
+      colorette: 2.0.19
       commander: 9.3.0
       debug: 4.3.4
       escalade: 3.1.1
