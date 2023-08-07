@@ -27,7 +27,7 @@ importers:
       eslint-config-airbnb-typescript: 17.0.0
       eslint-config-prettier: 8.5.0
       eslint-plugin-import: 2.26.0
-      eslint-plugin-prettier: 4.0.0
+      eslint-plugin-prettier: 4.2.1
       fast-jwt: 1.6.0
       ioredis: 5.1.0
       jest: 28.1.2
@@ -72,7 +72,7 @@ importers:
       eslint-config-airbnb-typescript: 17.0.0_2udmfovz45i65rsm2dczrbtkaa
       eslint-config-prettier: 8.5.0_eslint@8.19.0
       eslint-plugin-import: 2.26.0_iom7pm3yknyiblqpw2vvqvxs5i
-      eslint-plugin-prettier: 4.0.0_7uxdfn2xinezdgvmbammh6ev5i
+      eslint-plugin-prettier: 4.2.1_7uxdfn2xinezdgvmbammh6ev5i
       jest: 28.1.2_uoa55xvzrv5qubp2ywxyecvvgy
       npm-run-all: 4.1.5
       prettier: 2.7.1
@@ -3157,9 +3157,9 @@ packages:
       - supports-color
     dev: true
 
-  /eslint-plugin-prettier/4.0.0_7uxdfn2xinezdgvmbammh6ev5i:
-    resolution: {integrity: sha512-98MqmCJ7vJodoQK359bqQWaxOE0CS8paAz/GgjaZLyex4TTk3g9HugoO89EqWCrFiOqn9EVvcoo7gZzONCWVwQ==}
-    engines: {node: '>=6.0.0'}
+  /eslint-plugin-prettier/4.2.1_7uxdfn2xinezdgvmbammh6ev5i:
+    resolution: {integrity: sha512-f/0rXLXUt0oFYs8ra4w49wYZBG5GKZpAYsJSm6rnYL5uVDjd+zowwMwVZHnAjf4edNrKpCDYfXDgmRE/Ak7QyQ==}
+    engines: {node: '>=12.0.0'}
     peerDependencies:
       eslint: '>=7.28.0'
       eslint-config-prettier: '*'
