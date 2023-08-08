@@ -44,7 +44,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd ${{ env.FOLDER }}
-          pnpm i --frozen-lockfile
+          pnpm i
 
       - name: Run linter
         run: |
