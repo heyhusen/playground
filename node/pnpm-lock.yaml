@@ -25,7 +25,7 @@ importers:
       eslint: 8.46.0
       eslint-config-airbnb-base: 15.0.0
       eslint-config-airbnb-typescript: 17.1.0
-      eslint-config-prettier: 8.5.0
+      eslint-config-prettier: 8.10.0
       eslint-plugin-import: 2.26.0
       eslint-plugin-prettier: 4.2.1
       fast-jwt: 1.7.2
@@ -70,9 +70,9 @@ importers:
       eslint: 8.46.0
       eslint-config-airbnb-base: 15.0.0_6bgz44wpkratuaiez4nldep7ae
       eslint-config-airbnb-typescript: 17.1.0_ct46n4435e4npnuas5ylur2t2e
-      eslint-config-prettier: 8.5.0_eslint@8.46.0
+      eslint-config-prettier: 8.10.0_eslint@8.46.0
       eslint-plugin-import: 2.26.0_zx2ldm4646tzugbvbfrlkdfxxm
-      eslint-plugin-prettier: 4.2.1_yywmt6dkr3o6ddde34awjzwj44
+      eslint-plugin-prettier: 4.2.1_i2tnxmyaxd2bqdmeheimspsciq
       jest: 28.1.3_2263m44mchjafa7bz7l52hbcpa
       npm-run-all: 4.1.5
       prettier: 2.8.8
@@ -3160,8 +3160,8 @@ packages:
       eslint-plugin-import: 2.26.0_zx2ldm4646tzugbvbfrlkdfxxm
     dev: true
 
-  /eslint-config-prettier/8.5.0_eslint@8.46.0:
-    resolution: {integrity: sha512-obmWKLUNCnhtQRKc+tmnYuQl0pFU1ibYJQ5BGhTVB08bHe9wC8qUeG7c08dj9XX+AuPj1YSGSQIHl1pnDHZR0Q==}
+  /eslint-config-prettier/8.10.0_eslint@8.46.0:
+    resolution: {integrity: sha512-SM8AMJdeQqRYT9O9zguiruQZaN7+z+E4eAP9oiLNGKMtomwaB1E9dcgUD6ZAn/eQAb52USbvezbiljfZUhbJcg==}
     hasBin: true
     peerDependencies:
       eslint: '>=7.0.0'
@@ -3235,7 +3235,7 @@ packages:
       - supports-color
     dev: true
 
-  /eslint-plugin-prettier/4.2.1_yywmt6dkr3o6ddde34awjzwj44:
+  /eslint-plugin-prettier/4.2.1_i2tnxmyaxd2bqdmeheimspsciq:
     resolution: {integrity: sha512-f/0rXLXUt0oFYs8ra4w49wYZBG5GKZpAYsJSm6rnYL5uVDjd+zowwMwVZHnAjf4edNrKpCDYfXDgmRE/Ak7QyQ==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
@@ -3247,7 +3247,7 @@ packages:
         optional: true
     dependencies:
       eslint: 8.46.0
-      eslint-config-prettier: 8.5.0_eslint@8.46.0
+      eslint-config-prettier: 8.10.0_eslint@8.46.0
       prettier: 2.8.8
       prettier-linter-helpers: 1.0.0
     dev: true
