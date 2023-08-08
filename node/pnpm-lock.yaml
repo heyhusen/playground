@@ -21,7 +21,7 @@ importers:
       argon2: 0.28.7
       cache-manager: 4.1.0
       cache-manager-ioredis: 2.1.0
-      dotenv: 16.0.1
+      dotenv: 16.3.1
       eslint: 8.19.0
       eslint-config-airbnb-base: 15.0.0
       eslint-config-airbnb-typescript: 17.0.0
@@ -66,7 +66,7 @@ importers:
       '@types/supertest': 2.0.12
       '@typescript-eslint/eslint-plugin': 5.62.0_nt22dzc3wtlrmjc37xgtc7mggm
       '@typescript-eslint/parser': 5.62.0_4x5o4skxv6sl53vpwefgt23khm
-      dotenv: 16.0.1
+      dotenv: 16.3.1
       eslint: 8.19.0
       eslint-config-airbnb-base: 15.0.0_q2xwze32dd33a2fc2qubwr4ie4
       eslint-config-airbnb-typescript: 17.0.0_4tabkfjm6hm7sbmvjbdorlyikm
@@ -2994,8 +2994,8 @@ packages:
       esutils: 2.0.3
     dev: true
 
-  /dotenv/16.0.1:
-    resolution: {integrity: sha512-1K6hR6wtk2FviQ4kEiSjFiH5rpzEVi8WW0x96aztHVMhEspNpc4DVOUTEHtEva5VThQ8IaBX1Pe4gSzpVVUsKQ==}
+  /dotenv/16.3.1:
+    resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
     engines: {node: '>=12'}
     dev: true
 
