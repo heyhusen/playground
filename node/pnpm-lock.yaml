@@ -97,7 +97,7 @@ importers:
       express-async-handler: 1.2.0
       express-json-validator-middleware: 3.0.1
       multer: 1.4.5-lts.1
-      swagger-ui-express: 4.6.3
+      swagger-ui-express: 5.0.0
       yaml: 2.3.1
     dependencies:
       ajv: 8.11.0
@@ -108,7 +108,7 @@ importers:
       express-async-handler: 1.2.0
       express-json-validator-middleware: 3.0.1
       multer: 1.4.5-lts.1
-      swagger-ui-express: 4.6.3_express@4.18.2
+      swagger-ui-express: 5.0.0_express@4.18.2
       yaml: 2.3.1
     devDependencies:
       '@types/cookie-parser': 1.4.3
@@ -6217,18 +6217,18 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  /swagger-ui-dist/4.12.0:
-    resolution: {integrity: sha512-B0Iy2ueXtbByE6OOyHTi3lFQkpPi/L7kFOKFeKTr44za7dJIELa9kzaca6GkndCgpK1QTjArnoXG+aUy0XQp1w==}
+  /swagger-ui-dist/5.3.1:
+    resolution: {integrity: sha512-El78OvXp9zMasfPrshtkW1CRx8AugAKoZuGGOTW+8llJzOV1RtDJYqQRz/6+2OakjeWWnZuRlN2Qj1Y0ilux3w==}
     dev: false
 
-  /swagger-ui-express/4.6.3_express@4.18.2:
-    resolution: {integrity: sha512-CDje4PndhTD2HkgyKH3pab+LKspDeB/NhPN2OF1j+piYIamQqBYwAXWESOT1Yju2xFg51bRW9sUng2WxDjzArw==}
+  /swagger-ui-express/5.0.0_express@4.18.2:
+    resolution: {integrity: sha512-tsU9tODVvhyfkNSvf03E6FAk+z+5cU3lXAzMy6Pv4av2Gt2xA0++fogwC4qo19XuFf6hdxevPuVCSKFuMHJhFA==}
     engines: {node: '>= v0.10.32'}
     peerDependencies:
       express: '>=4.0.0 || >=5.0.0-beta'
     dependencies:
       express: 4.18.2
-      swagger-ui-dist: 4.12.0
+      swagger-ui-dist: 5.3.1
     dev: false
 
   /tar/6.1.11:
