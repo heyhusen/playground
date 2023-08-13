@@ -1,7 +1,8 @@
+import { beforeAll, describe, expect, test, vi } from 'vitest';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type {
-	LogInDto,
 	AuthResult,
+	LogInDto,
 } from '../../core/interfaces/auth.interface';
 import type { HashService } from '../../core/interfaces/hash.interface';
 import type { RedisService } from '../../core/interfaces/redis.interface';
@@ -13,32 +14,32 @@ import type { ResponseModel } from '../interfaces/common.interface';
 import type { HttpRequestBody } from '../interfaces/http.interface';
 import { logInUserController } from './log-in-user.controller';
 
-jest.mock('../../core/use-cases/log-in-user.use-case');
+vi.mock('../../core/use-cases/log-in-user.use-case');
 
 describe('logInUserController', () => {
 	const userRepository: UserRepository = {
-		create: jest.fn(),
-		findAll: jest.fn(),
-		findOne: jest.fn(),
-		findOneByEmail: jest.fn(),
-		update: jest.fn(),
-		remove: jest.fn(),
-		truncate: jest.fn(),
+		create: vi.fn(),
+		findAll: vi.fn(),
+		findOne: vi.fn(),
+		findOneByEmail: vi.fn(),
+		update: vi.fn(),
+		remove: vi.fn(),
+		truncate: vi.fn(),
 	};
 	const hashService: HashService = {
-		create: jest.fn(),
-		verify: jest.fn(),
+		create: vi.fn(),
+		verify: vi.fn(),
 	};
 	const tokenService: TokenService = {
-		generateAccessToken: jest.fn(),
-		verifyAccessToken: jest.fn(),
-		generateRefreshToken: jest.fn(),
-		verifyRefreshToken: jest.fn(),
+		generateAccessToken: vi.fn(),
+		verifyAccessToken: vi.fn(),
+		generateRefreshToken: vi.fn(),
+		verifyRefreshToken: vi.fn(),
 	};
 	const redisService: RedisService = {
-		set: jest.fn(),
-		get: jest.fn(),
-		del: jest.fn(),
+		set: vi.fn(),
+		get: vi.fn(),
+		del: vi.fn(),
 	};
 	const expiresIn = 3600;
 
@@ -57,7 +58,7 @@ describe('logInUserController', () => {
 		expiresIn
 	);
 
-	const mockedLogInUser = jest.mocked(logInUser, true);
+	const mockedLogInUser = vi.mocked(logInUser, true);
 
 	beforeAll(() => {
 		mockedLogInUser.mockReturnValue(

@@ -1,3 +1,4 @@
+import { beforeAll, describe, expect, test, vi } from 'vitest';
 import { BearerTokenException } from '../exceptions/bearer-token.exception';
 import type { RedisService } from '../interfaces/redis.interface';
 import { logOutUser } from './log-out-user.use-case';
@@ -9,8 +10,8 @@ describe('logOutUser', () => {
 
 	beforeAll(() => {
 		redisService = {
-			set: jest.fn(),
-			get: jest.fn((key: string) => {
+			set: vi.fn(),
+			get: vi.fn((key: string) => {
 				if (key !== jti) {
 					return Promise.resolve(null);
 				}
@@ -19,7 +20,7 @@ describe('logOutUser', () => {
 					JSON.stringify({ userId: 'userId', isRevoked: false })
 				);
 			}),
-			del: jest.fn(),
+			del: vi.fn(),
 		};
 	});
 

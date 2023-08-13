@@ -1,3 +1,4 @@
+import { beforeAll, describe, expect, test, vi } from 'vitest';
 import { BearerTokenException } from '../../core/exceptions/bearer-token.exception';
 import type { UserRefreshRequest } from '../../core/interfaces/auth.interface';
 import type { RedisService } from '../../core/interfaces/redis.interface';
@@ -9,19 +10,19 @@ import type {
 } from '../interfaces/http.interface';
 import { verifyRefreshTokenController } from './verify-refresh-token.controller';
 
-jest.mock('../../core/use-cases/verify-refresh-token.use-case');
+vi.mock('../../core/use-cases/verify-refresh-token.use-case');
 
 describe('verifyRefreshTokenController', () => {
 	const tokenService: TokenService = {
-		generateAccessToken: jest.fn(),
-		verifyAccessToken: jest.fn(),
-		generateRefreshToken: jest.fn(),
-		verifyRefreshToken: jest.fn(),
+		generateAccessToken: vi.fn(),
+		verifyAccessToken: vi.fn(),
+		generateRefreshToken: vi.fn(),
+		verifyRefreshToken: vi.fn(),
 	};
 	const redisService: RedisService = {
-		set: jest.fn(),
-		get: jest.fn(),
-		del: jest.fn(),
+		set: vi.fn(),
+		get: vi.fn(),
+		del: vi.fn(),
 	};
 
 	let request: HttpRequestCookie<RefreshTokenCookie> = {
@@ -34,7 +35,7 @@ describe('verifyRefreshTokenController', () => {
 		},
 	};
 
-	const mockedVerifyRefreshToken = jest.mocked(verifyRefreshToken, true);
+	const mockedVerifyRefreshToken = vi.mocked(verifyRefreshToken, true);
 
 	const controller = verifyRefreshTokenController(tokenService, redisService);
 

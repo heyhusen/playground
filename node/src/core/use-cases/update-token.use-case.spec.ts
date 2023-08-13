@@ -1,3 +1,4 @@
+import { beforeAll, describe, expect, test, vi } from 'vitest';
 import type {
 	AuthResult,
 	UserRefreshRequest,
@@ -20,16 +21,16 @@ describe('updateToken', () => {
 
 	beforeAll(() => {
 		tokenService = {
-			generateAccessToken: jest.fn().mockReturnValue('accessToken'),
-			verifyAccessToken: jest.fn(),
-			generateRefreshToken: jest.fn().mockReturnValue('refreshToken'),
-			verifyRefreshToken: jest.fn(),
+			generateAccessToken: vi.fn().mockReturnValue('accessToken'),
+			verifyAccessToken: vi.fn(),
+			generateRefreshToken: vi.fn().mockReturnValue('refreshToken'),
+			verifyRefreshToken: vi.fn(),
 		};
 
 		redisService = {
-			set: jest.fn(),
-			get: jest.fn(),
-			del: jest.fn(),
+			set: vi.fn(),
+			get: vi.fn(),
+			del: vi.fn(),
 		};
 	});
 

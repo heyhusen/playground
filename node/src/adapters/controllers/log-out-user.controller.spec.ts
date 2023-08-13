@@ -1,3 +1,4 @@
+import { beforeAll, describe, expect, test, vi } from 'vitest';
 import { UnauthorizedException } from '../../core/exceptions/unauthorized.exception';
 import type { UserRefreshRequest } from '../../core/interfaces/auth.interface';
 import type { RedisService } from '../../core/interfaces/redis.interface';
@@ -6,13 +7,13 @@ import type { ResponseModel } from '../interfaces/common.interface';
 import type { HttpRequestUser } from '../interfaces/http.interface';
 import { logOutUserController } from './log-out-user.controller';
 
-jest.mock('../../core/use-cases/log-out-user.use-case');
+vi.mock('../../core/use-cases/log-out-user.use-case');
 
 describe('logOutUserController', () => {
 	const redisService: RedisService = {
-		set: jest.fn(),
-		get: jest.fn(),
-		del: jest.fn(),
+		set: vi.fn(),
+		get: vi.fn(),
+		del: vi.fn(),
 	};
 
 	const userRequest: UserRefreshRequest = {
@@ -25,7 +26,7 @@ describe('logOutUserController', () => {
 
 	const controller = logOutUserController(redisService);
 
-	const mockedLogOutUser = jest.mocked(logOutUser, true);
+	const mockedLogOutUser = vi.mocked(logOutUser, true);
 
 	beforeAll(() => {
 		mockedLogOutUser.mockReturnValue(Promise.resolve());

@@ -29,7 +29,7 @@ export async function createUser(
 	});
 
 	if (!record) {
-		throw Error('Something went wrong.');
+		throw new Error('Something went wrong.');
 	}
 
 	const { password: ignorePassword, ...data } = record;

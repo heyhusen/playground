@@ -1,3 +1,4 @@
+import { beforeAll, describe, expect, test, vi } from 'vitest';
 import { BearerTokenException } from '../../core/exceptions/bearer-token.exception';
 import type { UserRequest } from '../../core/interfaces/auth.interface';
 import type { TokenService } from '../../core/interfaces/token.interface';
@@ -8,19 +9,19 @@ import type {
 } from '../interfaces/http.interface';
 import { verifyAccessTokenController } from './verify-access-token.controller';
 
-jest.mock('../../core/use-cases/verify-access-token.use-case');
+vi.mock('../../core/use-cases/verify-access-token.use-case');
 
 describe('verifyAccessTokenController', () => {
 	const tokenService: TokenService = {
-		generateAccessToken: jest.fn(),
-		verifyAccessToken: jest.fn(),
-		generateRefreshToken: jest.fn(),
-		verifyRefreshToken: jest.fn(),
+		generateAccessToken: vi.fn(),
+		verifyAccessToken: vi.fn(),
+		generateRefreshToken: vi.fn(),
+		verifyRefreshToken: vi.fn(),
 	};
 
 	let request: HttpRequest<BearerTokenHeader> = {};
 
-	const mockedVerifyAccessToken = jest.mocked(verifyAccessToken, true);
+	const mockedVerifyAccessToken = vi.mocked(verifyAccessToken, true);
 
 	const controller = verifyAccessTokenController(tokenService);
 

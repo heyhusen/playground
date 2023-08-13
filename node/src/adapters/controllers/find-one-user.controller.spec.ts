@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type { FileService } from '../../core/interfaces/file.interface';
 import type {
@@ -14,22 +15,22 @@ import type {
 } from '../interfaces/user.interface';
 import { findOneUserController } from './find-one-user.controller';
 
-jest.mock('../../core/use-cases/find-one-user.use-case');
+vi.mock('../../core/use-cases/find-one-user.use-case');
 
 describe('findOneUserController', () => {
 	const userRepository: UserRepository = {
-		create: jest.fn(),
-		findAll: jest.fn(),
-		findOne: jest.fn(),
-		findOneByEmail: jest.fn(),
-		update: jest.fn(),
-		remove: jest.fn(),
-		truncate: jest.fn(),
+		create: vi.fn(),
+		findAll: vi.fn(),
+		findOne: vi.fn(),
+		findOneByEmail: vi.fn(),
+		update: vi.fn(),
+		remove: vi.fn(),
+		truncate: vi.fn(),
 	};
 	const fileService: FileService = {
-		upload: jest.fn(),
-		getUrl: jest.fn(),
-		remove: jest.fn(),
+		upload: vi.fn(),
+		getUrl: vi.fn(),
+		remove: vi.fn(),
 	};
 
 	const controller = findOneUserController(userRepository, fileService);
@@ -47,7 +48,7 @@ describe('findOneUserController', () => {
 		updated_at: '2022-06-11 01:55:13',
 	};
 
-	const mockedFindOneUser = jest.mocked(findOneUser, true);
+	const mockedFindOneUser = vi.mocked(findOneUser, true);
 
 	beforeEach(() => {
 		mockedFindOneUser.mockImplementation(() => {

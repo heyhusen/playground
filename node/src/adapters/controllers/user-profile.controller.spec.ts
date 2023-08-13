@@ -1,3 +1,4 @@
+import { beforeAll, describe, expect, test, vi } from 'vitest';
 import { UnauthorizedException } from '../../core/exceptions/unauthorized.exception';
 import type { UserRequest } from '../../core/interfaces/auth.interface';
 import type { FileService } from '../../core/interfaces/file.interface';
@@ -12,22 +13,22 @@ import type { HttpRequestUser } from '../interfaces/http.interface';
 import type { UserResponse } from '../interfaces/user.interface';
 import { userProfileController } from './user-profile.controller';
 
-jest.mock('../../core/use-cases/find-one-user.use-case');
+vi.mock('../../core/use-cases/find-one-user.use-case');
 
 describe('userProfileController', () => {
 	const userRepository: UserRepository = {
-		create: jest.fn(),
-		findAll: jest.fn(),
-		findOne: jest.fn(),
-		findOneByEmail: jest.fn(),
-		update: jest.fn(),
-		remove: jest.fn(),
-		truncate: jest.fn(),
+		create: vi.fn(),
+		findAll: vi.fn(),
+		findOne: vi.fn(),
+		findOneByEmail: vi.fn(),
+		update: vi.fn(),
+		remove: vi.fn(),
+		truncate: vi.fn(),
 	};
 	const fileService: FileService = {
-		upload: jest.fn(),
-		getUrl: jest.fn(),
-		remove: jest.fn(),
+		upload: vi.fn(),
+		getUrl: vi.fn(),
+		remove: vi.fn(),
 	};
 
 	const userRequest: UserRequest = {
@@ -48,7 +49,7 @@ describe('userProfileController', () => {
 		updated_at: '2022-06-11 01:55:13',
 	};
 
-	const mockedFindOneUser = jest.mocked(findOneUser, true);
+	const mockedFindOneUser = vi.mocked(findOneUser, true);
 
 	const controller = userProfileController(userRepository, fileService);
 

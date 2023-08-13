@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type {
 	AuthResult,
 	UserRefreshRequest,
@@ -10,19 +11,19 @@ import type { ResponseModel } from '../interfaces/common.interface';
 import type { HttpRequestUser } from '../interfaces/http.interface';
 import { updateTokenController } from './update-token.controller';
 
-jest.mock('../../core/use-cases/update-token.use-case');
+vi.mock('../../core/use-cases/update-token.use-case');
 
 describe('updateTokenController', () => {
 	const tokenService: TokenService = {
-		generateAccessToken: jest.fn(),
-		verifyAccessToken: jest.fn(),
-		generateRefreshToken: jest.fn(),
-		verifyRefreshToken: jest.fn(),
+		generateAccessToken: vi.fn(),
+		verifyAccessToken: vi.fn(),
+		generateRefreshToken: vi.fn(),
+		verifyRefreshToken: vi.fn(),
 	};
 	const redisService: RedisService = {
-		set: jest.fn(),
-		get: jest.fn(),
-		del: jest.fn(),
+		set: vi.fn(),
+		get: vi.fn(),
+		del: vi.fn(),
 	};
 	const expiresIn = 3600;
 
@@ -46,7 +47,7 @@ describe('updateTokenController', () => {
 		expiresIn
 	);
 
-	const mockedUpdateToken = jest.mocked(updateToken, true);
+	const mockedUpdateToken = vi.mocked(updateToken, true);
 
 	beforeEach(() => {
 		mockedUpdateToken.mockReturnValue(

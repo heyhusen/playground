@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { NotFoundException } from '../exceptions/not-found.exception';
 import type { FileService } from '../interfaces/file.interface';
 import type { UserRepository, UserTable } from '../interfaces/user.interface';
@@ -20,25 +21,25 @@ describe('removeUser', () => {
 
 	beforeEach(() => {
 		userRepository = {
-			create: jest.fn(),
-			findAll: jest.fn(),
-			findOne: jest.fn(),
-			findOneByEmail: jest.fn(),
-			update: jest.fn(),
-			remove: jest.fn((id: string) => {
+			create: vi.fn(),
+			findAll: vi.fn(),
+			findOne: vi.fn(),
+			findOneByEmail: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn((id: string) => {
 				if (id !== user.id) {
 					return Promise.resolve(null);
 				}
 
 				return Promise.resolve<UserTable>(user);
 			}),
-			truncate: jest.fn(),
+			truncate: vi.fn(),
 		};
 
 		fileService = {
-			upload: jest.fn(),
-			getUrl: jest.fn(),
-			remove: jest.fn(),
+			upload: vi.fn(),
+			getUrl: vi.fn(),
+			remove: vi.fn(),
 		};
 	});
 
@@ -56,7 +57,7 @@ describe('removeUser', () => {
 	});
 
 	test('should delete user with an avatar', async () => {
-		userRepository.remove = jest
+		userRepository.remove = vi
 			.fn()
 			.mockReturnValue(Promise.resolve({ ...user, photo: 'photo.png' }));
 

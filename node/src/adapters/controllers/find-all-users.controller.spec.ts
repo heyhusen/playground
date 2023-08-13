@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { FileService } from '../../core/interfaces/file.interface';
 import type {
 	UserRepository,
@@ -9,22 +10,22 @@ import type { HttpRequest } from '../interfaces/http.interface';
 import type { UserResponse } from '../interfaces/user.interface';
 import { findAllUsersController } from './find-all-users.controller';
 
-jest.mock('../../core/use-cases/find-all-users.use-case');
+vi.mock('../../core/use-cases/find-all-users.use-case');
 
 describe('findAllUsersController', () => {
 	const userRepository: UserRepository = {
-		create: jest.fn(),
-		findAll: jest.fn(),
-		findOne: jest.fn(),
-		findOneByEmail: jest.fn(),
-		update: jest.fn(),
-		remove: jest.fn(),
-		truncate: jest.fn(),
+		create: vi.fn(),
+		findAll: vi.fn(),
+		findOne: vi.fn(),
+		findOneByEmail: vi.fn(),
+		update: vi.fn(),
+		remove: vi.fn(),
+		truncate: vi.fn(),
 	};
 	const fileService: FileService = {
-		upload: jest.fn(),
-		getUrl: jest.fn(),
-		remove: jest.fn(),
+		upload: vi.fn(),
+		getUrl: vi.fn(),
+		remove: vi.fn(),
 	};
 
 	const controller = findAllUsersController(userRepository, fileService);
@@ -48,7 +49,7 @@ describe('findAllUsersController', () => {
 		updated_at: '2022-06-11 01:55:13',
 	};
 
-	const mockedFindAllUsers = jest.mocked(findAllUsers, true);
+	const mockedFindAllUsers = vi.mocked(findAllUsers, true);
 
 	beforeEach(() => {
 		mockedFindAllUsers.mockImplementation(() => {

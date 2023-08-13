@@ -1,5 +1,6 @@
+import { beforeAll, describe, expect, test, vi } from 'vitest';
 import { UnauthorizedException } from '../exceptions/unauthorized.exception';
-import type { LogInDto, AuthResult } from '../interfaces/auth.interface';
+import type { AuthResult, LogInDto } from '../interfaces/auth.interface';
 import type { HashService } from '../interfaces/hash.interface';
 import type { RedisService } from '../interfaces/redis.interface';
 import type { TokenService } from '../interfaces/token.interface';
@@ -32,24 +33,24 @@ describe('logInUser', () => {
 
 	beforeAll(() => {
 		userRepository = {
-			create: jest.fn(),
-			findAll: jest.fn(),
-			findOne: jest.fn(),
-			findOneByEmail: jest.fn((email: string) => {
+			create: vi.fn(),
+			findAll: vi.fn(),
+			findOne: vi.fn(),
+			findOneByEmail: vi.fn((email: string) => {
 				if (email !== user.email) {
 					return Promise.resolve(null);
 				}
 
 				return Promise.resolve<UserTable>(user);
 			}),
-			update: jest.fn(),
-			remove: jest.fn(),
-			truncate: jest.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			truncate: vi.fn(),
 		};
 
 		hashService = {
-			create: jest.fn(),
-			verify: jest.fn((hash: string, plain: string) => {
+			create: vi.fn(),
+			verify: vi.fn((hash: string, plain: string) => {
 				if (hash !== plain) {
 					return Promise.resolve(false);
 				}
@@ -59,23 +60,26 @@ describe('logInUser', () => {
 		};
 
 		tokenService = {
-			generateAccessToken: jest.fn().mockReturnValue('accessToken'),
-			verifyAccessToken: jest.fn(),
-			generateRefreshToken: jest.fn().mockReturnValue('refreshToken'),
-			verifyRefreshToken: jest.fn(),
+			generateAccessToken: vi.fn().mockReturnValue('accessToken'),
+			verifyAccessToken: vi.fn(),
+			generateRefreshToken: vi.fn().mockReturnValue('refreshToken'),
+			verifyRefreshToken: vi.fn(),
 		};
 
 		redisService = {
-			set: jest.fn(),
-			get: jest.fn(),
-			del: jest.fn(),
+			set: vi.fn(),
+			get: vi.fn(),
+			del: vi.fn(),
 		};
 	});
 
 	test('should throw error when user not found', async () => {
 		await expect(
 			logInUser(
-				{ ...dto, username: 'johndoe@example.co' },
+				{
+					...dto,
+					username: 'johndoe@example.co',
+				},
 				userRepository,
 				hashService,
 				tokenService,
@@ -90,7 +94,10 @@ describe('logInUser', () => {
 	test('should throw error when password is invalid', async () => {
 		await expect(
 			logInUser(
-				{ ...dto, password: 'abogobog' },
+				{
+					...dto,
+					password: 'abogobog',
+				},
 				userRepository,
 				hashService,
 				tokenService,
@@ -105,7 +112,10 @@ describe('logInUser', () => {
 	test('should throw error when user not found and password is invalid', async () => {
 		await expect(
 			logInUser(
-				{ username: 'johndoe@example.co', password: 'abogobog' },
+				{
+					username: 'johndoe@example.co',
+					password: 'abogobog',
+				},
 				userRepository,
 				hashService,
 				tokenService,

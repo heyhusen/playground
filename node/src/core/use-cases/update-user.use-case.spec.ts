@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { NotFoundException } from '../exceptions/not-found.exception';
 import type { FileService } from '../interfaces/file.interface';
 import type { HashService } from '../interfaces/hash.interface';
@@ -31,36 +32,36 @@ describe('updateUser', () => {
 
 	beforeEach(() => {
 		userRepository = {
-			create: jest.fn(),
-			findAll: jest.fn(),
-			findOne: jest.fn(),
-			findOneByEmail: jest.fn(),
-			update: jest.fn((id: string, data: Partial<UserTableInput>) => {
+			create: vi.fn(),
+			findAll: vi.fn(),
+			findOne: vi.fn(),
+			findOneByEmail: vi.fn(),
+			update: vi.fn((id: string, data: Partial<UserTableInput>) => {
 				if (id !== user.id) {
 					return Promise.resolve<null>(null);
 				}
 
 				return Promise.resolve<UserTable>({ ...user, ...data });
 			}),
-			remove: jest.fn(),
-			truncate: jest.fn(),
+			remove: vi.fn(),
+			truncate: vi.fn(),
 		};
 
 		hashService = {
-			create: jest.fn().mockReturnValue(Promise.resolve('hashedPassword')),
-			verify: jest.fn(),
+			create: vi.fn().mockReturnValue(Promise.resolve('hashedPassword')),
+			verify: vi.fn(),
 		};
 
 		fileService = {
-			upload: jest.fn(),
-			getUrl: jest.fn().mockImplementation(() => {
+			upload: vi.fn(),
+			getUrl: vi.fn().mockImplementation(() => {
 				if (!user.photo) {
 					return null;
 				}
 
 				return Promise.resolve('avatar.png');
 			}),
-			remove: jest.fn(),
+			remove: vi.fn(),
 		};
 	});
 
