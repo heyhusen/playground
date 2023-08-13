@@ -4,12 +4,14 @@ on:
   push:
     branches:
       - "main"
+      - "development"
     paths:
       - "node/**"
       - ".github/workflows/node.yml"
   pull_request:
     branches:
       - "main"
+      - "development"
     paths:
       - "node/**"
       - ".github/workflows/node.yml"
