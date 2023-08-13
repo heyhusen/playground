@@ -1,9 +1,9 @@
 import type { NextFunction, Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
-import { uniqueUserEmailController } from '../../../adapters/controllers/unique-user-email.controller';
-import type { HttpRequestBody } from '../../../adapters/interfaces/http.interface';
-import type { UpdateUserDto } from '../../../core/interfaces/user.interface';
-import { userRepository } from '../../repositories/user.repository';
+import { uniqueUserEmailController } from '../../../../adapters/controllers/unique-user-email.controller';
+import type { HttpRequestBody } from '../../../../adapters/interfaces/http.interface';
+import type { UpdateUserDto } from '../../../../core/interfaces/user.interface';
+import { userRepository } from '../../../repositories/user.repository';
 
 export function uniqueUserEmail() {
 	return expressAsyncHandler(

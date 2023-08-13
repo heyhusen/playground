@@ -1,4 +1,6 @@
 {
+	"name": "express-server",
+	"version": "0.0.1",
 	"private": true,
 	"dependencies": {
 		"ajv": "^8.11.0",

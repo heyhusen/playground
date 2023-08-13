@@ -5,10 +5,10 @@ import type {
 	BearerTokenError,
 	JsonApiError,
 	JsonApiErrorObject,
-} from '../../../adapters/interfaces/http.interface';
-import { BearerTokenException } from '../../../core/exceptions/bearer-token.exception';
-import { NotFoundException } from '../../../core/exceptions/not-found.exception';
-import type { HttpError } from '../../../core/interfaces/http.interface';
+} from '../../../../adapters/interfaces/http.interface';
+import { BearerTokenException } from '../../../../core/exceptions/bearer-token.exception';
+import { NotFoundException } from '../../../../core/exceptions/not-found.exception';
+import type { HttpError } from '../../../../core/interfaces/http.interface';
 
 export function notFoundHandler() {
 	return (_req: Request, _res: Response, next: NextFunction) => {

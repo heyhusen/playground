@@ -1,5 +1,5 @@
-import type { UserRequest } from 'src/core/interfaces/auth.interface';
 import { BearerTokenException } from '../../core/exceptions/bearer-token.exception';
+import type { UserRequest } from '../../core/interfaces/auth.interface';
 import type { TokenService } from '../../core/interfaces/token.interface';
 import { verifyAccessToken } from '../../core/use-cases/verify-access-token.use-case';
 import type {

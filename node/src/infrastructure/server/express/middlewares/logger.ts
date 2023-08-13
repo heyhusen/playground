@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
-import type { HttpError } from '../../../core/interfaces/http.interface';
-import { log } from '../../ports/logger';
+import type { HttpError } from '../../../../core/interfaces/http.interface';
+import { log } from '../../../ports/logger';
 
 export function httpLogger() {
 	return (req: Request, res: Response, next: NextFunction) => {

@@ -1,21 +1,21 @@
 import type { Request, Response } from 'express';
-import { logInUserController } from '../../../adapters/controllers/log-in-user.controller';
-import { logOutUserController } from '../../../adapters/controllers/log-out-user.controller';
-import { updateTokenController } from '../../../adapters/controllers/update-token.controller';
-import { userProfileController } from '../../../adapters/controllers/user-profile.controller';
-import type { JsonApiData } from '../../../adapters/interfaces/http.interface';
-import type { UserResponse } from '../../../adapters/interfaces/user.interface';
+import { logInUserController } from '../../../../adapters/controllers/log-in-user.controller';
+import { logOutUserController } from '../../../../adapters/controllers/log-out-user.controller';
+import { updateTokenController } from '../../../../adapters/controllers/update-token.controller';
+import { userProfileController } from '../../../../adapters/controllers/user-profile.controller';
+import type { JsonApiData } from '../../../../adapters/interfaces/http.interface';
+import type { UserResponse } from '../../../../adapters/interfaces/user.interface';
 import type {
 	LogInDto,
 	UserRefreshRequest,
 	UserRequest,
-} from '../../../core/interfaces/auth.interface';
-import { authConfig } from '../../config/auth';
-import { userRepository } from '../../repositories/user.repository';
-import { fileService } from '../../services/file.service';
-import { hashService } from '../../services/hash.service';
-import { redisService } from '../../services/redis.service';
-import { tokenService } from '../../services/token.service';
+} from '../../../../core/interfaces/auth.interface';
+import { authConfig } from '../../../config/auth';
+import { userRepository } from '../../../repositories/user.repository';
+import { fileService } from '../../../services/file.service';
+import { hashService } from '../../../services/hash.service';
+import { redisService } from '../../../services/redis.service';
+import { tokenService } from '../../../services/token.service';
 
 const { expiresIn } = authConfig.access;
 
