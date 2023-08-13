@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: ['16', '18']
+        node: ['18', '20']
     env:
       FOLDER: node
 
@@ -30,38 +30,32 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up pnpm v7
-        uses: pnpm/action-setup@v2
-        with:
-          version: 7.x.x
-          run_install: false
-
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-          cache: 'pnpm'
-          cache-dependency-path: ${{ env.FOLDER }}/pnpm-lock.yaml
+          cache: 'yarn'
+          cache-dependency-path: ${{ env.FOLDER }}/yarn.lock
 
       - name: Install dependencies
         run: |
           cd ${{ env.FOLDER }}
-          pnpm i
+          yarn install
 
       - name: Run linter
         run: |
           cd ${{ env.FOLDER }}
-          pnpm lint
+          yarn lint
 
       - name: Run prettier
         run: |
           cd ${{ env.FOLDER }}
-          pnpm prettier
+          yarn prettier
 
       - name: Run build
         run: |
           cd ${{ env.FOLDER }}
-          pnpm build
+          yarn build
 
       - name: Run tests
         run: |
@@ -69,8 +63,8 @@ jobs:
           cp .env.example .env
           docker compose up -d
           sleep 10s
-          pnpm migrate:up
-          pnpm seed:run
-          pnpm test
+          yarn migrate:up
+          yarn seed:run
+          yarn test
           docker compose down -v
 
