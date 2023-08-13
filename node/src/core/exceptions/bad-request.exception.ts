@@ -2,7 +2,7 @@ import type { ErrorObject } from '../interfaces/http.interface';
 import { HttpException } from './http.exception';
 
 export class BadRequestException extends HttpException {
-	override readonly error?: ErrorObject | Record<string, unknown>;
+	declare readonly error?: ErrorObject | Record<string, unknown>;
 
 	constructor(message: string, error?: ErrorObject) {
 		super(400, message, 'Bad Request');
