@@ -1,5 +1,5 @@
-import { appConfig } from '../config/app';
-import { log } from '../ports/logger';
+import { appConfig } from '../../config/app';
+import { log } from '../../ports/logger';
 import { app } from './app';
 
 app.listen(appConfig.port, () => {

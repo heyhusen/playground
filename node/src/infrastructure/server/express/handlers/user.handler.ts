@@ -1,26 +1,26 @@
 import type { Request, Response } from 'express';
 import { createReadStream } from 'fs';
 import { extname } from 'path';
-import { createUserController } from '../../../adapters/controllers/create-user.controller';
-import { findAllUsersController } from '../../../adapters/controllers/find-all-users.controller';
-import { findOneUserController } from '../../../adapters/controllers/find-one-user.controller';
-import { removeUserController } from '../../../adapters/controllers/remove-user.controller';
-import { updateUserController } from '../../../adapters/controllers/update-user.controller';
+import { createUserController } from '../../../../adapters/controllers/create-user.controller';
+import { findAllUsersController } from '../../../../adapters/controllers/find-all-users.controller';
+import { findOneUserController } from '../../../../adapters/controllers/find-one-user.controller';
+import { removeUserController } from '../../../../adapters/controllers/remove-user.controller';
+import { updateUserController } from '../../../../adapters/controllers/update-user.controller';
 import type {
 	HttpRequest,
 	HttpRequestBody,
 	JsonApiData,
-} from '../../../adapters/interfaces/http.interface';
+} from '../../../../adapters/interfaces/http.interface';
 import type {
 	CreateUser,
 	UpdateUser,
 	UserData,
 	UserRequestParams,
 	UserResponse,
-} from '../../../adapters/interfaces/user.interface';
-import { userRepository } from '../../repositories/user.repository';
-import { fileService } from '../../services/file.service';
-import { hashService } from '../../services/hash.service';
+} from '../../../../adapters/interfaces/user.interface';
+import { userRepository } from '../../../repositories/user.repository';
+import { fileService } from '../../../services/file.service';
+import { hashService } from '../../../services/hash.service';
 
 export async function create(
 	req: Request<unknown, unknown, CreateUser>,
