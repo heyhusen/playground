@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type {
 	UpdateUserDto,
@@ -8,17 +9,17 @@ import { uniqueUserEmail } from '../../core/use-cases/unique-user-email.use-case
 import type { HttpRequestBody } from '../interfaces/http.interface';
 import { uniqueUserEmailController } from './unique-user-email.controller';
 
-jest.mock('../../core/use-cases/unique-user-email.use-case');
+vi.mock('../../core/use-cases/unique-user-email.use-case');
 
 describe('uniqueUserEmailController', () => {
 	const userRepository: UserRepository = {
-		create: jest.fn(),
-		findAll: jest.fn(),
-		findOne: jest.fn(),
-		findOneByEmail: jest.fn(),
-		update: jest.fn(),
-		remove: jest.fn(),
-		truncate: jest.fn(),
+		create: vi.fn(),
+		findAll: vi.fn(),
+		findOne: vi.fn(),
+		findOneByEmail: vi.fn(),
+		update: vi.fn(),
+		remove: vi.fn(),
+		truncate: vi.fn(),
 	};
 
 	let dto: Pick<UpdateUserDto, 'email'> = { email: 'johndoe@example.com' };
@@ -38,7 +39,7 @@ describe('uniqueUserEmailController', () => {
 
 	const controller = uniqueUserEmailController(userRepository);
 
-	const mockedUniqueUserEmail = jest.mocked(uniqueUserEmail, true);
+	const mockedUniqueUserEmail = vi.mocked(uniqueUserEmail, true);
 
 	beforeEach(() => {
 		mockedUniqueUserEmail.mockImplementation((email: string) => {

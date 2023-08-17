@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { UnauthorizedException } from '../exceptions/unauthorized.exception';
 import type { UserRefreshRequest } from '../interfaces/auth.interface';
 import type { RedisService } from '../interfaces/redis.interface';
@@ -25,22 +26,22 @@ describe('verifyRefreshToken', () => {
 
 	beforeEach(() => {
 		tokenService = {
-			generateAccessToken: jest.fn(),
-			verifyAccessToken: jest.fn(),
-			generateRefreshToken: jest.fn(),
-			verifyRefreshToken: jest.fn().mockReturnValue(payload),
+			generateAccessToken: vi.fn(),
+			verifyAccessToken: vi.fn(),
+			generateRefreshToken: vi.fn(),
+			verifyRefreshToken: vi.fn().mockReturnValue(payload),
 		};
 
 		redisService = {
-			set: jest.fn(),
-			get: jest.fn((key: string) => {
+			set: vi.fn(),
+			get: vi.fn((key: string) => {
 				if (key !== payload.jti) {
 					return Promise.resolve(null);
 				}
 
 				return Promise.resolve(JSON.stringify(tokenRecord));
 			}),
-			del: jest.fn(),
+			del: vi.fn(),
 		};
 	});
 

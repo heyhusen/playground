@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { HashService } from '../interfaces/hash.interface';
 import type {
 	CreateUserDto,
@@ -32,25 +33,25 @@ describe('createUser', () => {
 
 	beforeEach(() => {
 		userRepository = {
-			create: jest.fn((data: UserTableInput) => {
+			create: vi.fn((data: UserTableInput) => {
 				return Promise.resolve<UserTable>({ ...user, ...data });
 			}),
-			findAll: jest.fn(),
-			findOne: jest.fn(),
-			findOneByEmail: jest.fn(),
-			update: jest.fn(),
-			remove: jest.fn(),
-			truncate: jest.fn(),
+			findAll: vi.fn(),
+			findOne: vi.fn(),
+			findOneByEmail: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			truncate: vi.fn(),
 		};
 
 		hashService = {
-			create: jest.fn(),
-			verify: jest.fn(),
+			create: vi.fn(),
+			verify: vi.fn(),
 		};
 	});
 
 	test('should throw error when user is not saved', async () => {
-		userRepository.create = jest.fn().mockReturnValue(Promise.resolve(null));
+		userRepository.create = vi.fn().mockReturnValue(Promise.resolve(null));
 
 		await expect(createUser(dto, userRepository, hashService)).rejects.toThrow(
 			new Error('Something went wrong.')

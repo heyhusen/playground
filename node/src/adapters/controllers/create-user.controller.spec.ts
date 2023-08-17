@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type { HashService } from '../../core/interfaces/hash.interface';
 import type {
@@ -12,21 +13,21 @@ import type { HttpRequestBody } from '../interfaces/http.interface';
 import type { UserResponse } from '../interfaces/user.interface';
 import { createUserController } from './create-user.controller';
 
-jest.mock('../../core/use-cases/create-user.use-case');
+vi.mock('../../core/use-cases/create-user.use-case');
 
 describe('createUserController', () => {
 	const userRepository: UserRepository = {
-		create: jest.fn(),
-		findAll: jest.fn(),
-		findOne: jest.fn(),
-		findOneByEmail: jest.fn(),
-		update: jest.fn(),
-		remove: jest.fn(),
-		truncate: jest.fn(),
+		create: vi.fn(),
+		findAll: vi.fn(),
+		findOne: vi.fn(),
+		findOneByEmail: vi.fn(),
+		update: vi.fn(),
+		remove: vi.fn(),
+		truncate: vi.fn(),
 	};
 	const hashService: HashService = {
-		create: jest.fn(),
-		verify: jest.fn(),
+		create: vi.fn(),
+		verify: vi.fn(),
 	};
 
 	const dto: CreateUserDto = {
@@ -51,7 +52,7 @@ describe('createUserController', () => {
 		updated_at: '2022-06-11 01:55:13',
 	};
 
-	const mockedCreateUser = jest.mocked(createUser, true);
+	const mockedCreateUser = vi.mocked(createUser, true);
 
 	beforeEach(() => {
 		mockedCreateUser.mockImplementation(() => {

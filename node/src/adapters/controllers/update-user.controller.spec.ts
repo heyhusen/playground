@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type { FileService } from '../../core/interfaces/file.interface';
 import type { HashService } from '../../core/interfaces/hash.interface';
@@ -11,26 +12,26 @@ import type { HttpRequest } from '../interfaces/http.interface';
 import type { UserRequestParams } from '../interfaces/user.interface';
 import { updateUserController } from './update-user.controller';
 
-jest.mock('../../core/use-cases/update-user.use-case');
+vi.mock('../../core/use-cases/update-user.use-case');
 
 describe('updateUserController', () => {
 	const userRepository: UserRepository = {
-		create: jest.fn(),
-		findAll: jest.fn(),
-		findOne: jest.fn(),
-		findOneByEmail: jest.fn(),
-		update: jest.fn(),
-		remove: jest.fn(),
-		truncate: jest.fn(),
+		create: vi.fn(),
+		findAll: vi.fn(),
+		findOne: vi.fn(),
+		findOneByEmail: vi.fn(),
+		update: vi.fn(),
+		remove: vi.fn(),
+		truncate: vi.fn(),
 	};
 	const hashService: HashService = {
-		create: jest.fn(),
-		verify: jest.fn(),
+		create: vi.fn(),
+		verify: vi.fn(),
 	};
 	const fileService: FileService = {
-		upload: jest.fn(),
-		getUrl: jest.fn(),
-		remove: jest.fn(),
+		upload: vi.fn(),
+		getUrl: vi.fn(),
+		remove: vi.fn(),
 	};
 
 	let dto: UpdateUserDto = {};
@@ -60,7 +61,7 @@ describe('updateUserController', () => {
 		fileService
 	);
 
-	const mockedUpdateUser = jest.mocked(updateUser, true);
+	const mockedUpdateUser = vi.mocked(updateUser, true);
 
 	beforeEach(() => {
 		mockedUpdateUser.mockImplementation(() => {

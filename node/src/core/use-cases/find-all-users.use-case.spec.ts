@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { FileService } from '../interfaces/file.interface';
 import type {
 	UserRepository,
@@ -23,24 +24,24 @@ describe('findAllUsers', () => {
 
 	beforeEach(() => {
 		userRepository = {
-			create: jest.fn(),
-			findAll: jest.fn().mockReturnValue(Promise.resolve<UserTable[]>([user])),
-			findOne: jest.fn(),
-			findOneByEmail: jest.fn(),
-			update: jest.fn(),
-			remove: jest.fn(),
-			truncate: jest.fn(),
+			create: vi.fn(),
+			findAll: vi.fn().mockReturnValue(Promise.resolve<UserTable[]>([user])),
+			findOne: vi.fn(),
+			findOneByEmail: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+			truncate: vi.fn(),
 		};
 
 		fileService = {
-			upload: jest.fn(),
-			getUrl: jest.fn().mockReturnValue(Promise.resolve('avatar.png')),
-			remove: jest.fn(),
+			upload: vi.fn(),
+			getUrl: vi.fn().mockReturnValue(Promise.resolve('avatar.png')),
+			remove: vi.fn(),
 		};
 	});
 
 	test('should return empty array', async () => {
-		userRepository.findAll = jest.fn().mockReturnValue(Promise.resolve([]));
+		userRepository.findAll = vi.fn().mockReturnValue(Promise.resolve([]));
 
 		const data = await findAllUsers(userRepository, fileService);
 
@@ -61,7 +62,7 @@ describe('findAllUsers', () => {
 	});
 
 	test('should return all users with avatar', async () => {
-		userRepository.findAll = jest
+		userRepository.findAll = vi
 			.fn()
 			.mockReturnValue(Promise.resolve([{ ...user, photo: 'photo.png' }]));
 

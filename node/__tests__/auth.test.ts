@@ -1,3 +1,4 @@
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import type { AuthResponse } from '../src/adapters/interfaces/auth.interface';
 import type {
 	BearerTokenError,

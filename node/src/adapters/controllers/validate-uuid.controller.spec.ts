@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type { RequestIdParams } from '../interfaces/common.interface';
 import type { HttpRequestParams } from '../interfaces/http.interface';

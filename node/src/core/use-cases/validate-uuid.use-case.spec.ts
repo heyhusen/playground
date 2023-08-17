@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 import { BadRequestException } from '../exceptions/bad-request.exception';
 import { validateUuid } from './validate-uuid.use-case';
 
