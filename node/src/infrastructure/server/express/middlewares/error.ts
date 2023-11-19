@@ -6,7 +6,6 @@ import type {
 	JsonApiError,
 	JsonApiErrorObject,
 } from '../../../../adapters/interfaces/http.interface';
-import { BearerTokenException } from '../../../../core/exceptions/bearer-token.exception';
 import { NotFoundException } from '../../../../core/exceptions/not-found.exception';
 import type { HttpError } from '../../../../core/interfaces/http.interface';
 
@@ -58,8 +57,6 @@ export function errorHandler() {
 			}
 
 			status = 400;
-		} else if (err instanceof BearerTokenException) {
-			response = { error: name, error_description: message };
 		}
 
 		res.status(status || 500).json(response);

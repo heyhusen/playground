@@ -2,7 +2,7 @@
 	"private": true,
 	"license": "Apache-2.0",
 	"author": {
-		"name": "Ahmad Husen",
+		"name": "Husen",
 		"email": "hi@husen.id",
 		"url": "https://husen.id"
 	},
@@ -75,8 +75,5 @@
 	"volta": {
 		"node": "18.17.1",
 		"yarn": "1.22.19"
-	},
-	"workspaces": [
-		"src/infrastructure/server/*"
-	]
+	}
 }
