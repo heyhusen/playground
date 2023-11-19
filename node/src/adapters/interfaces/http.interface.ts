@@ -1,15 +1,11 @@
 import type { File } from '../../core/entities/common.entity';
-import type {
-	UserRefreshRequest,
-	UserRequest,
-} from '../../core/interfaces/auth.interface';
 
 export interface HttpRequest<
 	Header = Record<string, unknown>,
 	Params = Record<string, unknown>,
 	Body = Record<string, unknown>,
 	Cookie = Record<string, unknown>,
-	User = UserRequest | UserRefreshRequest | Record<string, unknown>
+	User = Record<string, unknown>
 > {
 	headers?: Header;
 	params?: Params;
@@ -31,14 +27,6 @@ export type HttpRequestBody<T = Record<string, unknown>> = HttpRequest<
 >;
 
 export type HttpRequestCookie<T = Record<string, unknown>> = HttpRequest<
-	unknown,
-	unknown,
-	unknown,
-	T
->;
-
-export type HttpRequestUser<T = UserRequest | UserRefreshRequest> = HttpRequest<
-	unknown,
 	unknown,
 	unknown,
 	unknown,

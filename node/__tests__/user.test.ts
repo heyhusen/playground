@@ -1,30 +1,14 @@
-import {
-	afterAll,
-	beforeAll,
-	beforeEach,
-	describe,
-	expect,
-	test,
-} from 'vitest';
+import { afterAll, beforeEach, describe, expect, test } from 'vitest';
 import type {
-	BearerTokenError,
 	JsonApi,
 	JsonApiError,
 } from '../src/adapters/interfaces/http.interface';
 import { setup, testUser, user } from './fixtures/user.fixture';
-import { logIn, request } from './setup';
+import { request } from './setup';
 import { close } from './teardown';
-
-let accessToken: string;
 
 beforeEach(async () => {
 	await setup();
-});
-
-beforeAll(async () => {
-	const { accessToken: access } = await logIn();
-
-	accessToken = access;
 });
 
 afterAll(async () => {
@@ -32,37 +16,10 @@ afterAll(async () => {
 });
 
 describe('POST /user', () => {
-	test('should return unauthorized error', async () => {
-		const response = await request
-			.post('/user')
-			.set('Accept', 'application/vnd.api+json');
-
-		expect(response.status).toEqual<number>(400);
-		expect(response.body).toEqual<BearerTokenError>({
-			error: 'invalid_request',
-			error_description:
-				'The request is missing a required authorization header.',
-		});
-	});
-
-	test('should return unauthorized error if token missing', async () => {
-		const response = await request
-			.post('/user')
-			.set('Accept', 'application/vnd.api+json')
-			.auth('', { type: 'bearer' });
-
-		expect(response.status).toEqual<number>(401);
-		expect(response.body).toEqual<BearerTokenError>({
-			error: 'invalid_token',
-			error_description: 'The token is malformed.',
-		});
-	});
-
 	test('should return error when request body empty', async () => {
 		const response = await request
 			.post('/user')
-			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' });
+			.set('Accept', 'application/vnd.api+json');
 
 		expect(response.status).toEqual<number>(400);
 		expect(response.body).toEqual<JsonApiError>({
@@ -101,7 +58,6 @@ describe('POST /user', () => {
 		const response = await request
 			.post('/user')
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({
 				name: user.name,
 				email: 'johndoe',
@@ -131,7 +87,6 @@ describe('POST /user', () => {
 		const response = await request
 			.post('/user')
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({
 				name: user.name,
 				email: user.email,
@@ -166,7 +121,6 @@ describe('POST /user', () => {
 		const response = await request
 			.post('/user')
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({
 				name: user.name,
 				email: user.email,
@@ -196,7 +150,6 @@ describe('POST /user', () => {
 		const response = await request
 			.post('/user')
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({
 				name: user.name,
 				email: user.email,
@@ -226,7 +179,6 @@ describe('POST /user', () => {
 		const response = await request
 			.post('/user')
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({
 				name: testUser.name,
 				email: testUser.email,
@@ -264,37 +216,10 @@ describe('POST /user', () => {
 });
 
 describe('GET /user', () => {
-	test('should return unauthorized error', async () => {
-		const response = await request
-			.get('/user')
-			.set('Accept', 'application/vnd.api+json');
-
-		expect(response.status).toEqual<number>(400);
-		expect(response.body).toEqual<BearerTokenError>({
-			error: 'invalid_request',
-			error_description:
-				'The request is missing a required authorization header.',
-		});
-	});
-
-	test('should return unauthorized error if token missing', async () => {
-		const response = await request
-			.get('/user')
-			.set('Accept', 'application/vnd.api+json')
-			.auth('', { type: 'bearer' });
-
-		expect(response.status).toEqual<number>(401);
-		expect(response.body).toEqual<BearerTokenError>({
-			error: 'invalid_token',
-			error_description: 'The token is malformed.',
-		});
-	});
-
 	test('should return users', async () => {
 		const response = await request
 			.get('/user')
-			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' });
+			.set('Accept', 'application/vnd.api+json');
 
 		expect(response.status).toEqual<number>(200);
 		expect(response.body).toEqual(
@@ -346,37 +271,10 @@ describe('GET /user', () => {
 });
 
 describe('GET /user/{id}', () => {
-	test('should return unauthorized error', async () => {
-		const response = await request
-			.get(`/user/${user.id}`)
-			.set('Accept', 'application/vnd.api+json');
-
-		expect(response.status).toEqual<number>(400);
-		expect(response.body).toEqual<BearerTokenError>({
-			error: 'invalid_request',
-			error_description:
-				'The request is missing a required authorization header.',
-		});
-	});
-
-	test('should return unauthorized error if token missing', async () => {
-		const response = await request
-			.get(`/user/${user.id}`)
-			.set('Accept', 'application/vnd.api+json')
-			.auth('', { type: 'bearer' });
-
-		expect(response.status).toEqual<number>(401);
-		expect(response.body).toEqual<BearerTokenError>({
-			error: 'invalid_token',
-			error_description: 'The token is malformed.',
-		});
-	});
-
 	test('should return error when parameter is invalid', async () => {
 		const response = await request
 			.get('/user/invalid-id')
-			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' });
+			.set('Accept', 'application/vnd.api+json');
 
 		expect(response.status).toEqual<number>(400);
 		expect(response.body).toEqual<JsonApiError>({
@@ -399,8 +297,7 @@ describe('GET /user/{id}', () => {
 	test('should return error when user is not found', async () => {
 		const response = await request
 			.get('/user/60677a98-a65e-4abc-831c-45dd76e8f990')
-			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' });
+			.set('Accept', 'application/vnd.api+json');
 
 		expect(response.status).toEqual<number>(404);
 		expect(response.body).toEqual<JsonApiError>({
@@ -423,8 +320,7 @@ describe('GET /user/{id}', () => {
 	test('should return an user', async () => {
 		const response = await request
 			.get(`/user/${user.id}`)
-			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' });
+			.set('Accept', 'application/vnd.api+json');
 
 		expect(response.status).toEqual<number>(200);
 		expect(response.body).toEqual(
@@ -456,37 +352,10 @@ describe('GET /user/{id}', () => {
 });
 
 describe('PATCH /user/{id}', () => {
-	test('should return unauthorized error', async () => {
-		const response = await request
-			.patch(`/user/${user.id}`)
-			.set('Accept', 'application/vnd.api+json');
-
-		expect(response.status).toEqual<number>(400);
-		expect(response.body).toEqual<BearerTokenError>({
-			error: 'invalid_request',
-			error_description:
-				'The request is missing a required authorization header.',
-		});
-	});
-
-	test('should return unauthorized error if token missing', async () => {
-		const response = await request
-			.patch(`/user/${user.id}`)
-			.set('Accept', 'application/vnd.api+json')
-			.auth('', { type: 'bearer' });
-
-		expect(response.status).toEqual<number>(401);
-		expect(response.body).toEqual<BearerTokenError>({
-			error: 'invalid_token',
-			error_description: 'The token is malformed.',
-		});
-	});
-
 	test('should return error when parameter is invalid', async () => {
 		const response = await request
 			.patch('/user/invalid-id')
-			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' });
+			.set('Accept', 'application/vnd.api+json');
 
 		expect(response.status).toEqual<number>(400);
 		expect(response.body).toEqual<JsonApiError>({
@@ -509,8 +378,7 @@ describe('PATCH /user/{id}', () => {
 	test('should return error when user is not found', async () => {
 		const response = await request
 			.patch('/user/60677a98-a65e-4abc-831c-45dd76e8f990')
-			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' });
+			.set('Accept', 'application/vnd.api+json');
 
 		expect(response.status).toEqual<number>(404);
 		expect(response.body).toEqual<JsonApiError>({
@@ -534,7 +402,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ name: null });
 
 		expect(response.status).toEqual<number>(400);
@@ -559,7 +426,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ name: '' });
 
 		expect(response.status).toEqual<number>(400);
@@ -584,7 +450,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ name: 12345 });
 
 		expect(response.status).toEqual<number>(400);
@@ -609,7 +474,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ nickname: null });
 
 		expect(response.status).toEqual<number>(200);
@@ -647,7 +511,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ nickname: '' });
 
 		expect(response.status).toEqual<number>(200);
@@ -685,7 +548,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ email: null });
 
 		expect(response.status).toEqual<number>(400);
@@ -710,7 +572,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ email: '' });
 
 		expect(response.status).toEqual<number>(400);
@@ -735,7 +596,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ email: 12345 });
 
 		expect(response.status).toEqual<number>(400);
@@ -760,7 +620,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ email: 'johndoe' });
 
 		expect(response.status).toEqual<number>(400);
@@ -785,7 +644,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ password: null });
 
 		expect(response.status).toEqual<number>(400);
@@ -816,7 +674,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ password: '' });
 
 		expect(response.status).toEqual<number>(400);
@@ -847,7 +704,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ password: 12345 });
 
 		expect(response.status).toEqual<number>(400);
@@ -878,7 +734,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ password: 'abogo' });
 
 		expect(response.status).toEqual<number>(400);
@@ -909,7 +764,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ password: 'abogobog' });
 
 		expect(response.status).toEqual<number>(400);
@@ -935,7 +789,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ password_confirmation: null });
 
 		expect(response.status).toEqual<number>(400);
@@ -966,7 +819,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ password_confirmation: '' });
 
 		expect(response.status).toEqual<number>(400);
@@ -997,7 +849,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ password_confirmation: 12345 });
 
 		expect(response.status).toEqual<number>(400);
@@ -1028,7 +879,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ password_confirmation: 'abogo' });
 
 		expect(response.status).toEqual<number>(400);
@@ -1059,7 +909,6 @@ describe('PATCH /user/{id}', () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' })
 			.send({ password_confirmation: 'abogobog' });
 
 		expect(response.status).toEqual<number>(400);
@@ -1084,8 +933,7 @@ describe('PATCH /user/{id}', () => {
 	test('should not update an user', async () => {
 		const response = await request
 			.patch(`/user/${user.id}`)
-			.set('Accept', 'application/vnd.api+json')
-			.auth(accessToken, { type: 'bearer' });
+			.set('Accept', 'application/vnd.api+json');
 
 		expect(response.status).toEqual<number>(200);
 		expect(response.body).toEqual(
