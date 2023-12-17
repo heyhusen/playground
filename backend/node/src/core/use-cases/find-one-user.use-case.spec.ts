@@ -14,11 +14,10 @@ describe('findOneUser', () => {
 
 	const user: UserTable = {
 		id: 'id',
-		name: 'John Doe',
+		first_name: 'John',
+		last_name: 'Doe',
 		nickname: null,
 		email: 'johndoe@example.com',
-		email_verified_at: null,
-		password: 'abogoboga',
 		created_at: '2022-06-11 01:55:13',
 		updated_at: '2022-06-11 01:55:13',
 	};
@@ -55,25 +54,27 @@ describe('findOneUser', () => {
 
 	test('should return an user without avatar', async () => {
 		const data = await findOneUser(user.id, userRepository, fileService);
-		const { password, ...result } = user;
-
 		expect(userRepository.findOne).toBeCalledTimes(1);
 		expect(fileService.getUrl).toBeCalledTimes(0);
-		expect(data).toEqual<UserResult>({ ...result, avatar: null });
+		expect(data).toEqual<UserResult>({
+			...user,
+			avatar: null,
+		});
 	});
 
 	test('should return an user with avatar', async () => {
-		userRepository.findOne = vi
-			.fn()
-			.mockReturnValue(Promise.resolve({ ...user, photo: 'photo.png' }));
+		userRepository.findOne = vi.fn().mockReturnValue(
+			Promise.resolve({
+				...user,
+				photo: 'photo.png',
+			})
+		);
 
 		const data = await findOneUser(user.id, userRepository, fileService);
-		const { password, ...result } = user;
-
 		expect(userRepository.findOne).toBeCalledTimes(1);
 		expect(fileService.getUrl).toBeCalledTimes(1);
 		expect(data).toEqual<UserResult>({
-			...result,
+			...user,
 			photo: 'photo.png',
 			avatar: 'avatar.png',
 		});

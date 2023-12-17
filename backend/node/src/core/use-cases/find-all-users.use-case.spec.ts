@@ -13,11 +13,10 @@ describe('findAllUsers', () => {
 
 	const user: UserTable = {
 		id: 'id',
-		name: 'John Doe',
+		first_name: 'John',
+		last_name: 'Doe',
 		nickname: null,
 		email: 'johndoe@example.com',
-		email_verified_at: null,
-		password: 'abogoboga',
 		created_at: '2022-06-11 01:55:13',
 		updated_at: '2022-06-11 01:55:13',
 	};
@@ -52,12 +51,15 @@ describe('findAllUsers', () => {
 
 	test('should return all users', async () => {
 		const data = await findAllUsers(userRepository, fileService);
-		const { password, ...result } = user;
-
 		expect(userRepository.findAll).toBeCalledTimes(1);
 		expect(fileService.getUrl).toBeCalledTimes(0);
 		expect(data).toEqual(
-			expect.arrayContaining<UserResult>([{ ...result, avatar: null }])
+			expect.arrayContaining<UserResult>([
+				{
+					...user,
+					avatar: null,
+				},
+			])
 		);
 	});
 
@@ -67,13 +69,15 @@ describe('findAllUsers', () => {
 			.mockReturnValue(Promise.resolve([{ ...user, photo: 'photo.png' }]));
 
 		const data = await findAllUsers(userRepository, fileService);
-		const { password, ...result } = user;
-
 		expect(userRepository.findAll).toBeCalledTimes(1);
 		expect(fileService.getUrl).toBeCalledTimes(1);
 		expect(data).toEqual(
 			expect.arrayContaining<UserResult>([
-				{ ...result, photo: 'photo.png', avatar: 'avatar.png' },
+				{
+					...user,
+					photo: 'photo.png',
+					avatar: 'avatar.png',
+				},
 			])
 		);
 	});

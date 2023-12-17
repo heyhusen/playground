@@ -3,7 +3,11 @@ import type { AllowedSchema } from 'express-json-validator-middleware';
 export const createUserSchema: AllowedSchema = {
 	type: 'object',
 	properties: {
-		name: {
+		first_name: {
+			type: 'string',
+			minLength: 1,
+		},
+		last_name: {
 			type: 'string',
 			minLength: 1,
 		},
@@ -16,35 +20,15 @@ export const createUserSchema: AllowedSchema = {
 				format: 'The email must be a valid email address.',
 			},
 		},
-		password: {
-			type: 'string',
-			minLength: 8,
-			errorMessage: {
-				minLength: 'The password must be at least 8 characters.',
-			},
-		},
-		password_confirmation: {
-			type: 'string',
-			minLength: 8,
-			const: {
-				$data: '1/password',
-			},
-			errorMessage: {
-				minLength: 'The password confirmation must be at least 8 characters.',
-				const: 'The password confirmation does not match.',
-			},
-		},
 	},
-	required: ['name', 'email', 'password', 'password_confirmation'],
+	required: ['first_name', 'email'],
 	errorMessage: {
 		required: {
-			name: 'The name is required.',
+			first_name: 'The first name is required.',
 			email: 'The email is required.',
-			password: 'The password is required.',
-			password_confirmation: 'The password confirmation is required.',
 		},
 		properties: {
-			name: 'The name is required.',
+			first_name: 'The first name is required.',
 		},
 	},
 };
@@ -52,13 +36,17 @@ export const createUserSchema: AllowedSchema = {
 export const updateUserSchema: AllowedSchema = {
 	type: 'object',
 	properties: {
-		name: {
+		first_name: {
 			type: 'string',
 			minLength: 1,
 			errorMessage: {
-				type: 'The name must be a string.',
-				minLength: 'The name field must have a value.',
+				type: 'The first name must be a string.',
+				minLength: 'The first name field must have a value.',
 			},
+		},
+		last_name: {
+			type: 'string',
+			nullable: true,
 		},
 		nickname: {
 			type: 'string',
@@ -72,37 +60,9 @@ export const updateUserSchema: AllowedSchema = {
 				format: 'The email must be a valid email address.',
 			},
 		},
-		password: {
-			type: 'string',
-			minLength: 8,
-			errorMessage: {
-				type: 'The password must be a string.',
-				minLength: 'The password must be at least 8 characters.',
-			},
-		},
-		password_confirmation: {
-			type: 'string',
-			minLength: 8,
-			const: {
-				$data: '1/password',
-			},
-			errorMessage: {
-				type: 'The password confirmation must be a string.',
-				minLength: 'The password confirmation must be at least 8 characters.',
-				const: 'The password confirmation does not match.',
-			},
-		},
 	},
-	dependencies: {
-		password: ['password_confirmation'],
-		password_confirmation: ['password'],
-	},
+	dependencies: {},
 	errorMessage: {
-		dependencies: {
-			password:
-				'The password confirmation field is required when password is present.',
-			password_confirmation:
-				'The password field is required when password confirmation is present.',
-		},
+		dependencies: {},
 	},
 };

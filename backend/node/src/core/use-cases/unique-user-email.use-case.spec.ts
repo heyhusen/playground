@@ -8,11 +8,10 @@ describe('uniqueUserEmail', () => {
 
 	const user: UserTable = {
 		id: 'id',
-		name: 'John Doe',
+		first_name: 'John',
+		last_name: 'Doe',
 		nickname: null,
 		email: 'johndoe@example.com',
-		email_verified_at: null,
-		password: 'abogoboga',
 		created_at: '2022-06-11 01:55:13',
 		updated_at: '2022-06-11 01:55:13',
 	};

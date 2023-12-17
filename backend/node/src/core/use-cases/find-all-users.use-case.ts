@@ -15,18 +15,22 @@ export async function findAllUsers(
 	const records = await userRepository.findAll();
 
 	const result = await Promise.all(
-		records.map(
-			async ({ password, ...obj }) =>
-				({
-					...obj,
-					avatar: obj.photo ? await fileService.getUrl(obj.photo) : null,
-				} as UserResult)
-		)
+		records.map(async (obj) => {
+			let avatar: string | null = null;
+			if (obj.photo) {
+				avatar = await fileService.getUrl(obj.photo);
+			}
+
+			return {
+				...obj,
+				avatar,
+			};
+		})
 	);
 
-	if (records.length > 0) {
-		return result;
+	if (!records.length) {
+		return [];
 	}
 
-	return [];
+	return result;
 }

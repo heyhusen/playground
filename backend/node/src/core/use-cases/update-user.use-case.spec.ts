@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { NotFoundException } from '../exceptions/not-found.exception';
 import type { FileService } from '../interfaces/file.interface';
-import type { HashService } from '../interfaces/hash.interface';
 import type {
 	UpdateUserDto,
 	UserRepository,
@@ -13,16 +12,14 @@ import { updateUser } from './update-user.use-case';
 
 describe('updateUser', () => {
 	let userRepository: UserRepository;
-	let hashService: HashService;
 	let fileService: FileService;
 
 	let user: UserTable = {
 		id: 'id',
-		name: 'John Doe',
+		first_name: 'John',
+		last_name: 'Doe',
 		nickname: null,
 		email: 'johndoe@example.com',
-		email_verified_at: null,
-		password: 'abogoboga',
 		photo: '',
 		created_at: '2022-06-11 01:55:13',
 		updated_at: '2022-06-11 01:55:13',
@@ -47,11 +44,6 @@ describe('updateUser', () => {
 			truncate: vi.fn(),
 		};
 
-		hashService = {
-			create: vi.fn().mockReturnValue(Promise.resolve('hashedPassword')),
-			verify: vi.fn(),
-		};
-
 		fileService = {
 			upload: vi.fn(),
 			getUrl: vi.fn().mockImplementation(() => {
@@ -67,86 +59,52 @@ describe('updateUser', () => {
 
 	test('should throw error when user not found', async () => {
 		await expect(
-			updateUser('invalid-id', dto, userRepository, hashService, fileService)
+			updateUser('invalid-id', dto, userRepository, fileService)
 		).rejects.toThrow(new NotFoundException('The user is not found.'));
 	});
 
 	test("should only update user's name", async () => {
-		dto = { name: 'Jane Doe' };
+		dto = {
+			first_name: 'Jane',
+			last_name: 'Doe',
+		};
 
-		const data = await updateUser(
-			'id',
-			dto,
-			userRepository,
-			hashService,
-			fileService
-		);
+		const data = await updateUser('id', dto, userRepository, fileService);
 
-		const { password, ...result } = user;
-
-		expect(hashService.create).toBeCalledTimes(0);
-		expect(data).toEqual<UserResult>({ ...result, ...dto, avatar: null });
+		expect(data).toEqual<UserResult>({ ...user, ...dto, avatar: null });
 	});
 
 	test("should only update user's nickname", async () => {
-		dto = { nickname: 'John' };
+		dto = {
+			nickname: 'John',
+		};
 
-		const data = await updateUser(
-			'id',
-			dto,
-			userRepository,
-			hashService,
-			fileService
-		);
+		const data = await updateUser('id', dto, userRepository, fileService);
 
-		const { password, ...result } = user;
-
-		expect(hashService.create).toBeCalledTimes(0);
-		expect(data).toEqual<UserResult>({ ...result, ...dto, avatar: null });
+		expect(data).toEqual<UserResult>({ ...user, ...dto, avatar: null });
 	});
 
 	test("should only update user's email", async () => {
-		dto = { email: 'janedoe@example.com' };
+		dto = {
+			email: 'janedoe@example.com',
+		};
 
-		const data = await updateUser(
-			'id',
-			dto,
-			userRepository,
-			hashService,
-			fileService
-		);
+		const data = await updateUser('id', dto, userRepository, fileService);
 
-		const { password, ...result } = user;
-
-		expect(hashService.create).toBeCalledTimes(0);
-		expect(data).toEqual<UserResult>({ ...result, ...dto, avatar: null });
-	});
-
-	test("should only update user's password", async () => {
-		dto = { password: 'new-password' };
-
-		await updateUser('id', dto, userRepository, hashService, fileService);
-
-		expect(hashService.create).toBeCalledTimes(1);
+		expect(data).toEqual<UserResult>({ ...user, ...dto, avatar: null });
 	});
 
 	test("should only update existing user's avatar", async () => {
 		dto = {};
-		user = { ...user, photo: 'photo.png' };
+		user = {
+			...user,
+			photo: 'photo.png',
+		};
 
-		const data = await updateUser(
-			'id',
-			dto,
-			userRepository,
-			hashService,
-			fileService
-		);
+		const data = await updateUser('id', dto, userRepository, fileService);
 
-		const { password, ...result } = user;
-
-		expect(hashService.create).toBeCalledTimes(0);
 		expect(data).toEqual<UserResult>({
-			...result,
+			...user,
 			photo: 'photo.png',
 			avatar: 'avatar.png',
 		});

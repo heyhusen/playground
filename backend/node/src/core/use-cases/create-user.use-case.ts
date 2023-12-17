@@ -1,4 +1,3 @@
-import type { HashService } from '../interfaces/hash.interface';
 import type {
 	CreateUserDto,
 	UserRepository,
@@ -17,25 +16,22 @@ import type {
  */
 export async function createUser(
 	dto: CreateUserDto,
-	userRepository: UserRepository,
-	hashService: HashService
+	userRepository: UserRepository
 ): Promise<UserResult> {
-	const { name, email, password } = dto;
+	const { first_name: firstName, last_name: lastName, email } = dto;
 
 	const record = await userRepository.create({
-		name,
+		first_name: firstName,
+		last_name: lastName,
 		email,
-		password: await hashService.create(password),
 	});
 
 	if (!record) {
 		throw new Error('Something went wrong.');
 	}
 
-	const { password: ignorePassword, ...data } = record;
-
 	return {
-		...data,
+		...record,
 		avatar: null,
 	};
 }

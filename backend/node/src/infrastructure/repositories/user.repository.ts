@@ -11,20 +11,20 @@ export const userRepository: UserRepository = {
 			.insert(input)
 			.returning([
 				'id',
-				'name',
+				'first_name',
+				'last_name',
 				'nickname',
 				'email',
-				'password',
 				'photo',
 				'created_at',
 				'updated_at',
 			]);
 
-		if (records.length < 1) {
+		if (!records.length) {
 			return null;
 		}
 
-		const result = records[0] as UserTable;
+		const result = records.at(0) as UserTable;
 
 		return result;
 	},
@@ -32,10 +32,10 @@ export const userRepository: UserRepository = {
 	findAll: async () => {
 		const records = await db<UserTable>('users').select(
 			'id',
-			'name',
+			'first_name',
+			'last_name',
 			'nickname',
 			'email',
-			'password',
 			'photo',
 			'created_at',
 			'updated_at'
@@ -51,10 +51,10 @@ export const userRepository: UserRepository = {
 			.where('id', '=', id)
 			.first(
 				'id',
-				'name',
+				'first_name',
+				'last_name',
 				'nickname',
 				'email',
-				'password',
 				'photo',
 				'created_at',
 				'updated_at'
@@ -74,10 +74,10 @@ export const userRepository: UserRepository = {
 			.where('email', '=', email)
 			.first(
 				'id',
-				'name',
+				'first_name',
+				'last_name',
 				'nickname',
 				'email',
-				'password',
 				'photo',
 				'created_at',
 				'updated_at'
@@ -98,20 +98,20 @@ export const userRepository: UserRepository = {
 			.update({ ...input, updated_at: db.fn.now() })
 			.returning([
 				'id',
-				'name',
+				'first_name',
+				'last_name',
 				'nickname',
 				'email',
-				'password',
 				'photo',
 				'created_at',
 				'updated_at',
 			]);
 
-		if (record.length < 1) {
+		if (!record.length) {
 			return null;
 		}
 
-		const result = record[0] as UserTable;
+		const result = record.at(0) as UserTable;
 
 		return result;
 	},
@@ -122,20 +122,20 @@ export const userRepository: UserRepository = {
 			.delete()
 			.returning([
 				'id',
-				'name',
+				'first_name',
+				'last_name',
 				'nickname',
 				'email',
-				'password',
 				'photo',
 				'created_at',
 				'updated_at',
 			]);
 
-		if (record.length < 1) {
+		if (!record.length) {
 			return null;
 		}
 
-		const result = record[0] as UserTable;
+		const result = record.at(0) as UserTable;
 
 		return result;
 	},

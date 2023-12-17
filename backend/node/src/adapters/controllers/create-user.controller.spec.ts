@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
-import type { HashService } from '../../core/interfaces/hash.interface';
 import type {
 	CreateUserDto,
 	UserRepository,
@@ -25,29 +24,23 @@ describe('createUserController', () => {
 		remove: vi.fn(),
 		truncate: vi.fn(),
 	};
-	const hashService: HashService = {
-		create: vi.fn(),
-		verify: vi.fn(),
-	};
 
 	const dto: CreateUserDto = {
-		name: 'John Doe',
+		first_name: 'John',
+		last_name: 'Doe',
 		email: 'johndoe@example.com',
-		password: 'abogoboga',
-		password_confirmation: 'abogoboga',
 	};
 
-	const controller = createUserController(userRepository, hashService);
+	const controller = createUserController(userRepository);
 
 	let request: HttpRequestBody<CreateUserDto> = {};
 
 	const user: UserTable = {
 		id: 'id',
-		name: dto.name,
+		first_name: dto.first_name,
+		last_name: dto.last_name,
 		nickname: null,
 		email: dto.email,
-		email_verified_at: null,
-		password: dto.password,
 		created_at: '2022-06-11 01:55:13',
 		updated_at: '2022-06-11 01:55:13',
 	};
@@ -56,11 +49,10 @@ describe('createUserController', () => {
 
 	beforeEach(() => {
 		mockedCreateUser.mockImplementation(() => {
-			const { password, ...result } = user;
-
 			return Promise.resolve<UserResult>({
-				...result,
-				name: dto.name,
+				...user,
+				first_name: dto.first_name,
+				last_name: dto.last_name,
 				email: dto.email,
 				photo: null,
 				avatar: null,
@@ -79,11 +71,14 @@ describe('createUserController', () => {
 
 		const data = await controller(request);
 
-		const { password, ...result } = user;
-
 		expect(data).toEqual<ResponseModel<UserResponse>>({
 			status: 201,
-			data: { ...result, photo: null, avatar: null, type: 'users' },
+			data: {
+				...user,
+				photo: null,
+				avatar: null,
+				type: 'users',
+			},
 		});
 	});
 });

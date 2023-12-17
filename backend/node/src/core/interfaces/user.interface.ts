@@ -1,19 +1,18 @@
 import type { User } from '../entities/user.entity';
 import type { BaseRepository } from './common.interface';
 
-export interface CreateUserDto extends Omit<User, 'nickname' | 'avatar'> {
+export interface CreateUserDto
+	extends Omit<User, 'last_name' | 'nickname' | 'avatar'> {
+	last_name: string | null;
 	nickname?: string;
-	password: string;
-	password_confirmation: string;
 }
 
 export type UpdateUserDto = Partial<CreateUserDto>;
 
 export interface UserTable
 	extends Pick<User, 'nickname'>,
-		Omit<CreateUserDto, 'nickname' | 'password_confirmation'> {
+		Omit<CreateUserDto, 'nickname'> {
 	id: string;
-	email_verified_at?: string | null;
 	photo?: string | null;
 	created_at: string;
 	updated_at: string;
@@ -30,4 +29,4 @@ export interface UserRepository
 	findOneByEmail: (email: string) => Promise<UserTable | null>;
 }
 
-export type UserResult = Omit<UserTable, 'password'> & Pick<User, 'avatar'>;
+export type UserResult = UserTable & Pick<User, 'avatar'>;

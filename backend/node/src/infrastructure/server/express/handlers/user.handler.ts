@@ -20,7 +20,6 @@ import type {
 } from '../../../../adapters/interfaces/user.interface';
 import { userRepository } from '../../../repositories/user.repository';
 import { fileService } from '../../../services/file.service';
-import { hashService } from '../../../services/hash.service';
 
 export async function create(
 	req: Request<unknown, unknown, CreateUser>,
@@ -45,7 +44,7 @@ export async function create(
 		};
 	}
 
-	const controller = createUserController(userRepository, hashService);
+	const controller = createUserController(userRepository);
 
 	const { status, data } = await controller(request);
 
@@ -140,11 +139,7 @@ export async function update(
 		};
 	}
 
-	const controller = updateUserController(
-		userRepository,
-		hashService,
-		fileService
-	);
+	const controller = updateUserController(userRepository, fileService);
 
 	const { status, data } = await controller(request);
 

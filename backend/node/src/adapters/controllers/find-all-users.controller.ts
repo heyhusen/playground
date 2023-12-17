@@ -14,8 +14,12 @@ export function findAllUsersController(
 
 		return {
 			status: 200,
-			data:
-				data.length > 0 ? data.map((obj) => ({ ...obj, type: 'users' })) : [],
+			data: data?.map((obj) => {
+				return {
+					...obj,
+					type: 'users',
+				};
+			}),
 		};
 	};
 }

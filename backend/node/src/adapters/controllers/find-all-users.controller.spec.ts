@@ -40,11 +40,10 @@ describe('findAllUsersController', () => {
 
 	let user: UserTable = {
 		id: 'id',
-		name: 'John Doe',
+		first_name: 'John',
+		last_name: 'Doe',
 		nickname: null,
 		email: 'johndoe@example.com',
-		email_verified_at: null,
-		password: 'abogoboga',
 		created_at: '2022-06-11 01:55:13',
 		updated_at: '2022-06-11 01:55:13',
 	};
@@ -53,10 +52,11 @@ describe('findAllUsersController', () => {
 
 	beforeEach(() => {
 		mockedFindAllUsers.mockImplementation(() => {
-			const { password, ...result } = user;
-
 			return Promise.resolve<UserResult[]>([
-				{ ...result, avatar: user.photo ? 'avatar.png' : null },
+				{
+					...user,
+					avatar: user.photo ? 'avatar.png' : null,
+				},
 			]);
 		});
 	});
@@ -72,12 +72,14 @@ describe('findAllUsersController', () => {
 
 	test('should return all users', async () => {
 		const data = await controller(request);
-		const { password, ...result } = user;
-
 		expect(data.status).toEqual(200);
 		expect(data.data).toEqual(
 			expect.arrayContaining<UserResponse>([
-				{ ...result, avatar: null, type: 'users' },
+				{
+					...user,
+					avatar: null,
+					type: 'users',
+				},
 			])
 		);
 	});
@@ -86,12 +88,15 @@ describe('findAllUsersController', () => {
 		user = { ...user, photo: 'photo.png' };
 
 		const data = await controller(request);
-		const { password, ...result } = user;
 
 		expect(data.status).toEqual(200);
 		expect(data.data).toEqual(
 			expect.arrayContaining<UserResponse>([
-				{ ...result, avatar: 'avatar.png', type: 'users' },
+				{
+					...user,
+					avatar: 'avatar.png',
+					type: 'users',
+				},
 			])
 		);
 	});

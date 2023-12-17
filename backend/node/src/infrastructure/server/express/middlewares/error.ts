@@ -2,7 +2,6 @@ import type { ErrorObject } from 'ajv';
 import type { NextFunction, Request, Response } from 'express';
 import { ValidationError } from 'express-json-validator-middleware';
 import type {
-	BearerTokenError,
 	JsonApiError,
 	JsonApiErrorObject,
 } from '../../../../adapters/interfaces/http.interface';
@@ -32,10 +31,20 @@ export function errorHandler() {
 		const { name, message } = err;
 		let { status } = err;
 
-		let response: JsonApiError | BearerTokenError = {
-			jsonapi: { version: '1.0' },
-			links: { self: req.path },
-			errors: [{ status, title: name, detail: message }],
+		let response: JsonApiError = {
+			jsonapi: {
+				version: '1.0',
+			},
+			links: {
+				self: req.path,
+			},
+			errors: [
+				{
+					status,
+					title: name,
+					detail: message,
+				},
+			],
 		};
 
 		if (err instanceof ValidationError) {

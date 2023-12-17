@@ -1,6 +1,5 @@
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type { FileService } from '../../core/interfaces/file.interface';
-import type { HashService } from '../../core/interfaces/hash.interface';
 import type {
 	UpdateUserDto,
 	UserRepository,
@@ -15,7 +14,6 @@ import type {
 
 export function updateUserController(
 	userRepository: UserRepository,
-	hashService: HashService,
 	fileService: FileService
 ): (
 	req: HttpRequest<unknown, UserRequestParams, Omit<UpdateUserDto, 'photo'>>
@@ -31,13 +29,7 @@ export function updateUserController(
 
 		const dto = { ...req.body };
 
-		const data = await updateUser(
-			id,
-			dto,
-			userRepository,
-			hashService,
-			fileService
-		);
+		const data = await updateUser(id, dto, userRepository, fileService);
 
 		return {
 			status: 200,

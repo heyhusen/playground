@@ -1,6 +1,5 @@
 import { NotFoundException } from '../exceptions/not-found.exception';
 import type { FileService } from '../interfaces/file.interface';
-import type { HashService } from '../interfaces/hash.interface';
 import type {
 	UpdateUserDto,
 	UserRepository,
@@ -24,15 +23,17 @@ export async function updateUser(
 	id: string,
 	dto: UpdateUserDto,
 	userRepository: UserRepository,
-	hashService: HashService,
 	fileService: FileService
 ): Promise<UserResult> {
-	const { name, nickname, email, password } = dto;
+	const { first_name: firstName, nickname, email } = dto;
 
 	let input: Partial<UserTableInput> = {};
 
-	if (name) {
-		input = { ...input, name };
+	if (firstName) {
+		input = {
+			...input,
+			first_name: firstName,
+		};
 	}
 
 	if (nickname) {
@@ -43,20 +44,19 @@ export async function updateUser(
 		input = { ...input, email };
 	}
 
-	if (password) {
-		input = { ...input, password: await hashService.create(password) };
-	}
-
 	const record = await userRepository.update(id, input);
 
 	if (!record) {
 		throw new NotFoundException('The user is not found.');
 	}
 
-	const { password: ignorePassword, ...data } = record;
+	let avatar: string | null = null;
+	if (record.photo) {
+		avatar = await fileService.getUrl(record.photo);
+	}
 
 	return {
-		...data,
-		avatar: record.photo ? await fileService.getUrl(record.photo) : null,
+		...record,
+		avatar,
 	};
 }

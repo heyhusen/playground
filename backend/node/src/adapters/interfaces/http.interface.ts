@@ -33,14 +33,6 @@ export type HttpRequestCookie<T = Record<string, unknown>> = HttpRequest<
 	T
 >;
 
-export interface BearerTokenHeader {
-	authorization: string | undefined;
-}
-
-export interface RefreshTokenCookie {
-	refresh_token: string | undefined;
-}
-
 export interface JsonApi {
 	jsonapi: {
 		version: string;
@@ -77,9 +69,4 @@ export interface JsonApiErrorObject {
 
 export interface JsonApiError extends JsonApi {
 	errors: JsonApiErrorObject[];
-}
-
-export interface BearerTokenError {
-	error: string;
-	error_description: string;
 }

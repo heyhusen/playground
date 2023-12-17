@@ -1,5 +1,4 @@
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
-import type { HashService } from '../../core/interfaces/hash.interface';
 import type {
 	CreateUserDto,
 	UserRepository,
@@ -10,8 +9,7 @@ import type { HttpRequestBody } from '../interfaces/http.interface';
 import type { UserResponse } from '../interfaces/user.interface';
 
 export function createUserController(
-	userRepository: UserRepository,
-	hashService: HashService
+	userRepository: UserRepository
 ): (
 	req: HttpRequestBody<Omit<CreateUserDto, 'photo'>>
 ) => Promise<ResponseModel<UserResponse>> {
@@ -22,13 +20,19 @@ export function createUserController(
 			throw new BadRequestException('Request body is empty.');
 		}
 
-		const dto = { ...req.body, photo: req.file };
+		const dto = {
+			...req.body,
+			photo: req.file,
+		};
 
-		const data = await createUser(dto, userRepository, hashService);
+		const data = await createUser(dto, userRepository);
 
 		return {
 			status: 201,
-			data: { ...data, type: 'users' },
+			data: {
+				...data,
+				type: 'users',
+			},
 		};
 	};
 }

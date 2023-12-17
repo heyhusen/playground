@@ -299,18 +299,14 @@ components:
     User:
       type: object
       properties:
-        name:
+        first_name:
+          type: string
+        last_name:
           type: string
         nickname:
           type: string
         email:
           type: string
-        password:
-          type: string
-          writeOnly: true
-        password_confirmation:
-          type: string
-          writeOnly: true
         photo:
           type: string
           writeOnly: true
@@ -324,16 +320,13 @@ components:
           type: string
           readOnly: true
       required:
-        - "name"
+        - "first_name"
         - "email"
-        - "password"
-        - "password_confirmation"
       example:
-        name: John Doe
+        first_name: John
+        last_name: Doe
         nickname: John
         email: johndoe@example.com
-        password: abogoboga
-        password_confirmation: abogoboga
         photo: <your-photo-path>
         avatar: <your-s3-url-here>
     UserData:
@@ -353,7 +346,8 @@ components:
               id: <your-uuid-v4-here>
               type: users
               attributes:
-                name: John Doe
+                first_name: John
+                last_name: Doe
                 nickname: John
                 email: johndoe@example.com
                 avatar: <your-s3-url-here>
@@ -372,7 +366,8 @@ components:
               - id: <your-uuid-v4-here>
                 type: users
                 attributes:
-                  name: John Doe
+                  first_name: John
+                  last_name: Doe
                   nickname: John
                   email: johndoe@example.com
                   avatar: <your-s3-url-here>
@@ -389,11 +384,10 @@ components:
               id: <your-uuid-v4-here>
               type: users
               attributes:
-                name: John Doe
+                first_name: John
+                last_name: Doe
                 nickname: John
-                email: johndoe@example.com
-                password: abogoboga
-                password_confirmation: abogoboga
+                email: johndoe@example.
                 photo: <your-photo-path>
     UserError:
       allOf:
@@ -410,21 +404,6 @@ components:
                 detail: The email has already been taken.
                 source:
                   pointer: "/data/attributes/email"
-              - status: 400
-                title: Bad Request
-                detail: The password must be at least 8 characters.
-                source:
-                  pointer: "/data/attributes/password"
-              - status: 400
-                title: Bad Request
-                detail: The password_confirmation must be at least 8 characters.
-                source:
-                  pointer: "/data/attributes/password_confirmation"
-              - status: 400
-                title: Bad Request
-                detail: The password_confirmation and password must match.
-                source:
-                  pointer: "/data/attributes/password_confirmation"
     UserRequestError:
       allOf:
         - $ref: "#/components/schemas/UserError"
@@ -432,24 +411,14 @@ components:
             errors:
               - status: 400
                 title: Bad Request
-                detail: The name is required.
+                detail: The first name is required.
                 source:
-                  pointer: "/data/attributes/name"
+                  pointer: "/data/attributes/first_name"
               - status: 400
                 title: Bad Request
                 detail: The email is required.
                 source:
                   pointer: "/data/attributes/email"
-              - status: 400
-                title: Bad Request
-                detail: The password is required.
-                source:
-                  pointer: "/data/attributes/password"
-              - status: 400
-                title: Bad Request
-                detail: The password_confirmation is required.
-                source:
-                  pointer: "/data/attributes/password_confirmation"
     UserNotFound:
       allOf:
         - $ref: "#/components/schemas/Error"

@@ -11,11 +11,11 @@ exports.up = async function up(knex) {
 			.notNullable()
 			.defaultTo(knex.raw('uuid_generate_v4()'))
 			.primary();
-		table.string('name').notNullable();
+		table.string('first_name').notNullable();
+		table.string('last_name').nullable();
 		table.string('nickname').nullable();
 		table.string('email').notNullable().unique();
 		table.timestamp('email_verified_at').nullable();
-		table.string('password').notNullable();
 		table.string('photo').nullable();
 		table.timestamps(true, true);
 	});

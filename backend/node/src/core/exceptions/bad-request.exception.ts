@@ -7,10 +7,8 @@ export class BadRequestException extends HttpException {
 	constructor(message: string, error?: ErrorObject) {
 		super(400, message, 'Bad Request');
 
-		if (error) {
-			if (Object.keys(error).length > 0) {
-				this.error = error;
-			}
+		if (error && Object.keys(error).length) {
+			this.error = error;
 		}
 	}
 }

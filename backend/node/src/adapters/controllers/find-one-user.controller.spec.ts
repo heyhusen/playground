@@ -39,11 +39,10 @@ describe('findOneUserController', () => {
 
 	let user: UserTable = {
 		id: 'id',
-		name: 'John Doe',
+		first_name: 'John',
+		last_name: 'Doe',
 		nickname: null,
 		email: 'johndoe@example.com',
-		email_verified_at: null,
-		password: 'abogoboga',
 		created_at: '2022-06-11 01:55:13',
 		updated_at: '2022-06-11 01:55:13',
 	};
@@ -52,10 +51,8 @@ describe('findOneUserController', () => {
 
 	beforeEach(() => {
 		mockedFindOneUser.mockImplementation(() => {
-			const { password, ...result } = user;
-
 			return Promise.resolve<UserResult>({
-				...result,
+				...user,
 				avatar: user.photo ? 'avatar.png' : null,
 			});
 		});
@@ -71,11 +68,14 @@ describe('findOneUserController', () => {
 		request = { ...request, params: { id: 'id' } };
 
 		const data = await controller(request);
-		const { password, ...result } = user;
 
 		expect(data).toEqual<ResponseModel<UserResponse>>({
 			status: 200,
-			data: { ...result, avatar: null, type: 'users' },
+			data: {
+				...user,
+				avatar: null,
+				type: 'users',
+			},
 		});
 	});
 
@@ -83,11 +83,14 @@ describe('findOneUserController', () => {
 		user = { ...user, photo: 'photo.png' };
 
 		const data = await controller(request);
-		const { password, ...result } = user;
 
 		expect(data).toEqual<ResponseModel<UserResponse>>({
 			status: 200,
-			data: { ...result, avatar: 'avatar.png', type: 'users' },
+			data: {
+				...user,
+				avatar: 'avatar.png',
+				type: 'users',
+			},
 		});
 	});
 });

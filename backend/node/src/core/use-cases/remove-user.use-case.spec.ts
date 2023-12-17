@@ -10,11 +10,10 @@ describe('removeUser', () => {
 
 	const user: UserTable = {
 		id: 'id',
-		name: 'John Doe',
+		first_name: 'John',
+		last_name: 'Doe',
 		nickname: null,
 		email: 'johndoe@example.com',
-		email_verified_at: null,
-		password: 'abogoboga',
 		created_at: '2022-06-11 01:55:13',
 		updated_at: '2022-06-11 01:55:13',
 	};
@@ -57,9 +56,12 @@ describe('removeUser', () => {
 	});
 
 	test('should delete user with an avatar', async () => {
-		userRepository.remove = vi
-			.fn()
-			.mockReturnValue(Promise.resolve({ ...user, photo: 'photo.png' }));
+		userRepository.remove = vi.fn().mockReturnValue(
+			Promise.resolve({
+				...user,
+				photo: 'photo.png',
+			})
+		);
 
 		await removeUser('id', userRepository, fileService);
 
