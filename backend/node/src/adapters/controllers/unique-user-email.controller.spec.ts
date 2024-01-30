@@ -1,28 +1,27 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { mockedUniqueUserEmail } from '../../../__tests__/mocks/user.mock';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type {
 	UpdateUserDto,
 	UserRepository,
 	UserTable,
 } from '../../core/interfaces/user.interface';
-import { uniqueUserEmail } from '../../core/use-cases/unique-user-email.use-case';
-import type { HttpRequestBody } from '../interfaces/http.interface';
+import { HttpRequest } from '../interfaces/http.interface';
 import { uniqueUserEmailController } from './unique-user-email.controller';
-
-vi.mock('../../core/use-cases/unique-user-email.use-case');
 
 describe('uniqueUserEmailController', () => {
 	const userRepository: UserRepository = {
-		create: vi.fn(),
-		findAll: vi.fn(),
-		findOne: vi.fn(),
-		findOneByEmail: vi.fn(),
-		update: vi.fn(),
-		remove: vi.fn(),
-		truncate: vi.fn(),
+		create: jest.fn(),
+		findAll: jest.fn(),
+		findOne: jest.fn(),
+		findOneByEmail: jest.fn(),
+		update: jest.fn(),
+		remove: jest.fn(),
+		truncate: jest.fn(),
 	};
 
-	let dto: Pick<UpdateUserDto, 'email'> = { email: 'johndoe@example.com' };
+	let dto: Pick<UpdateUserDto, 'email'> = {
+		email: 'johndoe@example.com',
+	};
 
 	const user: UserTable = {
 		id: 'id',
@@ -34,20 +33,24 @@ describe('uniqueUserEmailController', () => {
 		updated_at: '2022-06-11 01:55:13',
 	};
 
-	let request: HttpRequestBody<Pick<UpdateUserDto, 'email'>> = {};
+	let request: HttpRequest<
+		unknown,
+		Pick<UserTable, 'id'>,
+		Pick<UpdateUserDto, 'email'>
+	> = {};
 
 	const controller = uniqueUserEmailController(userRepository);
 
-	const mockedUniqueUserEmail = vi.mocked(uniqueUserEmail, true);
-
 	beforeEach(() => {
-		mockedUniqueUserEmail.mockImplementation((email: string) => {
-			if (email === user.email) {
-				throw new BadRequestException('The email has already been taken.');
-			}
+		mockedUniqueUserEmail.mockImplementation(
+			(_repo: UserRepository, email: string) => {
+				if (email === user.email) {
+					throw new BadRequestException('The email has already been taken.');
+				}
 
-			return Promise.resolve(true);
-		});
+				return Promise.resolve(true);
+			}
+		);
 	});
 
 	test('should only check when email is provided', async () => {
@@ -65,8 +68,14 @@ describe('uniqueUserEmailController', () => {
 	});
 
 	test('should return true when email is unique', async () => {
-		dto = { ...dto, email: 'jandoe@example.com' };
-		request = { ...request, body: dto };
+		dto = {
+			...dto,
+			email: 'jandoe@example.com',
+		};
+		request = {
+			...request,
+			body: dto,
+		};
 
 		const data = await controller(request);
 

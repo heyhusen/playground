@@ -1,10 +1,5 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { FileService } from '../interfaces/file.interface';
-import type {
-	UserRepository,
-	UserResult,
-	UserTable,
-} from '../interfaces/user.interface';
+import type { UserRepository, UserTable } from '../interfaces/user.interface';
 import { findAllUsers } from './find-all-users.use-case';
 
 describe('findAllUsers', () => {
@@ -23,24 +18,24 @@ describe('findAllUsers', () => {
 
 	beforeEach(() => {
 		userRepository = {
-			create: vi.fn(),
-			findAll: vi.fn().mockReturnValue(Promise.resolve<UserTable[]>([user])),
-			findOne: vi.fn(),
-			findOneByEmail: vi.fn(),
-			update: vi.fn(),
-			remove: vi.fn(),
-			truncate: vi.fn(),
+			create: jest.fn(),
+			findAll: jest.fn().mockReturnValue(Promise.resolve<UserTable[]>([user])),
+			findOne: jest.fn(),
+			findOneByEmail: jest.fn(),
+			update: jest.fn(),
+			remove: jest.fn(),
+			truncate: jest.fn(),
 		};
 
 		fileService = {
-			upload: vi.fn(),
-			getUrl: vi.fn().mockReturnValue(Promise.resolve('avatar.png')),
-			remove: vi.fn(),
+			upload: jest.fn(),
+			getUrl: jest.fn().mockReturnValue(Promise.resolve('avatar.png')),
+			remove: jest.fn(),
 		};
 	});
 
 	test('should return empty array', async () => {
-		userRepository.findAll = vi.fn().mockReturnValue(Promise.resolve([]));
+		userRepository.findAll = jest.fn().mockReturnValue(Promise.resolve([]));
 
 		const data = await findAllUsers(userRepository, fileService);
 
@@ -54,7 +49,7 @@ describe('findAllUsers', () => {
 		expect(userRepository.findAll).toBeCalledTimes(1);
 		expect(fileService.getUrl).toBeCalledTimes(0);
 		expect(data).toEqual(
-			expect.arrayContaining<UserResult>([
+			expect.arrayContaining([
 				{
 					...user,
 					avatar: null,
@@ -64,7 +59,7 @@ describe('findAllUsers', () => {
 	});
 
 	test('should return all users with avatar', async () => {
-		userRepository.findAll = vi
+		userRepository.findAll = jest
 			.fn()
 			.mockReturnValue(Promise.resolve([{ ...user, photo: 'photo.png' }]));
 
@@ -72,7 +67,7 @@ describe('findAllUsers', () => {
 		expect(userRepository.findAll).toBeCalledTimes(1);
 		expect(fileService.getUrl).toBeCalledTimes(1);
 		expect(data).toEqual(
-			expect.arrayContaining<UserResult>([
+			expect.arrayContaining([
 				{
 					...user,
 					photo: 'photo.png',

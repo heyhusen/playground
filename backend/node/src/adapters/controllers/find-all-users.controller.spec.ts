@@ -1,31 +1,28 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { StatusCodes } from 'http-status-codes';
+import { mockedFindAllUsers } from '../../../__tests__/mocks/user.mock';
 import type { FileService } from '../../core/interfaces/file.interface';
 import type {
 	UserRepository,
 	UserResult,
 	UserTable,
 } from '../../core/interfaces/user.interface';
-import { findAllUsers } from '../../core/use-cases/find-all-users.use-case';
 import type { HttpRequest } from '../interfaces/http.interface';
-import type { UserResponse } from '../interfaces/user.interface';
 import { findAllUsersController } from './find-all-users.controller';
-
-vi.mock('../../core/use-cases/find-all-users.use-case');
 
 describe('findAllUsersController', () => {
 	const userRepository: UserRepository = {
-		create: vi.fn(),
-		findAll: vi.fn(),
-		findOne: vi.fn(),
-		findOneByEmail: vi.fn(),
-		update: vi.fn(),
-		remove: vi.fn(),
-		truncate: vi.fn(),
+		create: jest.fn(),
+		findAll: jest.fn(),
+		findOne: jest.fn(),
+		findOneByEmail: jest.fn(),
+		update: jest.fn(),
+		remove: jest.fn(),
+		truncate: jest.fn(),
 	};
 	const fileService: FileService = {
-		upload: vi.fn(),
-		getUrl: vi.fn(),
-		remove: vi.fn(),
+		upload: jest.fn(),
+		getUrl: jest.fn(),
+		remove: jest.fn(),
 	};
 
 	const controller = findAllUsersController(userRepository, fileService);
@@ -48,8 +45,6 @@ describe('findAllUsersController', () => {
 		updated_at: '2022-06-11 01:55:13',
 	};
 
-	const mockedFindAllUsers = vi.mocked(findAllUsers, true);
-
 	beforeEach(() => {
 		mockedFindAllUsers.mockImplementation(() => {
 			return Promise.resolve<UserResult[]>([
@@ -66,36 +61,37 @@ describe('findAllUsersController', () => {
 
 		const data = await controller(request);
 
-		expect(data.status).toEqual(200);
+		expect(data.status).toEqual(StatusCodes.OK);
 		expect(data.data).toEqual([]);
 	});
 
 	test('should return all users', async () => {
 		const data = await controller(request);
-		expect(data.status).toEqual(200);
+		expect(data.status).toEqual(StatusCodes.OK);
 		expect(data.data).toEqual(
-			expect.arrayContaining<UserResponse>([
+			expect.arrayContaining([
 				{
 					...user,
 					avatar: null,
-					type: 'users',
 				},
 			])
 		);
 	});
 
 	test('should return all users with avatar', async () => {
-		user = { ...user, photo: 'photo.png' };
+		user = {
+			...user,
+			photo: 'photo.png',
+		};
 
 		const data = await controller(request);
 
-		expect(data.status).toEqual(200);
+		expect(data.status).toEqual(StatusCodes.OK);
 		expect(data.data).toEqual(
-			expect.arrayContaining<UserResponse>([
+			expect.arrayContaining([
 				{
 					...user,
 					avatar: 'avatar.png',
-					type: 'users',
 				},
 			])
 		);

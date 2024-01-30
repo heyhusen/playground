@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { NotFoundException } from '../exceptions/not-found.exception';
 import type { FileService } from '../interfaces/file.interface';
 import type {
@@ -24,25 +23,25 @@ describe('findOneUser', () => {
 
 	beforeEach(() => {
 		userRepository = {
-			create: vi.fn(),
-			findAll: vi.fn(),
-			findOne: vi.fn((id: string) => {
+			create: jest.fn(),
+			findAll: jest.fn(),
+			findOne: jest.fn((id: string) => {
 				if (id !== user.id) {
 					return Promise.resolve(null);
 				}
 
 				return Promise.resolve<UserTable>(user);
 			}),
-			findOneByEmail: vi.fn(),
-			update: vi.fn(),
-			remove: vi.fn(),
-			truncate: vi.fn(),
+			findOneByEmail: jest.fn(),
+			update: jest.fn(),
+			remove: jest.fn(),
+			truncate: jest.fn(),
 		};
 
 		fileService = {
-			upload: vi.fn(),
-			getUrl: vi.fn().mockReturnValue(Promise.resolve('avatar.png')),
-			remove: vi.fn(),
+			upload: jest.fn(),
+			getUrl: jest.fn().mockReturnValue(Promise.resolve('avatar.png')),
+			remove: jest.fn(),
 		};
 	});
 
@@ -56,14 +55,14 @@ describe('findOneUser', () => {
 		const data = await findOneUser(user.id, userRepository, fileService);
 		expect(userRepository.findOne).toBeCalledTimes(1);
 		expect(fileService.getUrl).toBeCalledTimes(0);
-		expect(data).toEqual<UserResult>({
+		expect<UserResult>(data).toEqual({
 			...user,
 			avatar: null,
 		});
 	});
 
 	test('should return an user with avatar', async () => {
-		userRepository.findOne = vi.fn().mockReturnValue(
+		userRepository.findOne = jest.fn().mockReturnValue(
 			Promise.resolve({
 				...user,
 				photo: 'photo.png',
@@ -73,7 +72,7 @@ describe('findOneUser', () => {
 		const data = await findOneUser(user.id, userRepository, fileService);
 		expect(userRepository.findOne).toBeCalledTimes(1);
 		expect(fileService.getUrl).toBeCalledTimes(1);
-		expect(data).toEqual<UserResult>({
+		expect<UserResult>(data).toEqual({
 			...user,
 			photo: 'photo.png',
 			avatar: 'avatar.png',

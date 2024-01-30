@@ -4,7 +4,10 @@ import { log } from '../../../ports/logger';
 
 export function httpLogger() {
 	return (req: Request, res: Response, next: NextFunction) => {
-		log.http('HTTP log', { req, res });
+		log.http('HTTP log', {
+			req,
+			res,
+		});
 
 		next();
 	};
@@ -17,7 +20,9 @@ export function errorLogger() {
 		_res: Response,
 		next: NextFunction
 	) => {
-		log.error('Error log', { err });
+		log.error('Error log', {
+			err,
+		});
 
 		next(err);
 	};

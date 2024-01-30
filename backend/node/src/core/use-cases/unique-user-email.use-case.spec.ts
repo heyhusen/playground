@@ -1,4 +1,3 @@
-import { beforeAll, describe, expect, test, vi } from 'vitest';
 import { BadRequestException } from '../exceptions/bad-request.exception';
 import type { UserRepository, UserTable } from '../interfaces/user.interface';
 import { uniqueUserEmail } from './unique-user-email.use-case';
@@ -18,32 +17,32 @@ describe('uniqueUserEmail', () => {
 
 	beforeAll(() => {
 		userRepository = {
-			create: vi.fn(),
-			findAll: vi.fn(),
-			findOne: vi.fn(),
-			findOneByEmail: vi.fn((email: string) => {
+			create: jest.fn(),
+			findAll: jest.fn(),
+			findOne: jest.fn(),
+			findOneByEmail: jest.fn((email: string) => {
 				if (email === user.email) {
 					return Promise.resolve(user);
 				}
 
 				return Promise.resolve(null);
 			}),
-			update: vi.fn(),
-			remove: vi.fn(),
-			truncate: vi.fn(),
+			update: jest.fn(),
+			remove: jest.fn(),
+			truncate: jest.fn(),
 		};
 	});
 
 	test('should throw error when email is already taken', async () => {
 		await expect(
-			uniqueUserEmail('johndoe@example.com', userRepository)
+			uniqueUserEmail(userRepository, 'johndoe@example.com')
 		).rejects.toThrow(
 			new BadRequestException('The email has already been taken.')
 		);
 	});
 
 	test('should return true when user is not found', async () => {
-		const data = await uniqueUserEmail('johndoe@example.co', userRepository);
+		const data = await uniqueUserEmail(userRepository, 'johndoe@example.co');
 
 		expect(data).toEqual(true);
 	});

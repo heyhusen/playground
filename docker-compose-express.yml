@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  backend-migrate:
+    image: playground-backend-express
+    depends_on:
+      - postgres
+    build:
+      context: ./
+      dockerfile: ./express.Dockerfile
+    volumes:
+      - ./backend/node:/app/node
+    command: pnpm migrate:up
+    restart: on-failure
+    networks:
+      - playground
+
+  backend-seeder:
+    image: playground-backend-express
+    depends_on:
+      - backend-migrate
+    build:
+      context: ./
+      dockerfile: ./express.Dockerfile
+    volumes:
+      - ./backend/node:/app/node
+    command: pnpm seed:run
+    restart: on-failure
+    networks:
+      - playground
+
+  backend:
+    image: playground-backend-express
+    depends_on:
+      - backend-migrate
+      - backend-seeder
+    build:
+      context: ./
+      dockerfile: ./express.Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - ./backend/node:/app/node
+    restart: on-failure
+    networks:
+      - playground

@@ -1,12 +1,38 @@
 version: '3.8'
 
 services:
+  postgres-kratos:
+    image: docker.io/library/postgres:16-alpine
+    ports:
+      - '${DB_PORT:-5431}:5432'
+    volumes:
+      - 'kratos-postgres:/var/lib/postgresql/data'
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_DATABASE:-postgres}
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'pg_isready',
+          '-q',
+          '-d',
+          '${DB_USERNAME:-postgres}',
+          '-U',
+          '${DB_PASSWORD:-postgres}',
+        ]
+      retries: 3
+      timeout: 5s
+    networks:
+      - playground
+
   kratos-migrate:
     image: docker.io/oryd/kratos:v1.0.0
     depends_on:
-      - postgres
+      - postgres-kratos
     environment:
-      - DSN=postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable&max_conns=20&max_idle_conns=4
+      - DSN=postgres://postgres:postgres@postgres-kratos:5432/postgres?sslmode=disable&max_conns=20&max_idle_conns=4
     volumes:
       - type: volume
         source: kratos-sqlite
@@ -29,7 +55,7 @@ services:
       - '4434:4434' # admin
     restart: unless-stopped
     environment:
-      - DSN=postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable&max_conns=20&max_idle_conns=4
+      - DSN=postgres://postgres:postgres@postgres-kratos:5432/postgres?sslmode=disable&max_conns=20&max_idle_conns=4
       - LOG_LEVEL=trace
       - SERVE_PUBLIC_BASE_URL=http://127.0.0.1:4455/.ory/kratos/public/
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
@@ -81,4 +107,5 @@ services:
       - ./config/oathkeeper:/etc/config/oathkeeper
 
 volumes:
+  kratos-postgres:
   kratos-sqlite:

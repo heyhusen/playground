@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { NotFoundException } from '../exceptions/not-found.exception';
 import type { FileService } from '../interfaces/file.interface';
 import type {
@@ -29,31 +28,31 @@ describe('updateUser', () => {
 
 	beforeEach(() => {
 		userRepository = {
-			create: vi.fn(),
-			findAll: vi.fn(),
-			findOne: vi.fn(),
-			findOneByEmail: vi.fn(),
-			update: vi.fn((id: string, data: Partial<UserTableInput>) => {
+			create: jest.fn(),
+			findAll: jest.fn(),
+			findOne: jest.fn(),
+			findOneByEmail: jest.fn(),
+			update: jest.fn((id: string, data: Partial<UserTableInput>) => {
 				if (id !== user.id) {
 					return Promise.resolve<null>(null);
 				}
 
 				return Promise.resolve<UserTable>({ ...user, ...data });
 			}),
-			remove: vi.fn(),
-			truncate: vi.fn(),
+			remove: jest.fn(),
+			truncate: jest.fn(),
 		};
 
 		fileService = {
-			upload: vi.fn(),
-			getUrl: vi.fn().mockImplementation(() => {
+			upload: jest.fn(),
+			getUrl: jest.fn().mockImplementation((_path: string) => {
 				if (!user.photo) {
-					return null;
+					return Promise.resolve(null);
 				}
 
 				return Promise.resolve('avatar.png');
 			}),
-			remove: vi.fn(),
+			remove: jest.fn(),
 		};
 	});
 
@@ -71,7 +70,11 @@ describe('updateUser', () => {
 
 		const data = await updateUser('id', dto, userRepository, fileService);
 
-		expect(data).toEqual<UserResult>({ ...user, ...dto, avatar: null });
+		expect<UserResult>(data).toEqual({
+			...user,
+			...dto,
+			avatar: null,
+		});
 	});
 
 	test("should only update user's nickname", async () => {
@@ -81,7 +84,11 @@ describe('updateUser', () => {
 
 		const data = await updateUser('id', dto, userRepository, fileService);
 
-		expect(data).toEqual<UserResult>({ ...user, ...dto, avatar: null });
+		expect<UserResult>(data).toEqual({
+			...user,
+			...dto,
+			avatar: null,
+		});
 	});
 
 	test("should only update user's email", async () => {
@@ -91,7 +98,11 @@ describe('updateUser', () => {
 
 		const data = await updateUser('id', dto, userRepository, fileService);
 
-		expect(data).toEqual<UserResult>({ ...user, ...dto, avatar: null });
+		expect<UserResult>(data).toEqual({
+			...user,
+			...dto,
+			avatar: null,
+		});
 	});
 
 	test("should only update existing user's avatar", async () => {
@@ -103,7 +114,7 @@ describe('updateUser', () => {
 
 		const data = await updateUser('id', dto, userRepository, fileService);
 
-		expect(data).toEqual<UserResult>({
+		expect<UserResult>(data).toEqual({
 			...user,
 			photo: 'photo.png',
 			avatar: 'avatar.png',

@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { StatusCodes } from 'http-status-codes';
+import { mockedUpdateUser } from '../../../__tests__/mocks/user.mock';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type { FileService } from '../../core/interfaces/file.interface';
 import type {
@@ -6,27 +7,24 @@ import type {
 	UserRepository,
 	UserTable,
 } from '../../core/interfaces/user.interface';
-import { updateUser } from '../../core/use-cases/update-user.use-case';
 import type { HttpRequest } from '../interfaces/http.interface';
 import type { UserRequestParams } from '../interfaces/user.interface';
 import { updateUserController } from './update-user.controller';
 
-vi.mock('../../core/use-cases/update-user.use-case');
-
 describe('updateUserController', () => {
 	const userRepository: UserRepository = {
-		create: vi.fn(),
-		findAll: vi.fn(),
-		findOne: vi.fn(),
-		findOneByEmail: vi.fn(),
-		update: vi.fn(),
-		remove: vi.fn(),
-		truncate: vi.fn(),
+		create: jest.fn(),
+		findAll: jest.fn(),
+		findOne: jest.fn(),
+		findOneByEmail: jest.fn(),
+		update: jest.fn(),
+		remove: jest.fn(),
+		truncate: jest.fn(),
 	};
 	const fileService: FileService = {
-		upload: vi.fn(),
-		getUrl: vi.fn(),
-		remove: vi.fn(),
+		upload: jest.fn(),
+		getUrl: jest.fn(),
+		remove: jest.fn(),
 	};
 
 	let dto: UpdateUserDto = {};
@@ -50,8 +48,6 @@ describe('updateUserController', () => {
 	};
 
 	const controller = updateUserController(userRepository, fileService);
-
-	const mockedUpdateUser = vi.mocked(updateUser, true);
 
 	beforeEach(() => {
 		mockedUpdateUser.mockImplementation(() => {
@@ -78,11 +74,10 @@ describe('updateUserController', () => {
 		const data = await controller(request);
 
 		expect(data).toEqual({
-			status: 200,
+			status: StatusCodes.OK,
 			data: {
 				...user,
 				avatar: null,
-				type: 'users',
 			},
 		});
 	});
@@ -96,13 +91,12 @@ describe('updateUserController', () => {
 		const data = await controller(request);
 
 		expect(data).toEqual({
-			status: 200,
+			status: StatusCodes.OK,
 			data: {
 				...user,
 				first_name: 'John',
 				last_name: 'Doe',
 				avatar: null,
-				type: 'users',
 			},
 		});
 	});
@@ -112,12 +106,11 @@ describe('updateUserController', () => {
 		const data = await controller(request);
 
 		expect(data).toEqual({
-			status: 200,
+			status: StatusCodes.OK,
 			data: {
 				...user,
 				email: 'janedoe@example.com',
 				avatar: null,
-				type: 'users',
 			},
 		});
 	});
@@ -129,11 +122,10 @@ describe('updateUserController', () => {
 		const data = await controller(request);
 
 		expect(data).toEqual({
-			status: 200,
+			status: StatusCodes.OK,
 			data: {
 				...user,
 				avatar: 'avatar.png',
-				type: 'users',
 			},
 		});
 	});

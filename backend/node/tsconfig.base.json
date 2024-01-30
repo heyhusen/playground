@@ -1,5 +1,5 @@
 {
-	"extends": ["@tsconfig/strictest/tsconfig", "@tsconfig/node18/tsconfig"],
+	"extends": ["@tsconfig/strictest/tsconfig", "@tsconfig/node20/tsconfig"],
 	"include": ["./src/**/*.ts"],
 	"compilerOptions": {
 		"baseUrl": "./",
@@ -9,13 +9,6 @@
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"noPropertyAccessFromIndexSignature": false,
-		"removeComments": true,
-		"typeRoots": [
-			"./src/infrastructure/server/express/types",
-			"./src/infrastructure/server/express/node_modules/@types",
-			"./src/infrastructure/server/fastify/types",
-			"./src/infrastructure/server/fastify/node_modules/@types",
-			"./node_modules/@types"
-		]
+		"removeComments": true
 	}
 }

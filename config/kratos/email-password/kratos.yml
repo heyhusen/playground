@@ -68,6 +68,14 @@ selfservice:
           hooks:
             - hook: session
             - hook: show_verification_ui
+            - hook: web_hook
+              config:
+                url: http://backend:3000/user
+                method: POST
+                body: file:///etc/config/kratos/hooks/after-registration.jsonnet
+                response:
+                  ignore: true
+                  parse: false
 
 log:
   level: debug

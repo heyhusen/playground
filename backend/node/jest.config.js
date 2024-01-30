@@ -1,14 +1,14 @@
-import type { InitialOptionsTsJest } from 'ts-jest';
-
-const config: InitialOptionsTsJest = {
+/** @type {import('jest').Config} */
+const config = {
 	clearMocks: true,
 	collectCoverage: true,
 	coverageDirectory: 'coverage',
 	coverageProvider: 'v8',
 	// globalTeardown: './__tests__/teardown.ts',
-	preset: 'ts-jest',
 	testMatch: ['**/src/**/*.spec.ts', '**/__tests__/**/*.test.ts'],
+	transform: {
+		'^.+\\.(t|j)sx?$': '@swc/jest',
+	},
 };
 
-// eslint-disable-next-line import/no-default-export
-export default config;
+module.exports = config;

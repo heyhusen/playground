@@ -6,7 +6,11 @@ import { router } from './routes';
 const app = express();
 
 // JSON parser
-app.use(json());
+app.use(
+	json({
+		type: ['application/vnd.api+json', 'application/json'],
+	})
+);
 
 // Http logger
 app.use(httpLogger());

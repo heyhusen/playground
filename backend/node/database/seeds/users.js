@@ -1,5 +1,4 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { hash } = require('argon2');
 
 /**
  * @param { import("knex").Knex } knex

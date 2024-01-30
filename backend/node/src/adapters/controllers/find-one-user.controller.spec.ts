@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { StatusCodes } from 'http-status-codes';
+import { mockedFindOneUser } from '../../../__tests__/mocks/user.mock';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type { FileService } from '../../core/interfaces/file.interface';
 import type {
@@ -6,31 +7,25 @@ import type {
 	UserResult,
 	UserTable,
 } from '../../core/interfaces/user.interface';
-import { findOneUser } from '../../core/use-cases/find-one-user.use-case';
 import type { ResponseModel } from '../interfaces/common.interface';
 import type { HttpRequestParams } from '../interfaces/http.interface';
-import type {
-	UserRequestParams,
-	UserResponse,
-} from '../interfaces/user.interface';
+import type { UserRequestParams } from '../interfaces/user.interface';
 import { findOneUserController } from './find-one-user.controller';
-
-vi.mock('../../core/use-cases/find-one-user.use-case');
 
 describe('findOneUserController', () => {
 	const userRepository: UserRepository = {
-		create: vi.fn(),
-		findAll: vi.fn(),
-		findOne: vi.fn(),
-		findOneByEmail: vi.fn(),
-		update: vi.fn(),
-		remove: vi.fn(),
-		truncate: vi.fn(),
+		create: jest.fn(),
+		findAll: jest.fn(),
+		findOne: jest.fn(),
+		findOneByEmail: jest.fn(),
+		update: jest.fn(),
+		remove: jest.fn(),
+		truncate: jest.fn(),
 	};
 	const fileService: FileService = {
-		upload: vi.fn(),
-		getUrl: vi.fn(),
-		remove: vi.fn(),
+		upload: jest.fn(),
+		getUrl: jest.fn(),
+		remove: jest.fn(),
 	};
 
 	const controller = findOneUserController(userRepository, fileService);
@@ -46,8 +41,6 @@ describe('findOneUserController', () => {
 		created_at: '2022-06-11 01:55:13',
 		updated_at: '2022-06-11 01:55:13',
 	};
-
-	const mockedFindOneUser = vi.mocked(findOneUser, true);
 
 	beforeEach(() => {
 		mockedFindOneUser.mockImplementation(() => {
@@ -65,31 +58,37 @@ describe('findOneUserController', () => {
 	});
 
 	test('should return an user', async () => {
-		request = { ...request, params: { id: 'id' } };
+		request = {
+			...request,
+			params: {
+				id: 'id',
+			},
+		};
 
 		const data = await controller(request);
 
-		expect(data).toEqual<ResponseModel<UserResponse>>({
-			status: 200,
+		expect<ResponseModel<UserResult>>(data).toEqual({
+			status: StatusCodes.OK,
 			data: {
 				...user,
 				avatar: null,
-				type: 'users',
 			},
 		});
 	});
 
 	test('should return an user with avatar', async () => {
-		user = { ...user, photo: 'photo.png' };
+		user = {
+			...user,
+			photo: 'photo.png',
+		};
 
 		const data = await controller(request);
 
-		expect(data).toEqual<ResponseModel<UserResponse>>({
-			status: 200,
+		expect<ResponseModel<UserResult>>(data).toEqual({
+			status: StatusCodes.OK,
 			data: {
 				...user,
 				avatar: 'avatar.png',
-				type: 'users',
 			},
 		});
 	});

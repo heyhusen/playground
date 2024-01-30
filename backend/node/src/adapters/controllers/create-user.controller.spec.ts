@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { StatusCodes } from 'http-status-codes';
+import { mockedCreateUser } from '../../../__tests__/mocks/user.mock';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type {
 	CreateUserDto,
@@ -6,23 +7,19 @@ import type {
 	UserResult,
 	UserTable,
 } from '../../core/interfaces/user.interface';
-import { createUser } from '../../core/use-cases/create-user.use-case';
 import type { ResponseModel } from '../interfaces/common.interface';
 import type { HttpRequestBody } from '../interfaces/http.interface';
-import type { UserResponse } from '../interfaces/user.interface';
 import { createUserController } from './create-user.controller';
-
-vi.mock('../../core/use-cases/create-user.use-case');
 
 describe('createUserController', () => {
 	const userRepository: UserRepository = {
-		create: vi.fn(),
-		findAll: vi.fn(),
-		findOne: vi.fn(),
-		findOneByEmail: vi.fn(),
-		update: vi.fn(),
-		remove: vi.fn(),
-		truncate: vi.fn(),
+		create: jest.fn(),
+		findAll: jest.fn(),
+		findOne: jest.fn(),
+		findOneByEmail: jest.fn(),
+		update: jest.fn(),
+		remove: jest.fn(),
+		truncate: jest.fn(),
 	};
 
 	const dto: CreateUserDto = {
@@ -45,8 +42,6 @@ describe('createUserController', () => {
 		updated_at: '2022-06-11 01:55:13',
 	};
 
-	const mockedCreateUser = vi.mocked(createUser, true);
-
 	beforeEach(() => {
 		mockedCreateUser.mockImplementation(() => {
 			return Promise.resolve<UserResult>({
@@ -67,17 +62,19 @@ describe('createUserController', () => {
 	});
 
 	test('should create an user', async () => {
-		request = { ...request, body: dto };
+		request = {
+			...request,
+			body: dto,
+		};
 
 		const data = await controller(request);
 
-		expect(data).toEqual<ResponseModel<UserResponse>>({
-			status: 201,
+		expect<ResponseModel<UserResult>>(data).toEqual({
+			status: StatusCodes.CREATED,
 			data: {
 				...user,
 				photo: null,
 				avatar: null,
-				type: 'users',
 			},
 		});
 	});

@@ -50,11 +50,7 @@ export interface JsonApiDataObject<Attributes = Record<string, unknown>> {
 
 export interface JsonApiData<Attributes = Record<string, unknown>>
 	extends JsonApi {
-	data:
-		| JsonApiDataObject<Attributes>
-		| JsonApiDataObject<Attributes>[]
-		| []
-		| null;
+	data: JsonApiDataObject<Attributes>;
 }
 
 export interface JsonApiErrorObject {

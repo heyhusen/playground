@@ -16,7 +16,7 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: 0.2.0
 paths:
-  /user:
+  /users:
     post:
       tags:
         - "user"
@@ -88,7 +88,7 @@ paths:
                   - example:
                       links:
                         self: "/user"
-  /user/{id}:
+  /users/{id}:
     get:
       tags:
         - "user"

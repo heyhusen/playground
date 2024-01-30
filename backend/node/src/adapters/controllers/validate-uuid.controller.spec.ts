@@ -1,4 +1,3 @@
-import { describe, expect, test } from 'vitest';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type { RequestIdParams } from '../interfaces/common.interface';
 import type { HttpRequestParams } from '../interfaces/http.interface';
@@ -14,7 +13,12 @@ describe('validateUuidController', () => {
 	});
 
 	test('should throw error when id is invalid uuid', () => {
-		request = { ...request, params: { id: 'id' } };
+		request = {
+			...request,
+			params: {
+				id: 'id',
+			},
+		};
 
 		expect(() => {
 			validateUuidController(request);
@@ -26,7 +30,9 @@ describe('validateUuidController', () => {
 	test('should return true when id is valid uuid', () => {
 		request = {
 			...request,
-			params: { id: 'a2e4b207-be4d-45ab-81a1-bcdf565cc9be' },
+			params: {
+				id: 'a2e4b207-be4d-45ab-81a1-bcdf565cc9be',
+			},
 		};
 
 		const data = validateUuidController(request);

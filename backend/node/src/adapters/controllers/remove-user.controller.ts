@@ -1,3 +1,4 @@
+import { StatusCodes } from 'http-status-codes';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type { FileService } from '../../core/interfaces/file.interface';
 import type { UserRepository } from '../../core/interfaces/user.interface';
@@ -21,6 +22,8 @@ export function removeUserController(
 
 		await removeUser(id, userRepository, fileService);
 
-		return { status: 204 };
+		return {
+			status: StatusCodes.NO_CONTENT,
+		};
 	};
 }

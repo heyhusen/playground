@@ -1,7 +1,8 @@
+import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { HttpException } from './http.exception';
 
 export class NotFoundException extends HttpException {
 	constructor(message: string) {
-		super(404, message, 'Not Found');
+		super(StatusCodes.NOT_FOUND, message, ReasonPhrases.NOT_FOUND);
 	}
 }

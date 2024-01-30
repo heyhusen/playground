@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type {
 	CreateUserDto,
 	UserRepository,
@@ -23,30 +22,29 @@ describe('createUser', () => {
 		last_name: dto.last_name,
 		nickname: null,
 		email: dto.email,
-		email_verified_at: null,
 		created_at: '2022-06-11 01:55:13',
 		updated_at: '2022-06-11 01:55:13',
 	};
 
 	beforeEach(() => {
 		userRepository = {
-			create: vi.fn((data: UserTableInput) => {
+			create: jest.fn((data: UserTableInput) => {
 				return Promise.resolve<UserTable>({
 					...user,
 					...data,
 				});
 			}),
-			findAll: vi.fn(),
-			findOne: vi.fn(),
-			findOneByEmail: vi.fn(),
-			update: vi.fn(),
-			remove: vi.fn(),
-			truncate: vi.fn(),
+			findAll: jest.fn(),
+			findOne: jest.fn(),
+			findOneByEmail: jest.fn(),
+			update: jest.fn(),
+			remove: jest.fn(),
+			truncate: jest.fn(),
 		};
 	});
 
 	test('should throw error when user is not saved', async () => {
-		userRepository.create = vi.fn().mockReturnValue(Promise.resolve(null));
+		userRepository.create = jest.fn().mockReturnValue(Promise.resolve(null));
 
 		await expect(createUser(dto, userRepository)).rejects.toThrow(
 			new Error('Something went wrong.')
@@ -57,7 +55,7 @@ describe('createUser', () => {
 		const data = await createUser(dto, userRepository);
 
 		expect(userRepository.create).toBeCalledTimes(1);
-		expect(data).toEqual<UserResult>({
+		expect<UserResult>(data).toEqual({
 			...user,
 			avatar: null,
 		});

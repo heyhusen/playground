@@ -1,6 +1,7 @@
 import type { ErrorObject } from 'ajv';
 import type { NextFunction, Request, Response } from 'express';
 import { ValidationError } from 'express-json-validator-middleware';
+import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import type {
 	JsonApiError,
 	JsonApiErrorObject,
@@ -19,8 +20,8 @@ function createErrorArray(arr: ErrorObject[]): JsonApiErrorObject[] {
 		.filter((item) => item.keyword !== 'if')
 		.map<JsonApiErrorObject>((item) => {
 			return {
-				status: 400,
-				title: 'Bad Request',
+				status: StatusCodes.BAD_REQUEST,
+				title: ReasonPhrases.BAD_REQUEST,
 				detail: item.message as string,
 			};
 		});
@@ -33,7 +34,7 @@ export function errorHandler() {
 
 		let response: JsonApiError = {
 			jsonapi: {
-				version: '1.0',
+				version: '1.1',
 			},
 			links: {
 				self: req.path,

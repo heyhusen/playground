@@ -10,7 +10,9 @@ export function validateUuid() {
 		next: NextFunction
 	) => {
 		const httpRequest: HttpRequestParams<RequestIdParams> = {
-			params: { id: req.params.id },
+			params: {
+				id: req.params.id,
+			},
 		};
 
 		validateUuidController(httpRequest);

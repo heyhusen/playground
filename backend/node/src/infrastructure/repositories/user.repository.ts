@@ -41,7 +41,7 @@ export const userRepository: UserRepository = {
 			'updated_at'
 		);
 
-		const result: UserTable[] = records;
+		const result = records;
 
 		return result;
 	},
@@ -64,14 +64,20 @@ export const userRepository: UserRepository = {
 			return null;
 		}
 
-		const result: UserTable = record;
+		const result = record;
 
 		return result;
 	},
 
-	findOneByEmail: async (email: string) => {
+	findOneByEmail: async (email: string, id?: string) => {
 		const record = await db<UserTable>('users')
 			.where('email', '=', email)
+			.modify<UserTable, UserTable>((query) => {
+				if (id) {
+					// eslint-disable-next-line @typescript-eslint/no-floating-promises
+					query.andWhereNot('id', '=', id);
+				}
+			})
 			.first(
 				'id',
 				'first_name',

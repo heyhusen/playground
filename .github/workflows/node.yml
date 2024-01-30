@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: ['18', '20', '21']
+        node: ['20', '21']
     env:
       FOLDER: backend/node
 
@@ -46,7 +46,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd ${{ env.FOLDER }}
-          pnpm i
+          pnpm install
 
       - name: Run linter
         run: |
@@ -57,6 +57,11 @@ jobs:
         run: |
           cd ${{ env.FOLDER }}
           pnpm prettier
+
+      - name: Run typecheck
+        run: |
+          cd ${{ env.FOLDER }}
+          pnpm typecheck
 
       - name: Run build
         run: |

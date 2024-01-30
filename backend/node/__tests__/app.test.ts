@@ -1,5 +1,4 @@
-import { afterAll, describe, expect, test } from 'vitest';
-import type { JsonApiError } from '../src/adapters/interfaces/http.interface';
+import { StatusCodes } from 'http-status-codes';
 import { request } from './setup';
 import { close } from './teardown';
 
@@ -13,8 +12,8 @@ describe('GET /', () => {
 			.get('/')
 			.set('Accept', 'application/vnd.api+json');
 
-		expect(response.status).toEqual<number>(200);
-		expect(response.body).toEqual<string>('Hello world!');
+		expect(response.status).toEqual(StatusCodes.OK);
+		expect(response.body).toEqual('Hello world!');
 	});
 });
 
@@ -24,15 +23,17 @@ describe('GET /404', () => {
 			.get('/404')
 			.set('Accept', 'application/vnd.api+json');
 
-		expect(response.status).toEqual<number>(404);
-		expect(response.body).toEqual<JsonApiError>({
-			jsonapi: { version: '1.0' },
+		expect(response.status).toEqual(StatusCodes.NOT_FOUND);
+		expect(response.body).toEqual({
+			jsonapi: {
+				version: '1.1',
+			},
 			links: {
 				self: '/404',
 			},
 			errors: [
 				{
-					status: 404,
+					status: StatusCodes.NOT_FOUND,
 					title: 'Not Found',
 					detail: 'Resource not found.',
 				},

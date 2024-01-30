@@ -6,6 +6,6 @@ const router = Router();
 
 router.use('/', appRouter);
 
-router.use('/user', userRouter);
+router.use('/users', userRouter);
 
 export { router };

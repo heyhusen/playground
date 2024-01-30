@@ -1,4 +1,5 @@
-import { beforeAll, describe, expect, test, vi } from 'vitest';
+import { StatusCodes } from 'http-status-codes';
+import { mockedRemoveUser } from '../../../__tests__/mocks/user.mock';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type { FileService } from '../../core/interfaces/file.interface';
 import type { UserRepository } from '../../core/interfaces/user.interface';
@@ -8,29 +9,25 @@ import type { HttpRequestParams } from '../interfaces/http.interface';
 import type { UserRequestParams } from '../interfaces/user.interface';
 import { removeUserController } from './remove-user.controller';
 
-vi.mock('../../core/use-cases/remove-user.use-case');
-
 describe('removeUserController', () => {
 	const userRepository: UserRepository = {
-		create: vi.fn(),
-		findAll: vi.fn(),
-		findOne: vi.fn(),
-		findOneByEmail: vi.fn(),
-		update: vi.fn(),
-		remove: vi.fn(),
-		truncate: vi.fn(),
+		create: jest.fn(),
+		findAll: jest.fn(),
+		findOne: jest.fn(),
+		findOneByEmail: jest.fn(),
+		update: jest.fn(),
+		remove: jest.fn(),
+		truncate: jest.fn(),
 	};
 	const fileService: FileService = {
-		upload: vi.fn(),
-		getUrl: vi.fn(),
-		remove: vi.fn(),
+		upload: jest.fn(),
+		getUrl: jest.fn(),
+		remove: jest.fn(),
 	};
 
 	let request: HttpRequestParams<UserRequestParams> = {};
 
 	const controller = removeUserController(userRepository, fileService);
-
-	const mockedRemoveUser = vi.mocked(removeUser, true);
 
 	beforeAll(() => {
 		mockedRemoveUser.mockReturnValue(Promise.resolve());
@@ -43,12 +40,21 @@ describe('removeUserController', () => {
 	});
 
 	test('should remove an user', async () => {
-		request = { ...request, params: { id: 'id' } };
+		mockedRemoveUser.mockReturnValue(Promise.resolve());
+
+		request = {
+			...request,
+			params: {
+				id: 'id',
+			},
+		};
 
 		const data = await controller(request);
 
 		expect(removeUser).toBeCalledTimes(1);
 		expect(removeUser).toBeCalledWith('id', userRepository, fileService);
-		expect(data).toEqual<ResponseModel>({ status: 204 });
+		expect<ResponseModel>(data).toEqual({
+			status: StatusCodes.NO_CONTENT,
+		});
 	});
 });

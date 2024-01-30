@@ -15,4 +15,4 @@ export interface UserResponse extends UserResult {
 	type: 'users';
 }
 
-export type UserData = Omit<UserResponse, 'id' | 'type'>;
+export type UserData = Omit<UserResponse, 'type'>;
