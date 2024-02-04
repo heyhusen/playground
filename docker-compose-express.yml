@@ -10,6 +10,8 @@ services:
       dockerfile: ./express.Dockerfile
     volumes:
       - ./backend/node:/app/node
+    environment:
+      DB_HOST: postgres
     command: pnpm migrate:up
     restart: on-failure
     networks:
@@ -24,6 +26,8 @@ services:
       dockerfile: ./express.Dockerfile
     volumes:
       - ./backend/node:/app/node
+    environment:
+      DB_HOST: postgres
     command: pnpm seed:run
     restart: on-failure
     networks:
@@ -41,6 +45,8 @@ services:
       - 3000:3000
     volumes:
       - ./backend/node:/app/node
+    environment:
+      DB_HOST: postgres
     restart: on-failure
     networks:
       - playground

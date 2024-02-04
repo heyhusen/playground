@@ -1,9 +1,20 @@
 import express, { json } from 'express';
+import { queryParser } from 'express-query-parser';
 import { errorHandler, notFoundHandler } from './middlewares/error';
 import { errorLogger, httpLogger } from './middlewares/logger';
 import { router } from './routes';
 
 const app = express();
+
+// Query parser
+app.use(
+	queryParser({
+		parseNull: true,
+		parseUndefined: true,
+		parseBoolean: true,
+		parseNumber: true,
+	})
+);
 
 // JSON parser
 app.use(

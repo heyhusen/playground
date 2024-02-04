@@ -1,4 +1,42 @@
 import type { AllowedSchema } from 'express-json-validator-middleware';
+import { getErrorMessage } from '../../../../core/entities/validation.entity';
+
+export const findAllUserSchema: AllowedSchema = {
+	type: 'object',
+	properties: {
+		page: {
+			type: 'object',
+			properties: {
+				number: {
+					type: 'integer',
+					errorMessage: {
+						type: getErrorMessage('page.number.type'),
+					},
+				},
+				size: {
+					type: 'integer',
+					errorMessage: {
+						type: getErrorMessage('page.size.type'),
+					},
+				},
+			},
+			required: ['number', 'size'],
+			errorMessage: {
+				required: {
+					number: getErrorMessage('page.number.required'),
+					size: getErrorMessage('page.size.required'),
+				},
+				type: getErrorMessage('page.type'),
+			},
+		},
+	},
+	required: ['page'],
+	errorMessage: {
+		required: {
+			page: getErrorMessage('page.required'),
+		},
+	},
+};
 
 export const createUserSchema: AllowedSchema = {
 	type: 'object',
@@ -9,14 +47,14 @@ export const createUserSchema: AllowedSchema = {
 				version: {
 					type: 'string',
 					errorMessage: {
-						type: 'The JSON:API version must be a string.',
+						type: getErrorMessage('jsonapi.version.type'),
 					},
 				},
 			},
 			required: ['version'],
 			errorMessage: {
 				required: {
-					version: 'The JSON:API version is required.',
+					version: getErrorMessage('jsonapi.version.required'),
 				},
 			},
 		},
@@ -27,14 +65,14 @@ export const createUserSchema: AllowedSchema = {
 					type: 'string',
 					format: 'uuid',
 					errorMessage: {
-						format: 'The data.id property must be a UUID (version 4).',
+						format: getErrorMessage('data.id.format'),
 					},
 				},
 				type: {
 					type: 'string',
 					pattern: 'users',
 					errorMessage: {
-						pattern: `The data.type property must be 'users'`,
+						pattern: getErrorMessage('data.type.pattern'),
 					},
 				},
 				attributes: {
@@ -53,22 +91,18 @@ export const createUserSchema: AllowedSchema = {
 							minLength: 1,
 							format: 'email',
 							errorMessage: {
-								minLength: 'The data.attributes.email property is required.',
-								format:
-									'The data.attributes.email property must be a valid email address.',
+								minLength: getErrorMessage('data.attributes.email.minLength'),
+								format: getErrorMessage('data.attributes.email.format'),
 							},
 						},
 					},
 					required: ['first_name', 'email'],
 					errorMessage: {
 						required: {
-							first_name:
-								'The data.attributes.first_name property is required.',
-							email: 'The data.attributes.email property is required.',
-						},
-						properties: {
-							first_name:
-								'The data.attributes.first_name property is required.',
+							first_name: getErrorMessage(
+								'data.attributes.first_name.required'
+							),
+							email: getErrorMessage('data.attributes.email.required'),
 						},
 					},
 				},
@@ -76,7 +110,7 @@ export const createUserSchema: AllowedSchema = {
 			required: ['type'],
 			errorMessage: {
 				required: {
-					type: 'The data.type property is required.',
+					type: getErrorMessage('data.type.required'),
 				},
 			},
 		},
@@ -86,14 +120,14 @@ export const createUserSchema: AllowedSchema = {
 				self: {
 					type: 'string',
 					errorMessage: {
-						type: 'The links.self property must be a string.',
+						type: getErrorMessage('links.self.type'),
 					},
 				},
 			},
 			required: ['self'],
 			errorMessage: {
 				required: {
-					self: 'The links.self property is required.',
+					self: getErrorMessage('links.self.required'),
 				},
 			},
 		},
@@ -101,7 +135,7 @@ export const createUserSchema: AllowedSchema = {
 	required: ['data'],
 	errorMessage: {
 		required: {
-			data: 'The data property is required.',
+			data: getErrorMessage('data.required'),
 		},
 	},
 };
@@ -115,14 +149,14 @@ export const updateUserSchema: AllowedSchema = {
 				version: {
 					type: 'string',
 					errorMessage: {
-						type: 'The JSON:API version must be a string.',
+						type: getErrorMessage('jsonapi.version.type'),
 					},
 				},
 			},
 			required: ['version'],
 			errorMessage: {
 				required: {
-					version: 'The JSON:API version is required.',
+					version: getErrorMessage('jsonapi.version.required'),
 				},
 			},
 		},
@@ -133,14 +167,14 @@ export const updateUserSchema: AllowedSchema = {
 					type: 'string',
 					format: 'uuid',
 					errorMessage: {
-						format: 'The data.id property must be a UUID (version 4).',
+						format: getErrorMessage('data.id.format'),
 					},
 				},
 				type: {
 					type: 'string',
 					pattern: 'users',
 					errorMessage: {
-						pattern: `The data.type property must be 'users'`,
+						pattern: getErrorMessage('data.type.pattern'),
 					},
 				},
 				attributes: {
@@ -150,9 +184,10 @@ export const updateUserSchema: AllowedSchema = {
 							type: 'string',
 							minLength: 1,
 							errorMessage: {
-								type: 'The data.attributes.first_name must be a string.',
-								minLength:
-									'The data.attributes.first_name field must have a value.',
+								type: getErrorMessage('data.attributes.first_name.type'),
+								minLength: getErrorMessage(
+									'data.attributes.first_name.minLength'
+								),
 							},
 						},
 						last_name: {
@@ -167,9 +202,8 @@ export const updateUserSchema: AllowedSchema = {
 							type: 'string',
 							format: 'email',
 							errorMessage: {
-								type: 'The data.attributes.email must be a string.',
-								format:
-									'The data.attributes.email must be a valid email address.',
+								type: getErrorMessage('data.attributes.email.type'),
+								format: getErrorMessage('data.attributes.email.format'),
 							},
 						},
 					},
@@ -178,7 +212,7 @@ export const updateUserSchema: AllowedSchema = {
 			required: ['type'],
 			errorMessage: {
 				required: {
-					type: 'The data.type property is required.',
+					type: getErrorMessage('data.type.required'),
 				},
 			},
 		},
@@ -188,14 +222,14 @@ export const updateUserSchema: AllowedSchema = {
 				self: {
 					type: 'string',
 					errorMessage: {
-						type: 'The links.self property must be a string.',
+						type: getErrorMessage('links.self.type'),
 					},
 				},
 			},
 			required: ['self'],
 			errorMessage: {
 				required: {
-					self: 'The links.self property is required.',
+					self: getErrorMessage('links.self.required'),
 				},
 			},
 		},
@@ -204,7 +238,7 @@ export const updateUserSchema: AllowedSchema = {
 	dependencies: {},
 	errorMessage: {
 		required: {
-			data: 'The data property is required.',
+			data: getErrorMessage('data.required'),
 		},
 		dependencies: {},
 	},

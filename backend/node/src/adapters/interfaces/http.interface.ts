@@ -66,3 +66,10 @@ export interface JsonApiErrorObject {
 export interface JsonApiError extends JsonApi {
 	errors: JsonApiErrorObject[];
 }
+
+export interface JsonApiPagination {
+	page: {
+		number: number;
+		size: number;
+	};
+}

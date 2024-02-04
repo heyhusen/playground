@@ -1,4 +1,8 @@
 import type { FileService } from '../interfaces/file.interface';
+import {
+	PaginationParams,
+	PaginationResult,
+} from '../interfaces/http.interface';
 import type { UserRepository, UserResult } from '../interfaces/user.interface';
 
 /**
@@ -10,11 +14,12 @@ import type { UserRepository, UserResult } from '../interfaces/user.interface';
  */
 export async function findAllUsers(
 	userRepository: UserRepository,
-	fileService: FileService
-): Promise<UserResult[]> {
-	const records = await userRepository.findAll();
+	fileService: FileService,
+	params: PaginationParams
+): Promise<PaginationResult<UserResult>> {
+	const { data: records, meta } = await userRepository.findAll(params);
 
-	const result = await Promise.all(
+	const data = await Promise.all(
 		records.map(async (obj) => {
 			let avatar: string | null = null;
 			if (obj.photo) {
@@ -29,8 +34,14 @@ export async function findAllUsers(
 	);
 
 	if (!records.length) {
-		return [];
+		return {
+			data: [],
+			meta,
+		};
 	}
 
-	return result;
+	return {
+		data,
+		meta,
+	};
 }

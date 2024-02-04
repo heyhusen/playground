@@ -21,12 +21,20 @@ ajvErrors(ajv);
 export function validate(schema: AllowedSchema, key: OptionKey = 'body') {
 	switch (key) {
 		case 'params':
-			return validator.validate({ params: schema });
+			return validator.validate({
+				params: schema,
+			});
 		case 'query':
-			return validator.validate({ query: schema });
+			return validator.validate({
+				query: schema,
+			});
 		case 'body':
-			return validator.validate({ body: schema });
+			return validator.validate({
+				body: schema,
+			});
 		default:
-			return validator.validate({ body: schema });
+			return validator.validate({
+				body: schema,
+			});
 	}
 }

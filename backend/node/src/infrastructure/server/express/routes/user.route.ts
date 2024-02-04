@@ -10,11 +10,19 @@ import {
 import { uniqueUserEmail } from '../middlewares/unique-user-email';
 import { validate } from '../middlewares/validator';
 import { idParamSchema } from '../schemas/common.schema';
-import { createUserSchema, updateUserSchema } from '../schemas/user.schema';
+import {
+	createUserSchema,
+	findAllUserSchema,
+	updateUserSchema,
+} from '../schemas/user.schema';
 
 const userRouter = Router();
 
-userRouter.get('/', asyncHandler(findAll));
+userRouter.get(
+	'/',
+	[validate(findAllUserSchema, 'query')],
+	asyncHandler(findAll)
+);
 
 userRouter.post(
 	'/',

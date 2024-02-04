@@ -7,3 +7,15 @@ export interface HttpError extends Error {
 	statusCode: number;
 	error?: ErrorObject | Record<string, unknown>;
 }
+
+export interface PaginationParams {
+	page: number;
+	limit: number;
+}
+
+export interface PaginationResult<Entity = Record<string, unknown>> {
+	data: Entity[];
+	meta: PaginationParams & {
+		total: number;
+	};
+}

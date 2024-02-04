@@ -1,3 +1,4 @@
+import { getErrorMessage } from '../entities/validation.entity';
 import { NotFoundException } from '../exceptions/not-found.exception';
 import type { FileService } from '../interfaces/file.interface';
 import type { UserRepository, UserTable } from '../interfaces/user.interface';
@@ -26,7 +27,7 @@ describe('removeUser', () => {
 			update: jest.fn(),
 			remove: jest.fn((id: string) => {
 				if (id !== user.id) {
-					return Promise.resolve(null);
+					return Promise.resolve<null>(null);
 				}
 
 				return Promise.resolve<UserTable>(user);
@@ -44,14 +45,16 @@ describe('removeUser', () => {
 	test('should throw error when user not found', async () => {
 		await expect(
 			removeUser('invalid-id', userRepository, fileService)
-		).rejects.toThrow(new NotFoundException('The user is not found.'));
+		).rejects.toThrow(new NotFoundException(getErrorMessage('user.exist')));
 	});
 
 	test('should delete user with no avatar', async () => {
 		await removeUser('id', userRepository, fileService);
 
-		expect(userRepository.remove).toBeCalledTimes(1);
-		expect(fileService.remove).toBeCalledTimes(0);
+		expect<UserRepository['remove']>(
+			userRepository.remove
+		).toHaveBeenCalledTimes(1);
+		expect<FileService['remove']>(fileService.remove).toHaveBeenCalledTimes(0);
 	});
 
 	test('should delete user with an avatar', async () => {
@@ -64,7 +67,9 @@ describe('removeUser', () => {
 
 		await removeUser('id', userRepository, fileService);
 
-		expect(userRepository.remove).toBeCalledTimes(1);
-		expect(fileService.remove).toBeCalledTimes(1);
+		expect<UserRepository['remove']>(
+			userRepository.remove
+		).toHaveBeenCalledTimes(1);
+		expect<FileService['remove']>(fileService.remove).toHaveBeenCalledTimes(1);
 	});
 });

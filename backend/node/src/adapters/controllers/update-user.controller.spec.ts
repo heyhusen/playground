@@ -5,8 +5,10 @@ import type { FileService } from '../../core/interfaces/file.interface';
 import type {
 	UpdateUserDto,
 	UserRepository,
+	UserResult,
 	UserTable,
 } from '../../core/interfaces/user.interface';
+import { ResponseModel } from '../interfaces/common.interface';
 import type { HttpRequest } from '../interfaces/http.interface';
 import type { UserRequestParams } from '../interfaces/user.interface';
 import { updateUserController } from './update-user.controller';
@@ -51,7 +53,7 @@ describe('updateUserController', () => {
 
 	beforeEach(() => {
 		mockedUpdateUser.mockImplementation(() => {
-			return Promise.resolve({
+			return Promise.resolve<UserResult>({
 				...user,
 				first_name: dto.first_name ?? user.first_name,
 				last_name: dto.last_name ?? user.last_name,
@@ -73,7 +75,9 @@ describe('updateUserController', () => {
 
 		const data = await controller(request);
 
-		expect(data).toEqual({
+		expect<ResponseModel<UserResult>>(data).toStrictEqual<
+			ResponseModel<UserResult>
+		>({
 			status: StatusCodes.OK,
 			data: {
 				...user,
@@ -90,7 +94,9 @@ describe('updateUserController', () => {
 
 		const data = await controller(request);
 
-		expect(data).toEqual({
+		expect<ResponseModel<UserResult>>(data).toStrictEqual<
+			ResponseModel<UserResult>
+		>({
 			status: StatusCodes.OK,
 			data: {
 				...user,
@@ -102,10 +108,14 @@ describe('updateUserController', () => {
 	});
 
 	test("should only update user's email", async () => {
-		dto = { email: 'janedoe@example.com' };
+		dto = {
+			email: 'janedoe@example.com',
+		};
 		const data = await controller(request);
 
-		expect(data).toEqual({
+		expect<ResponseModel<UserResult>>(data).toStrictEqual<
+			ResponseModel<UserResult>
+		>({
 			status: StatusCodes.OK,
 			data: {
 				...user,
@@ -117,11 +127,16 @@ describe('updateUserController', () => {
 
 	test("should only update user's avatar", async () => {
 		dto = {};
-		user = { ...user, photo: 'photo.png' };
+		user = {
+			...user,
+			photo: 'photo.png',
+		};
 
 		const data = await controller(request);
 
-		expect(data).toEqual({
+		expect<ResponseModel<UserResult>>(data).toStrictEqual<
+			ResponseModel<UserResult>
+		>({
 			status: StatusCodes.OK,
 			data: {
 				...user,

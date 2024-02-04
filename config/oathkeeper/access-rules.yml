@@ -28,7 +28,7 @@
     preserve_host: true
     url: "http://backend:3000"
   match:
-    url: "http://127.0.0.1:4455/<{user,user/*}>"
+    url: "http://127.0.0.1:4455/<{users,users/*}>"
     methods:
       - GET
       - POST

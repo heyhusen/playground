@@ -13,6 +13,8 @@ describe('validateUuid', () => {
 	});
 
 	test('should return true if uuid is valid', () => {
-		expect(validateUuid(uuid)).toEqual(true);
+		expect<ReturnType<typeof validateUuid>>(
+			validateUuid(uuid)
+		).toStrictEqual<boolean>(true);
 	});
 });

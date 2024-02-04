@@ -1,12 +1,16 @@
 import { StatusCodes } from 'http-status-codes';
 import { mockedFindAllUsers } from '../../../__tests__/mocks/user.mock';
 import type { FileService } from '../../core/interfaces/file.interface';
+import { PaginationResult } from '../../core/interfaces/http.interface';
 import type {
 	UserRepository,
 	UserResult,
 	UserTable,
 } from '../../core/interfaces/user.interface';
-import type { HttpRequest } from '../interfaces/http.interface';
+import type {
+	HttpRequest,
+	JsonApiPagination,
+} from '../interfaces/http.interface';
 import { findAllUsersController } from './find-all-users.controller';
 
 describe('findAllUsersController', () => {
@@ -27,12 +31,25 @@ describe('findAllUsersController', () => {
 
 	const controller = findAllUsersController(userRepository, fileService);
 
-	const request: HttpRequest = {
+	const request: HttpRequest<unknown, JsonApiPagination> = {
 		headers: {},
-		params: {},
+		params: {
+			page: {
+				size: 10,
+				number: 1,
+			},
+		},
 		body: {},
 		user: {},
 		cookies: {},
+	};
+	const result: PaginationResult<UserResult> = {
+		data: [],
+		meta: {
+			page: Number(request.params?.page.number),
+			limit: Number(request.params?.page.size),
+			total: 1,
+		},
 	};
 
 	let user: UserTable = {
@@ -47,28 +64,38 @@ describe('findAllUsersController', () => {
 
 	beforeEach(() => {
 		mockedFindAllUsers.mockImplementation(() => {
-			return Promise.resolve<UserResult[]>([
-				{
-					...user,
-					avatar: user.photo ? 'avatar.png' : null,
-				},
-			]);
+			return Promise.resolve<PaginationResult<UserResult>>({
+				...result,
+				data: [
+					{
+						...user,
+						avatar: user.photo ? 'avatar.png' : null,
+					},
+				],
+			});
 		});
 	});
 
 	test('should return empty array', async () => {
-		mockedFindAllUsers.mockReturnValue(Promise.resolve([]));
+		mockedFindAllUsers.mockReturnValue(
+			Promise.resolve<PaginationResult<UserResult>>(result)
+		);
 
-		const data = await controller(request);
+		const { status, data, meta } = await controller(request);
 
-		expect(data.status).toEqual(StatusCodes.OK);
-		expect(data.data).toEqual([]);
+		expect(status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		expect(data).toStrictEqual([]);
+		expect(meta).toStrictEqual<PaginationResult['meta']>(result.meta);
+		expect(meta?.page).toStrictEqual<number>(result.meta.page);
+		expect(meta?.limit).toStrictEqual<number>(result.meta.limit);
+		expect(meta?.total).toStrictEqual<number>(result.meta.total);
 	});
 
 	test('should return all users', async () => {
-		const data = await controller(request);
-		expect(data.status).toEqual(StatusCodes.OK);
-		expect(data.data).toEqual(
+		const { data, status, meta } = await controller(request);
+
+		expect(status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		expect(data).toStrictEqual(
 			expect.arrayContaining([
 				{
 					...user,
@@ -76,6 +103,10 @@ describe('findAllUsersController', () => {
 				},
 			])
 		);
+		expect(meta).toStrictEqual<PaginationResult['meta']>(result.meta);
+		expect(meta?.page).toStrictEqual<number>(result.meta.page);
+		expect(meta?.limit).toStrictEqual<number>(result.meta.limit);
+		expect(meta?.total).toStrictEqual<number>(result.meta.total);
 	});
 
 	test('should return all users with avatar', async () => {
@@ -84,10 +115,10 @@ describe('findAllUsersController', () => {
 			photo: 'photo.png',
 		};
 
-		const data = await controller(request);
+		const { data, status, meta } = await controller(request);
 
-		expect(data.status).toEqual(StatusCodes.OK);
-		expect(data.data).toEqual(
+		expect(status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		expect(data).toStrictEqual(
 			expect.arrayContaining([
 				{
 					...user,
@@ -95,5 +126,9 @@ describe('findAllUsersController', () => {
 				},
 			])
 		);
+		expect(meta).toStrictEqual<PaginationResult['meta']>(result.meta);
+		expect(meta?.page).toStrictEqual<number>(result.meta.page);
+		expect(meta?.limit).toStrictEqual<number>(result.meta.limit);
+		expect(meta?.total).toStrictEqual<number>(result.meta.total);
 	});
 });

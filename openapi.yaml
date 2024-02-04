@@ -67,6 +67,24 @@ paths:
         - "user"
       summary: Get all users.
       operationId: findAll
+      parameters:
+        - in: query
+          name: page
+          required: true
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              number:
+                type: integer
+                example: 1
+              size:
+                type: integer
+                example: 10
+            required:
+              - number
+              - size
       responses:
         "200":
           description: Return all users.

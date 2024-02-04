@@ -3,7 +3,7 @@ import type { BaseRepository } from './common.interface';
 
 export interface CreateUserDto
 	extends Omit<User, 'last_name' | 'nickname' | 'avatar'> {
-	id?: string;
+	id: string;
 	last_name: string | null;
 	nickname?: string;
 }

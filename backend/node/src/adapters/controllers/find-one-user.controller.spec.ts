@@ -67,7 +67,9 @@ describe('findOneUserController', () => {
 
 		const data = await controller(request);
 
-		expect<ResponseModel<UserResult>>(data).toEqual({
+		expect<ResponseModel<UserResult>>(data).toStrictEqual<
+			ResponseModel<UserResult>
+		>({
 			status: StatusCodes.OK,
 			data: {
 				...user,
@@ -84,7 +86,9 @@ describe('findOneUserController', () => {
 
 		const data = await controller(request);
 
-		expect<ResponseModel<UserResult>>(data).toEqual({
+		expect<ResponseModel<UserResult>>(data).toStrictEqual<
+			ResponseModel<UserResult>
+		>({
 			status: StatusCodes.OK,
 			data: {
 				...user,

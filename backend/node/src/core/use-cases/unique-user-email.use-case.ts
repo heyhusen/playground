@@ -1,3 +1,4 @@
+import { getErrorMessage } from '../entities/validation.entity';
 import { BadRequestException } from '../exceptions/bad-request.exception';
 import type { UserRepository } from '../interfaces/user.interface';
 
@@ -9,7 +10,7 @@ export async function uniqueUserEmail(
 	const isExists = await userRepository.findOneByEmail(email, userId);
 
 	if (isExists) {
-		throw new BadRequestException('The email has already been taken.');
+		throw new BadRequestException(getErrorMessage('email.unique'));
 	}
 
 	return true;

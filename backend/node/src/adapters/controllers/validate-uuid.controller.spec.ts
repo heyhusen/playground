@@ -37,6 +37,6 @@ describe('validateUuidController', () => {
 
 		const data = validateUuidController(request);
 
-		expect(data).toEqual(true);
+		expect<boolean>(data).toStrictEqual<boolean>(true);
 	});
 });

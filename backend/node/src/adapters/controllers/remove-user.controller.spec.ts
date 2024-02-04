@@ -51,9 +51,11 @@ describe('removeUserController', () => {
 
 		const data = await controller(request);
 
-		expect(removeUser).toBeCalledTimes(1);
-		expect(removeUser).toBeCalledWith('id', userRepository, fileService);
-		expect<ResponseModel>(data).toEqual({
+		expect<typeof removeUser>(removeUser).toHaveBeenCalledTimes(1);
+		expect<typeof removeUser>(removeUser).toHaveBeenCalledWith<
+			[string, UserRepository, FileService]
+		>('id', userRepository, fileService);
+		expect<ResponseModel>(data).toStrictEqual({
 			status: StatusCodes.NO_CONTENT,
 		});
 	});

@@ -1,6 +1,13 @@
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
+import { DataDocument } from 'ts-japi';
+import {
+	JsonApiError,
+	JsonApiPagination,
+} from '../src/adapters/interfaces/http.interface';
+import { UserData } from '../src/adapters/interfaces/user.interface';
+import { getErrorMessage } from '../src/core/entities/validation.entity';
 import { setup, testUser, user } from './fixtures/user.fixture';
-import { request } from './setup';
+import { SupertestResponse, request } from './setup';
 import { close } from './teardown';
 
 beforeEach(async () => {
@@ -13,12 +20,14 @@ afterAll(async () => {
 
 describe('POST /users', () => {
 	test('should return error when request body empty', async () => {
-		const response = await request
+		const response: SupertestResponse<JsonApiError> = await request
 			.post('/users')
 			.set('Accept', 'application/vnd.api+json');
 
-		expect(response.status).toEqual(StatusCodes.BAD_REQUEST);
-		expect(response.body).toEqual({
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
 			jsonapi: {
 				version: '1.1',
 			},
@@ -29,14 +38,14 @@ describe('POST /users', () => {
 				{
 					status: StatusCodes.BAD_REQUEST,
 					title: ReasonPhrases.BAD_REQUEST,
-					detail: 'The data property is required.',
+					detail: getErrorMessage('data.required'),
 				},
 			],
 		});
 	});
 
 	test('should return error when email is invalid', async () => {
-		const response = await request
+		const response: SupertestResponse<JsonApiError> = await request
 			.post('/users')
 			.set('Accept', 'application/vnd.api+json')
 			.send({
@@ -50,8 +59,10 @@ describe('POST /users', () => {
 				},
 			});
 
-		expect(response.status).toEqual(StatusCodes.BAD_REQUEST);
-		expect(response.body).toEqual({
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
 			jsonapi: {
 				version: '1.1',
 			},
@@ -61,16 +72,15 @@ describe('POST /users', () => {
 			errors: [
 				{
 					status: StatusCodes.BAD_REQUEST,
-					title: 'Bad Request',
-					detail:
-						'The data.attributes.email property must be a valid email address.',
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.email.format'),
 				},
 			],
 		});
 	});
 
 	test('should return error when email is already taken', async () => {
-		const response = await request
+		const response: SupertestResponse<JsonApiError> = await request
 			.post('/users')
 			.set('Accept', 'application/vnd.api+json')
 			.send({
@@ -84,8 +94,10 @@ describe('POST /users', () => {
 				},
 			});
 
-		expect(response.status).toEqual(StatusCodes.BAD_REQUEST);
-		expect(response.body).toEqual({
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
 			jsonapi: {
 				version: '1.1',
 			},
@@ -95,15 +107,15 @@ describe('POST /users', () => {
 			errors: [
 				{
 					status: StatusCodes.BAD_REQUEST,
-					title: 'Bad Request',
-					detail: 'The email has already been taken.',
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('email.unique'),
 				},
 			],
 		});
 	});
 
 	test('should create an user', async () => {
-		const response = await request
+		const response: SupertestResponse<DataDocument<UserData>> = await request
 			.post('/users')
 			.set('Accept', 'application/vnd.api+json')
 			.send({
@@ -117,67 +129,266 @@ describe('POST /users', () => {
 				},
 			});
 
-		expect(response.status).toEqual(StatusCodes.CREATED);
-		expect(response.body).toHaveProperty('jsonapi.version', '1.1');
-		expect(response.body).toHaveProperty('data.id');
-		expect(response.body).toHaveProperty('data.type', 'users');
-		expect(response.body).toHaveProperty(
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.CREATED
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty(
+			'jsonapi.version',
+			'1.1'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.id'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.type',
+			'users'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
 			'data.attributes.first_name',
 			testUser.first_name
 		);
-		expect(response.body).toHaveProperty(
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
 			'data.attributes.last_name',
-			testUser.last_name
+			String(testUser.last_name)
 		);
-		expect(response.body).toHaveProperty('data.attributes.nickname');
-		expect(response.body).toHaveProperty(
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.nickname'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
 			'data.attributes.email',
 			testUser.email
 		);
-		expect(response.body).toHaveProperty('data.attributes.photo', null);
-		expect(response.body).toHaveProperty('data.attributes.avatar', null);
-		expect(response.body).toHaveProperty('data.attributes.created_at');
-		expect(response.body).toHaveProperty('data.attributes.updated_at');
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.photo',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.avatar',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.created_at'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.updated_at'
+		);
 	});
 });
 
 describe('GET /users', () => {
-	test('should return users', async () => {
-		const response = await request
+	test('should return error when query parameter is empty', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
 			.get('/users')
 			.set('Accept', 'application/vnd.api+json');
 
-		expect(response.status).toEqual(StatusCodes.OK);
-		expect(response.body).toHaveProperty('jsonapi.version', '1.1');
-		expect(response.body).toHaveProperty('data[0].type', 'users');
-		expect(response.body).toHaveProperty(
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			links: {
+				self: '/users',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST,
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('page.required'),
+				},
+			],
+		});
+	});
+
+	test('should return error when page query parameter is empty', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.get('/users')
+			.query({
+				page: null,
+			})
+			.set('Accept', 'application/vnd.api+json');
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			links: {
+				self: '/users',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST,
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('page.type'),
+				},
+			],
+		});
+	});
+
+	test('should return error when page number query parameter is mising', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.get('/users')
+			.query({
+				page: {
+					size: 10,
+				},
+			})
+			.set('Accept', 'application/vnd.api+json');
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			links: {
+				self: '/users',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST,
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('page.number.required'),
+				},
+			],
+		});
+	});
+
+	test('should return error when page size query parameter is mising', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.get('/users')
+			.query({
+				page: {
+					number: 10,
+				},
+			})
+			.set('Accept', 'application/vnd.api+json');
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			links: {
+				self: '/users',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST,
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('page.size.required'),
+				},
+			],
+		});
+	});
+
+	test('should return error when page size & number query parameter is wrong type', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.get('/users')
+			.query({
+				page: {
+					number: null,
+					size: null,
+				},
+			})
+			.set('Accept', 'application/vnd.api+json');
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			links: {
+				self: '/users',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST,
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('page.number.type'),
+				},
+				{
+					status: StatusCodes.BAD_REQUEST,
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('page.size.type'),
+				},
+			],
+		});
+	});
+
+	test('should return users', async () => {
+		const params: JsonApiPagination = {
+			page: {
+				number: 1,
+				size: 10,
+			},
+		};
+
+		const response: SupertestResponse<DataDocument<UserData[]>> = await request
+			.get('/users')
+			.query(params)
+			.set('Accept', 'application/vnd.api+json');
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		expect<DataDocument<UserData[]>>(response.body).toHaveProperty<string>(
+			'jsonapi.version',
+			'1.1'
+		);
+		expect<DataDocument<UserData[]>>(response.body).toHaveProperty<string>(
+			'data[0].type',
+			'users'
+		);
+		expect<DataDocument<UserData[]>>(response.body).toHaveProperty<string>(
 			'data[0].attributes.first_name',
 			user.first_name
 		);
-		expect(response.body).toHaveProperty(
+		expect<DataDocument<UserData[]>>(response.body).toHaveProperty<string>(
 			'data[0].attributes.last_name',
-			user.last_name
+			String(user.last_name)
 		);
-		expect(response.body).toHaveProperty('data[0].attributes.nickname');
-		expect(response.body).toHaveProperty(
+		expect<DataDocument<UserData[]>>(response.body).toHaveProperty<string>(
+			'data[0].attributes.nickname'
+		);
+		expect<DataDocument<UserData[]>>(response.body).toHaveProperty<string>(
 			'data[0].attributes.email',
 			user.email
 		);
-		expect(response.body).toHaveProperty('data[0].attributes.photo', null);
-		expect(response.body).toHaveProperty('data[0].attributes.avatar', null);
-		expect(response.body).toHaveProperty('data[0].attributes.created_at');
-		expect(response.body).toHaveProperty('data[0].attributes.updated_at');
+		expect<DataDocument<UserData[]>>(response.body).toHaveProperty<null>(
+			'data[0].attributes.photo',
+			null
+		);
+		expect<DataDocument<UserData[]>>(response.body).toHaveProperty<null>(
+			'data[0].attributes.avatar',
+			null
+		);
+		expect<DataDocument<UserData[]>>(response.body).toHaveProperty<string>(
+			'data[0].attributes.created_at'
+		);
+		expect<DataDocument<UserData[]>>(response.body).toHaveProperty<string>(
+			'data[0].attributes.updated_at'
+		);
 	});
 });
 
 describe('GET /users/{id}', () => {
 	test('should return error when parameter is invalid', async () => {
-		const response = await request
+		const response: SupertestResponse<JsonApiError> = await request
 			.get('/users/invalid-id')
 			.set('Accept', 'application/vnd.api+json');
 
-		expect(response.status).toEqual(StatusCodes.BAD_REQUEST);
-		expect(response.body).toEqual({
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
 			jsonapi: {
 				version: '1.1',
 			},
@@ -187,98 +398,22 @@ describe('GET /users/{id}', () => {
 			errors: [
 				{
 					status: StatusCodes.BAD_REQUEST,
-					title: 'Bad Request',
-					detail: 'Validation failed (uuid v4 is expected).',
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('id.format'),
 				},
 			],
 		});
 	});
 
 	test('should return error when user is not found', async () => {
-		const response = await request
+		const response: SupertestResponse<JsonApiError> = await request
 			.get('/users/60677a98-a65e-4abc-831c-45dd76e8f990')
 			.set('Accept', 'application/vnd.api+json');
 
-		expect(response.status).toEqual(StatusCodes.NOT_FOUND);
-		expect(response.body).toEqual({
-			jsonapi: {
-				version: '1.1',
-			},
-			links: {
-				self: '/users/60677a98-a65e-4abc-831c-45dd76e8f990',
-			},
-			errors: [
-				{
-					status: StatusCodes.NOT_FOUND,
-					title: 'Not Found',
-					detail: 'The user is not found.',
-				},
-			],
-		});
-	});
-
-	test('should return an user', async () => {
-		const response = await request
-			.get(`/users/${user.id}`)
-			.set('Accept', 'application/vnd.api+json');
-
-		expect(response.status).toEqual(StatusCodes.OK);
-		expect(response.body).toHaveProperty('jsonapi.version', '1.1');
-		expect(response.body).toHaveProperty('data.id', user.id);
-		expect(response.body).toHaveProperty('data.type', 'users');
-		expect(response.body).toHaveProperty(
-			'data.attributes.first_name',
-			user.first_name
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.NOT_FOUND
 		);
-		expect(response.body).toHaveProperty(
-			'data.attributes.last_name',
-			user.last_name
-		);
-		expect(response.body).toHaveProperty('data.attributes.nickname');
-		expect(response.body).toHaveProperty('data.attributes.email', user.email);
-		expect(response.body).toHaveProperty('data.attributes.photo', null);
-		expect(response.body).toHaveProperty('data.attributes.avatar', null);
-		expect(response.body).toHaveProperty('data.attributes.created_at');
-		expect(response.body).toHaveProperty('data.attributes.updated_at');
-	});
-});
-
-describe('PATCH /users/{id}', () => {
-	test('should return error when parameter is invalid', async () => {
-		const response = await request
-			.patch('/users/invalid-id')
-			.set('Accept', 'application/vnd.api+json');
-
-		expect(response.status).toEqual(StatusCodes.BAD_REQUEST);
-		expect(response.body).toEqual({
-			jsonapi: {
-				version: '1.1',
-			},
-			links: {
-				self: '/users/invalid-id',
-			},
-			errors: [
-				{
-					status: StatusCodes.BAD_REQUEST,
-					title: 'Bad Request',
-					detail: 'Validation failed (uuid v4 is expected).',
-				},
-			],
-		});
-	});
-
-	test('should return error when user is not found', async () => {
-		const response = await request
-			.patch('/users/60677a98-a65e-4abc-831c-45dd76e8f990')
-			.set('Accept', 'application/vnd.api+json')
-			.send({
-				data: {
-					type: 'users',
-				},
-			});
-
-		expect(response.status).toEqual(StatusCodes.NOT_FOUND);
-		expect(response.body).toEqual({
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
 			jsonapi: {
 				version: '1.1',
 			},
@@ -289,14 +424,120 @@ describe('PATCH /users/{id}', () => {
 				{
 					status: StatusCodes.NOT_FOUND,
 					title: ReasonPhrases.NOT_FOUND,
-					detail: 'The user is not found.',
+					detail: getErrorMessage('user.exist'),
+				},
+			],
+		});
+	});
+
+	test('should return an user', async () => {
+		const response: SupertestResponse<DataDocument<UserData>> = await request
+			.get(`/users/${user.id}`)
+			.set('Accept', 'application/vnd.api+json');
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'jsonapi.version',
+			'1.1'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.id',
+			user.id
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.type',
+			'users'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.first_name',
+			user.first_name
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.last_name',
+			String(user.last_name)
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.nickname'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.email',
+			user.email
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.photo',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.avatar',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.created_at'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.updated_at'
+		);
+	});
+});
+
+describe('PATCH /users/{id}', () => {
+	test('should return error when parameter is invalid', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.patch('/users/invalid-id')
+			.set('Accept', 'application/vnd.api+json');
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			links: {
+				self: '/users/invalid-id',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST,
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('id.format'),
+				},
+			],
+		});
+	});
+
+	test('should return error when user is not found', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.patch('/users/60677a98-a65e-4abc-831c-45dd76e8f990')
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					type: 'users',
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.NOT_FOUND
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			links: {
+				self: '/users/60677a98-a65e-4abc-831c-45dd76e8f990',
+			},
+			errors: [
+				{
+					status: StatusCodes.NOT_FOUND,
+					title: ReasonPhrases.NOT_FOUND,
+					detail: getErrorMessage('user.exist'),
 				},
 			],
 		});
 	});
 
 	test('should return error when name is null', async () => {
-		const response = await request
+		const response: SupertestResponse<JsonApiError> = await request
 			.patch(`/users/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
 			.send({
@@ -308,8 +549,10 @@ describe('PATCH /users/{id}', () => {
 				},
 			});
 
-		expect(response.status).toEqual(StatusCodes.BAD_REQUEST);
-		expect(response.body).toEqual({
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
 			jsonapi: {
 				version: '1.1',
 			},
@@ -319,15 +562,15 @@ describe('PATCH /users/{id}', () => {
 			errors: [
 				{
 					status: StatusCodes.BAD_REQUEST,
-					title: 'Bad Request',
-					detail: 'The data.attributes.first_name must be a string.',
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.first_name.type'),
 				},
 			],
 		});
 	});
 
 	test('should return error when name is empty', async () => {
-		const response = await request
+		const response: SupertestResponse<JsonApiError> = await request
 			.patch(`/users/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
 			.send({
@@ -339,8 +582,10 @@ describe('PATCH /users/{id}', () => {
 				},
 			});
 
-		expect(response.status).toEqual(StatusCodes.BAD_REQUEST);
-		expect(response.body).toEqual({
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
 			jsonapi: {
 				version: '1.1',
 			},
@@ -350,15 +595,15 @@ describe('PATCH /users/{id}', () => {
 			errors: [
 				{
 					status: StatusCodes.BAD_REQUEST,
-					title: 'Bad Request',
-					detail: 'The data.attributes.first_name field must have a value.',
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.first_name.minLength'),
 				},
 			],
 		});
 	});
 
 	test('should return error when name is invalid', async () => {
-		const response = await request
+		const response: SupertestResponse<JsonApiError> = await request
 			.patch(`/users/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
 			.send({
@@ -370,8 +615,10 @@ describe('PATCH /users/{id}', () => {
 				},
 			});
 
-		expect(response.status).toEqual(StatusCodes.BAD_REQUEST);
-		expect(response.body).toEqual({
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
 			jsonapi: {
 				version: '1.1',
 			},
@@ -381,15 +628,15 @@ describe('PATCH /users/{id}', () => {
 			errors: [
 				{
 					status: StatusCodes.BAD_REQUEST,
-					title: 'Bad Request',
-					detail: 'The data.attributes.first_name must be a string.',
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.first_name.type'),
 				},
 			],
 		});
 	});
 
 	test('should ok when username is null', async () => {
-		const response = await request
+		const response: SupertestResponse<DataDocument<UserData>> = await request
 			.patch(`/users/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
 			.send({
@@ -401,28 +648,53 @@ describe('PATCH /users/{id}', () => {
 				},
 			});
 
-		expect(response.status).toEqual(StatusCodes.OK);
-		expect(response.body).toHaveProperty('jsonapi.version', '1.1');
-		expect(response.body).toHaveProperty('data.id', user.id);
-		expect(response.body).toHaveProperty('data.type', 'users');
-		expect(response.body).toHaveProperty(
+		expect<number>(response.status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'jsonapi.version',
+			'1.1'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.id',
+			user.id
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.type',
+			'users'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
 			'data.attributes.first_name',
 			user.first_name
 		);
-		expect(response.body).toHaveProperty(
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
 			'data.attributes.last_name',
-			user.last_name
+			String(user.last_name)
 		);
-		expect(response.body).toHaveProperty('data.attributes.nickname', null);
-		expect(response.body).toHaveProperty('data.attributes.email', user.email);
-		expect(response.body).toHaveProperty('data.attributes.photo', null);
-		expect(response.body).toHaveProperty('data.attributes.avatar', null);
-		expect(response.body).toHaveProperty('data.attributes.created_at');
-		expect(response.body).toHaveProperty('data.attributes.updated_at');
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.nickname',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.email',
+			user.email
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.photo',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.avatar',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.created_at'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.updated_at'
+		);
 	});
 
 	test('should ok when username is empty', async () => {
-		const response = await request
+		const response: SupertestResponse<DataDocument<UserData>> = await request
 			.patch(`/users/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
 			.send({
@@ -434,28 +706,53 @@ describe('PATCH /users/{id}', () => {
 				},
 			});
 
-		expect(response.status).toEqual(StatusCodes.OK);
-		expect(response.body).toHaveProperty('jsonapi.version', '1.1');
-		expect(response.body).toHaveProperty('data.id', user.id);
-		expect(response.body).toHaveProperty('data.type', 'users');
-		expect(response.body).toHaveProperty(
+		expect<number>(response.status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'jsonapi.version',
+			'1.1'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.id',
+			user.id
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.type',
+			'users'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
 			'data.attributes.first_name',
 			user.first_name
 		);
-		expect(response.body).toHaveProperty(
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
 			'data.attributes.last_name',
-			user.last_name
+			String(user.last_name)
 		);
-		expect(response.body).toHaveProperty('data.attributes.nickname', null);
-		expect(response.body).toHaveProperty('data.attributes.email', user.email);
-		expect(response.body).toHaveProperty('data.attributes.photo', null);
-		expect(response.body).toHaveProperty('data.attributes.avatar', null);
-		expect(response.body).toHaveProperty('data.attributes.created_at');
-		expect(response.body).toHaveProperty('data.attributes.updated_at');
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.nickname',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.email',
+			user.email
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.photo',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.avatar',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.created_at'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.updated_at'
+		);
 	});
 
 	test('should return error when email is null', async () => {
-		const response = await request
+		const response: SupertestResponse<JsonApiError> = await request
 			.patch(`/users/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
 			.send({
@@ -467,8 +764,10 @@ describe('PATCH /users/{id}', () => {
 				},
 			});
 
-		expect(response.status).toEqual(StatusCodes.BAD_REQUEST);
-		expect(response.body).toEqual({
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
 			jsonapi: {
 				version: '1.1',
 			},
@@ -478,15 +777,15 @@ describe('PATCH /users/{id}', () => {
 			errors: [
 				{
 					status: StatusCodes.BAD_REQUEST,
-					title: 'Bad Request',
-					detail: 'The data.attributes.email must be a string.',
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.email.type'),
 				},
 			],
 		});
 	});
 
 	test('should return error when email is empty', async () => {
-		const response = await request
+		const response: SupertestResponse<JsonApiError> = await request
 			.patch(`/users/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
 			.send({
@@ -498,8 +797,10 @@ describe('PATCH /users/{id}', () => {
 				},
 			});
 
-		expect(response.status).toEqual(StatusCodes.BAD_REQUEST);
-		expect(response.body).toEqual({
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
 			jsonapi: {
 				version: '1.1',
 			},
@@ -509,15 +810,15 @@ describe('PATCH /users/{id}', () => {
 			errors: [
 				{
 					status: StatusCodes.BAD_REQUEST,
-					title: 'Bad Request',
-					detail: 'The data.attributes.email must be a valid email address.',
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.email.format'),
 				},
 			],
 		});
 	});
 
 	test('should return error when email is invalid', async () => {
-		const response = await request
+		const response: SupertestResponse<JsonApiError> = await request
 			.patch(`/users/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
 			.send({
@@ -529,8 +830,10 @@ describe('PATCH /users/{id}', () => {
 				},
 			});
 
-		expect(response.status).toEqual(StatusCodes.BAD_REQUEST);
-		expect(response.body).toEqual({
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
 			jsonapi: {
 				version: '1.1',
 			},
@@ -540,15 +843,15 @@ describe('PATCH /users/{id}', () => {
 			errors: [
 				{
 					status: StatusCodes.BAD_REQUEST,
-					title: 'Bad Request',
-					detail: 'The data.attributes.email must be a string.',
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.email.type'),
 				},
 			],
 		});
 	});
 
 	test('should return error when email is invalid', async () => {
-		const response = await request
+		const response: SupertestResponse<JsonApiError> = await request
 			.patch(`/users/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
 			.send({
@@ -560,8 +863,10 @@ describe('PATCH /users/{id}', () => {
 				},
 			});
 
-		expect(response.status).toEqual(StatusCodes.BAD_REQUEST);
-		expect(response.body).toEqual({
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
 			jsonapi: {
 				version: '1.1',
 			},
@@ -571,15 +876,15 @@ describe('PATCH /users/{id}', () => {
 			errors: [
 				{
 					status: StatusCodes.BAD_REQUEST,
-					title: 'Bad Request',
-					detail: 'The data.attributes.email must be a valid email address.',
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.email.format'),
 				},
 			],
 		});
 	});
 
 	test('should not update an user', async () => {
-		const response = await request
+		const response: SupertestResponse<DataDocument<UserData>> = await request
 			.patch(`/users/${user.id}`)
 			.set('Accept', 'application/vnd.api+json')
 			.send({
@@ -588,23 +893,47 @@ describe('PATCH /users/{id}', () => {
 				},
 			});
 
-		expect(response.status).toEqual(StatusCodes.OK);
-		expect(response.body).toHaveProperty('jsonapi.version', '1.1');
-		expect(response.body).toHaveProperty('data.id', user.id);
-		expect(response.body).toHaveProperty('data.type', 'users');
-		expect(response.body).toHaveProperty(
+		expect<number>(response.status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'jsonapi.version',
+			'1.1'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.id',
+			user.id
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.type',
+			'users'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
 			'data.attributes.first_name',
 			user.first_name
 		);
-		expect(response.body).toHaveProperty(
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
 			'data.attributes.last_name',
-			user.last_name
+			String(user.last_name)
 		);
-		expect(response.body).toHaveProperty('data.attributes.nickname');
-		expect(response.body).toHaveProperty('data.attributes.email', user.email);
-		expect(response.body).toHaveProperty('data.attributes.photo', null);
-		expect(response.body).toHaveProperty('data.attributes.avatar', null);
-		expect(response.body).toHaveProperty('data.attributes.created_at');
-		expect(response.body).toHaveProperty('data.attributes.updated_at');
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.nickname'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.email',
+			user.email
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.photo',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.avatar',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.created_at'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.updated_at'
+		);
 	});
 });

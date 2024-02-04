@@ -34,10 +34,6 @@ services:
     environment:
       - DSN=postgres://postgres:postgres@postgres-kratos:5432/postgres?sslmode=disable&max_conns=20&max_idle_conns=4
     volumes:
-      - type: volume
-        source: kratos-sqlite
-        target: /var/lib/sqlite
-        read_only: false
       - type: bind
         source: ./config/kratos/email-password
         target: /etc/config/kratos
@@ -60,10 +56,6 @@ services:
       - SERVE_PUBLIC_BASE_URL=http://127.0.0.1:4455/.ory/kratos/public/
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     volumes:
-      - type: volume
-        source: kratos-sqlite
-        target: /var/lib/sqlite
-        read_only: false
       - type: bind
         source: ./config/kratos/email-password
         target: /etc/config/kratos

@@ -37,7 +37,8 @@
               "title": "Last Name",
               "type": "string"
             }
-          }
+          },
+					"required": ["first", "last"]
         }
       },
       "required": [

@@ -9,7 +9,7 @@ describe('homeController', () => {
 	test('should return hello world!', () => {
 		const data = homeController(request);
 
-		expect<ResponseModel<string>>(data).toEqual({
+		expect<ResponseModel<string>>(data).toStrictEqual<ResponseModel<string>>({
 			status: StatusCodes.OK,
 			data: 'Hello world!',
 		});

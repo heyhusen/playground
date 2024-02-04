@@ -1,3 +1,4 @@
+import { PaginationParams } from '../../core/interfaces/http.interface';
 import type {
 	UserRepository,
 	UserTable,
@@ -29,21 +30,34 @@ export const userRepository: UserRepository = {
 		return result;
 	},
 
-	findAll: async () => {
-		const records = await db<UserTable>('users').select(
-			'id',
-			'first_name',
-			'last_name',
-			'nickname',
-			'email',
-			'photo',
-			'created_at',
-			'updated_at'
-		);
+	findAll: async (options: PaginationParams) => {
+		const offset = options.page > 1 ? (options.page - 1) * options.limit : 0;
 
-		const result = records;
+		const [records, count] = await Promise.all([
+			db<UserTable>('users')
+				.select(
+					'id',
+					'first_name',
+					'last_name',
+					'nickname',
+					'email',
+					'photo',
+					'created_at',
+					'updated_at'
+				)
+				.limit(options.limit)
+				.offset(offset),
+			db<UserTable>('users').count<Array<{ count: string }>>(),
+		]);
 
-		return result;
+		return {
+			data: records,
+			meta: {
+				page: options.page,
+				limit: options.limit,
+				total: Number(count?.at(0)?.count),
+			},
+		};
 	},
 
 	findOne: async (id: string) => {

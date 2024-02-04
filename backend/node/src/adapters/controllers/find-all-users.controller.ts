@@ -6,18 +6,29 @@ import type {
 } from '../../core/interfaces/user.interface';
 import { findAllUsers } from '../../core/use-cases/find-all-users.use-case';
 import type { ResponseModel } from '../interfaces/common.interface';
-import type { HttpRequest } from '../interfaces/http.interface';
+import type {
+	HttpRequest,
+	JsonApiPagination,
+} from '../interfaces/http.interface';
 
 export function findAllUsersController(
 	userRepository: UserRepository,
 	fileService: FileService
-): (req: HttpRequest) => Promise<ResponseModel<UserResult[]>> {
-	return async (_req: HttpRequest): Promise<ResponseModel<UserResult[]>> => {
-		const data = await findAllUsers(userRepository, fileService);
+): (
+	req: HttpRequest<unknown, JsonApiPagination>
+) => Promise<ResponseModel<UserResult[]>> {
+	return async (
+		req: HttpRequest<unknown, JsonApiPagination>
+	): Promise<ResponseModel<UserResult[]>> => {
+		const { data, meta } = await findAllUsers(userRepository, fileService, {
+			page: Number(req.params?.page.number),
+			limit: Number(req.params?.page.size),
+		});
 
 		return {
 			status: StatusCodes.OK,
 			data,
+			meta,
 		};
 	};
 }

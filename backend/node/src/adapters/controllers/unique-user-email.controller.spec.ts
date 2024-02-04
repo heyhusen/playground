@@ -48,7 +48,7 @@ describe('uniqueUserEmailController', () => {
 					throw new BadRequestException('The email has already been taken.');
 				}
 
-				return Promise.resolve(true);
+				return Promise.resolve<boolean>(true);
 			}
 		);
 	});
@@ -56,7 +56,7 @@ describe('uniqueUserEmailController', () => {
 	test('should only check when email is provided', async () => {
 		const data = await controller(request);
 
-		expect(data).toEqual(true);
+		expect<boolean>(data).toStrictEqual<boolean>(true);
 	});
 
 	test('should throw error when email is not unique', async () => {
@@ -79,6 +79,6 @@ describe('uniqueUserEmailController', () => {
 
 		const data = await controller(request);
 
-		expect(data).toEqual(true);
+		expect<boolean>(data).toStrictEqual<boolean>(true);
 	});
 });

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '../entities/validation.entity';
 import { NotFoundException } from '../exceptions/not-found.exception';
 import type { FileService } from '../interfaces/file.interface';
 import type {
@@ -47,19 +48,19 @@ describe('updateUser', () => {
 			upload: jest.fn(),
 			getUrl: jest.fn().mockImplementation((_path: string) => {
 				if (!user.photo) {
-					return Promise.resolve(null);
+					return Promise.resolve<null>(null);
 				}
 
-				return Promise.resolve('avatar.png');
+				return Promise.resolve<string>('avatar.png');
 			}),
 			remove: jest.fn(),
 		};
 	});
 
 	test('should throw error when user not found', async () => {
-		await expect(
+		await expect<Promise<UserResult>>(
 			updateUser('invalid-id', dto, userRepository, fileService)
-		).rejects.toThrow(new NotFoundException('The user is not found.'));
+		).rejects.toThrow(new NotFoundException(getErrorMessage('user.exist')));
 	});
 
 	test("should only update user's name", async () => {
@@ -70,7 +71,7 @@ describe('updateUser', () => {
 
 		const data = await updateUser('id', dto, userRepository, fileService);
 
-		expect<UserResult>(data).toEqual({
+		expect<UserResult>(data).toStrictEqual<UserResult>({
 			...user,
 			...dto,
 			avatar: null,
@@ -84,7 +85,7 @@ describe('updateUser', () => {
 
 		const data = await updateUser('id', dto, userRepository, fileService);
 
-		expect<UserResult>(data).toEqual({
+		expect<UserResult>(data).toStrictEqual<UserResult>({
 			...user,
 			...dto,
 			avatar: null,
@@ -98,7 +99,7 @@ describe('updateUser', () => {
 
 		const data = await updateUser('id', dto, userRepository, fileService);
 
-		expect<UserResult>(data).toEqual({
+		expect<UserResult>(data).toStrictEqual<UserResult>({
 			...user,
 			...dto,
 			avatar: null,
@@ -114,7 +115,7 @@ describe('updateUser', () => {
 
 		const data = await updateUser('id', dto, userRepository, fileService);
 
-		expect<UserResult>(data).toEqual({
+		expect<UserResult>(data).toStrictEqual<UserResult>({
 			...user,
 			photo: 'photo.png',
 			avatar: 'avatar.png',

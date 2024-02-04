@@ -1,3 +1,4 @@
+import { getErrorMessage } from '../entities/validation.entity';
 import { NotFoundException } from '../exceptions/not-found.exception';
 import type { FileService } from '../interfaces/file.interface';
 import type {
@@ -40,7 +41,7 @@ describe('findOneUser', () => {
 
 		fileService = {
 			upload: jest.fn(),
-			getUrl: jest.fn().mockReturnValue(Promise.resolve('avatar.png')),
+			getUrl: jest.fn().mockReturnValue(Promise.resolve<string>('avatar.png')),
 			remove: jest.fn(),
 		};
 	});
@@ -48,14 +49,17 @@ describe('findOneUser', () => {
 	test('should throw error when user not found', async () => {
 		await expect(
 			findOneUser('invalid-id', userRepository, fileService)
-		).rejects.toThrow(new NotFoundException('The user is not found.'));
+		).rejects.toThrow(new NotFoundException(getErrorMessage('user.exist')));
 	});
 
 	test('should return an user without avatar', async () => {
 		const data = await findOneUser(user.id, userRepository, fileService);
-		expect(userRepository.findOne).toBeCalledTimes(1);
-		expect(fileService.getUrl).toBeCalledTimes(0);
-		expect<UserResult>(data).toEqual({
+
+		expect<UserRepository['findOne']>(
+			userRepository.findOne
+		).toHaveBeenCalledTimes(1);
+		expect<FileService['getUrl']>(fileService.getUrl).toHaveBeenCalledTimes(0);
+		expect<UserResult>(data).toStrictEqual<UserResult>({
 			...user,
 			avatar: null,
 		});
@@ -70,9 +74,12 @@ describe('findOneUser', () => {
 		);
 
 		const data = await findOneUser(user.id, userRepository, fileService);
-		expect(userRepository.findOne).toBeCalledTimes(1);
-		expect(fileService.getUrl).toBeCalledTimes(1);
-		expect<UserResult>(data).toEqual({
+
+		expect<UserRepository['findOne']>(
+			userRepository.findOne
+		).toHaveBeenCalledTimes(1);
+		expect<FileService['getUrl']>(fileService.getUrl).toHaveBeenCalledTimes(1);
+		expect<UserResult>(data).toStrictEqual<UserResult>({
 			...user,
 			photo: 'photo.png',
 			avatar: 'avatar.png',

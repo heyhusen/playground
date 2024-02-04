@@ -1,3 +1,4 @@
+import { getErrorMessage } from '../entities/validation.entity';
 import { NotFoundException } from '../exceptions/not-found.exception';
 import type { FileService } from '../interfaces/file.interface';
 import type {
@@ -47,7 +48,7 @@ export async function updateUser(
 	const record = await userRepository.update(id, input);
 
 	if (!record) {
-		throw new NotFoundException('The user is not found.');
+		throw new NotFoundException(getErrorMessage('user.exist'));
 	}
 
 	let avatar: string | null = null;

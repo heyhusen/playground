@@ -23,6 +23,7 @@ describe('createUserController', () => {
 	};
 
 	const dto: CreateUserDto = {
+		id: 'id',
 		first_name: 'John',
 		last_name: 'Doe',
 		email: 'johndoe@example.com',
@@ -69,7 +70,7 @@ describe('createUserController', () => {
 
 		const data = await controller(request);
 
-		expect<ResponseModel<UserResult>>(data).toEqual({
+		expect<ResponseModel<UserResult>>(data).toStrictEqual({
 			status: StatusCodes.CREATED,
 			data: {
 				...user,

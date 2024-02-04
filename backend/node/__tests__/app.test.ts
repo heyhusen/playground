@@ -1,5 +1,6 @@
-import { StatusCodes } from 'http-status-codes';
-import { request } from './setup';
+import { ReasonPhrases, StatusCodes } from 'http-status-codes';
+import { JsonApiError } from '../src/adapters/interfaces/http.interface';
+import { SupertestResponse, request } from './setup';
 import { close } from './teardown';
 
 afterAll(async () => {
@@ -8,23 +9,25 @@ afterAll(async () => {
 
 describe('GET /', () => {
 	test('should return hello world', async () => {
-		const response = await request
+		const response: SupertestResponse<string> = await request
 			.get('/')
 			.set('Accept', 'application/vnd.api+json');
 
-		expect(response.status).toEqual(StatusCodes.OK);
-		expect(response.body).toEqual('Hello world!');
+		expect<number>(response.status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		expect<string>(response.body).toStrictEqual<string>('Hello world!');
 	});
 });
 
 describe('GET /404', () => {
 	test('should return not found error', async () => {
-		const response = await request
+		const response: SupertestResponse<JsonApiError> = await request
 			.get('/404')
 			.set('Accept', 'application/vnd.api+json');
 
-		expect(response.status).toEqual(StatusCodes.NOT_FOUND);
-		expect(response.body).toEqual({
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.NOT_FOUND
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
 			jsonapi: {
 				version: '1.1',
 			},
@@ -34,7 +37,7 @@ describe('GET /404', () => {
 			errors: [
 				{
 					status: StatusCodes.NOT_FOUND,
-					title: 'Not Found',
+					title: ReasonPhrases.NOT_FOUND,
 					detail: 'Resource not found.',
 				},
 			],

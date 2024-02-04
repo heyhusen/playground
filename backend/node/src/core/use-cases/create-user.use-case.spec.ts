@@ -11,6 +11,7 @@ describe('createUser', () => {
 	let userRepository: UserRepository;
 
 	const dto: CreateUserDto = {
+		id: 'id',
 		first_name: 'Doe',
 		last_name: 'Doe',
 		email: 'johndoe@example.com',
@@ -44,7 +45,9 @@ describe('createUser', () => {
 	});
 
 	test('should throw error when user is not saved', async () => {
-		userRepository.create = jest.fn().mockReturnValue(Promise.resolve(null));
+		userRepository.create = jest
+			.fn()
+			.mockReturnValue(Promise.resolve<null>(null));
 
 		await expect(createUser(dto, userRepository)).rejects.toThrow(
 			new Error('Something went wrong.')
@@ -54,8 +57,10 @@ describe('createUser', () => {
 	test('should create an user', async () => {
 		const data = await createUser(dto, userRepository);
 
-		expect(userRepository.create).toBeCalledTimes(1);
-		expect<UserResult>(data).toEqual({
+		expect<UserRepository['create']>(
+			userRepository.create
+		).toHaveBeenCalledTimes(1);
+		expect<UserResult>(data).toStrictEqual<UserResult>({
 			...user,
 			avatar: null,
 		});

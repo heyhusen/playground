@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import { createReadStream } from 'fs';
 import { extname } from 'path';
-import { DataDocument, Linker, Serializer } from 'ts-japi';
+import { DataDocument, Linker, Paginator, Serializer } from 'ts-japi';
 import { createUserController } from '../../../../adapters/controllers/create-user.controller';
 import { findAllUsersController } from '../../../../adapters/controllers/find-all-users.controller';
 import { findOneUserController } from '../../../../adapters/controllers/find-one-user.controller';
@@ -11,6 +11,7 @@ import type {
 	HttpRequest,
 	HttpRequestBody,
 	JsonApiData,
+	JsonApiPagination,
 } from '../../../../adapters/interfaces/http.interface';
 import type {
 	CreateUser,
@@ -22,18 +23,14 @@ import { appConfig } from '../../../config/app';
 import { userRepository } from '../../../repositories/user.repository';
 import { fileService } from '../../../services/file.service';
 
-const userSerializer = new Serializer<UserData | UserData[]>('users', {
+const userPath = `${appConfig.url}/users`;
+
+const userSerializer = new Serializer<UserData>('users', {
 	version: '1.1',
 });
-const userLinker = (type: 'multi' | 'single' = 'multi') => {
-	const UserLinker = new Linker<[UserData | UserData[]]>((users) => {
-		return type === 'multi' || Array.isArray(users)
-			? `${appConfig.url}/users/`
-			: `${appConfig.url}/users/${users.id}`;
-	});
-
-	return UserLinker;
-};
+const UserLinker = new Linker<[UserData]>((users) => {
+	return `${userPath}/${users.id}`;
+});
 
 export async function create(
 	req: Request<unknown, unknown, JsonApiData<CreateUser>>,
@@ -66,7 +63,7 @@ export async function create(
 
 	const result = await userSerializer.serialize(data, {
 		linkers: {
-			resource: userLinker('single'),
+			resource: UserLinker,
 		},
 	});
 
@@ -74,15 +71,38 @@ export async function create(
 }
 
 export async function findAll(
-	_req: Request,
+	req: Request<unknown, unknown, unknown, JsonApiPagination>,
 	res: Response<Partial<DataDocument<UserData[]>>>
 ) {
 	const controller = findAllUsersController(userRepository, fileService);
-	const { status, data } = await controller({});
+	const { status, data, meta } = await controller({
+		params: req.query,
+	});
+
+	const UserPaginator = new Paginator<UserData>((_user) => {
+		const {
+			page: { size: limit, number: page },
+		} = req.query;
+		const totalPages = Math.ceil(Number(meta?.total) / limit);
+		const prevPage = page > 1 ? page - 1 : 0;
+		const nextPage = page < totalPages ? page + 1 : 0;
+
+		return {
+			first: `${userPath}/?page[number]=1&page[size]=${req.query.page.size}`,
+			last: `${userPath}/?page[number]=${totalPages}&page[size]=${req.query.page.size}`,
+			prev: prevPage
+				? `${userPath}/?page[number]=${prevPage}&page[size]=${req.query.page.size}`
+				: null,
+			next: nextPage
+				? `${userPath}/?page[number]=${nextPage}&page[size]=${req.query.page.size}`
+				: null,
+		};
+	});
 
 	const result = await userSerializer.serialize(data, {
 		linkers: {
-			resource: userLinker('multi'),
+			resource: UserLinker,
+			paginator: UserPaginator,
 		},
 	});
 
@@ -101,7 +121,7 @@ export async function findOne(
 
 	const result = await userSerializer.serialize(data, {
 		linkers: {
-			resource: userLinker('single'),
+			resource: UserLinker,
 		},
 	});
 
@@ -141,7 +161,7 @@ export async function update(
 
 	const result = await userSerializer.serialize(data, {
 		linkers: {
-			resource: userLinker('single'),
+			resource: UserLinker,
 		},
 	});
 

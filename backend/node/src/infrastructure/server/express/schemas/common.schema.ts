@@ -1,4 +1,5 @@
 import type { AllowedSchema } from 'express-json-validator-middleware';
+import { getErrorMessage } from '../../../../core/entities/validation.entity';
 
 export const idParamSchema: AllowedSchema = {
 	type: 'object',
@@ -6,12 +7,15 @@ export const idParamSchema: AllowedSchema = {
 		id: {
 			type: 'string',
 			format: 'uuid',
+			errorMessage: {
+				format: getErrorMessage('id.format'),
+			},
 		},
 	},
 	required: ['id'],
 	errorMessage: {
-		properties: {
-			id: 'Validation failed (uuid v4 is expected).',
+		required: {
+			id: getErrorMessage('id.required'),
 		},
 	},
 };

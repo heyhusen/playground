@@ -1,3 +1,4 @@
+import { getErrorMessage } from '../entities/validation.entity';
 import { NotFoundException } from '../exceptions/not-found.exception';
 import type { FileService } from '../interfaces/file.interface';
 import type { UserRepository } from '../interfaces/user.interface';
@@ -20,7 +21,7 @@ export async function removeUser(
 	const record = await userRepository.remove(id);
 
 	if (!record) {
-		throw new NotFoundException('The user is not found.');
+		throw new NotFoundException(getErrorMessage('user.exist'));
 	}
 
 	if (record.photo) {

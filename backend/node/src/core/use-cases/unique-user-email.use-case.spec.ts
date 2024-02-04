@@ -22,10 +22,10 @@ describe('uniqueUserEmail', () => {
 			findOne: jest.fn(),
 			findOneByEmail: jest.fn((email: string) => {
 				if (email === user.email) {
-					return Promise.resolve(user);
+					return Promise.resolve<UserTable>(user);
 				}
 
-				return Promise.resolve(null);
+				return Promise.resolve<null>(null);
 			}),
 			update: jest.fn(),
 			remove: jest.fn(),
@@ -44,6 +44,6 @@ describe('uniqueUserEmail', () => {
 	test('should return true when user is not found', async () => {
 		const data = await uniqueUserEmail(userRepository, 'johndoe@example.co');
 
-		expect(data).toEqual(true);
+		expect<boolean>(data).toStrictEqual<boolean>(true);
 	});
 });

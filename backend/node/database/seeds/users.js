@@ -1,4 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line import/no-extraneous-dependencies, @typescript-eslint/no-var-requires
+const { faker } = require('@faker-js/faker');
 
 /**
  * @param { import("knex").Knex } knex
@@ -13,4 +14,15 @@ exports.seed = async function seed(knex) {
 		nickname: 'John',
 		email: 'johndoe@example.com',
 	});
+
+	// eslint-disable-next-line no-plusplus
+	for (let index = 0; index < 50; index++) {
+		// eslint-disable-next-line no-await-in-loop
+		await knex('users').insert({
+			first_name: faker.person.firstName(),
+			last_name: faker.person.lastName(),
+			nickname: faker.person.firstName(),
+			email: faker.internet.email().toLowerCase(),
+		});
+	}
 };
