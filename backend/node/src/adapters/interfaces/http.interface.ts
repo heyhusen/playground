@@ -1,3 +1,5 @@
+import { DataDocument, Dictionary, ErrorDocument, JapiError } from 'ts-japi';
+import Resource from 'ts-japi/lib/models/resource.model';
 import type { File } from '../../core/entities/common.entity';
 
 export interface HttpRequest<
@@ -33,38 +35,15 @@ export type HttpRequestCookie<T = Record<string, unknown>> = HttpRequest<
 	T
 >;
 
-export interface JsonApi {
-	jsonapi: {
-		version: string;
-	};
-	links: {
-		self: string;
+export interface JsonApiData<Entity extends Dictionary<any>>
+	extends Omit<DataDocument<Entity>, 'data'> {
+	data: Omit<Resource<Entity>, 'attributes'> & {
+		attributes: Entity;
 	};
 }
 
-export interface JsonApiDataObject<Attributes = Record<string, unknown>> {
-	type: string;
-	id: string;
-	attributes: Attributes;
-}
-
-export interface JsonApiData<Attributes = Record<string, unknown>>
-	extends JsonApi {
-	data: JsonApiDataObject<Attributes>;
-}
-
-export interface JsonApiErrorObject {
-	status: number;
-	title: string;
-	detail: string;
-	source?: {
-		pointer?: string;
-		parameter?: string;
-	};
-}
-
-export interface JsonApiError extends JsonApi {
-	errors: JsonApiErrorObject[];
+export interface JsonApiError extends Omit<ErrorDocument, 'errors'> {
+	errors: Omit<JapiError, 'stack'>[];
 }
 
 export interface JsonApiPagination {

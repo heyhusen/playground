@@ -1,3 +1,4 @@
+import { getErrorMessage } from '../../core/entities/validation.entity';
 import { BadRequestException } from '../../core/exceptions/bad-request.exception';
 import type { RequestIdParams } from '../interfaces/common.interface';
 import type { HttpRequestParams } from '../interfaces/http.interface';
@@ -22,9 +23,7 @@ describe('validateUuidController', () => {
 
 		expect(() => {
 			validateUuidController(request);
-		}).toThrow(
-			new BadRequestException('Validation failed (uuid v4 is expected).')
-		);
+		}).toThrow(new BadRequestException(getErrorMessage('id.format')));
 	});
 
 	test('should return true when id is valid uuid', () => {

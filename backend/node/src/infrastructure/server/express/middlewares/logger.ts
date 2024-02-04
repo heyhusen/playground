@@ -20,7 +20,7 @@ export function errorLogger() {
 		_res: Response,
 		next: NextFunction
 	) => {
-		log.error('Error log', {
+		log.error('Error log:', {
 			err,
 		});
 

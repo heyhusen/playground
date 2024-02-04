@@ -2,10 +2,7 @@ import type { ErrorObject } from 'ajv';
 import type { NextFunction, Request, Response } from 'express';
 import { ValidationError } from 'express-json-validator-middleware';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
-import type {
-	JsonApiError,
-	JsonApiErrorObject,
-} from '../../../../adapters/interfaces/http.interface';
+import type { JsonApiError } from '../../../../adapters/interfaces/http.interface';
 import { NotFoundException } from '../../../../core/exceptions/not-found.exception';
 import type { HttpError } from '../../../../core/interfaces/http.interface';
 
@@ -15,12 +12,12 @@ export function notFoundHandler() {
 	};
 }
 
-function createErrorArray(arr: ErrorObject[]): JsonApiErrorObject[] {
+function createErrorArray(arr: ErrorObject[]): JsonApiError['errors'] {
 	return arr
 		.filter((item) => item.keyword !== 'if')
-		.map<JsonApiErrorObject>((item) => {
+		.map<JsonApiError['errors'][number]>((item) => {
 			return {
-				status: StatusCodes.BAD_REQUEST,
+				status: StatusCodes.BAD_REQUEST.toString(),
 				title: ReasonPhrases.BAD_REQUEST,
 				detail: item.message as string,
 			};
@@ -28,7 +25,12 @@ function createErrorArray(arr: ErrorObject[]): JsonApiErrorObject[] {
 }
 
 export function errorHandler() {
-	return (err: HttpError, req: Request, res: Response, _next: NextFunction) => {
+	return (
+		err: HttpError,
+		_req: Request,
+		res: Response,
+		_next: NextFunction
+	) => {
 		const { name, message } = err;
 		let { status } = err;
 
@@ -36,12 +38,9 @@ export function errorHandler() {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: req.path,
-			},
 			errors: [
 				{
-					status,
+					status: status?.toString(),
 					title: name,
 					detail: message,
 				},

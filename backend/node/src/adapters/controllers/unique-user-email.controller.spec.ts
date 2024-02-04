@@ -60,7 +60,10 @@ describe('uniqueUserEmailController', () => {
 	});
 
 	test('should throw error when email is not unique', async () => {
-		request = { ...request, body: dto };
+		request = {
+			...request,
+			body: dto,
+		};
 
 		await expect(controller(request)).rejects.toThrow(
 			new BadRequestException('The email has already been taken.')

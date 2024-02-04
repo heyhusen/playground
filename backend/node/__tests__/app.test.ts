@@ -31,12 +31,9 @@ describe('GET /404', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: '/404',
-			},
 			errors: [
 				{
-					status: StatusCodes.NOT_FOUND,
+					status: StatusCodes.NOT_FOUND.toString(),
 					title: ReasonPhrases.NOT_FOUND,
 					detail: 'Resource not found.',
 				},

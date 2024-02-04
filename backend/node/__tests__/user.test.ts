@@ -31,12 +31,9 @@ describe('POST /users', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: '/users',
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('data.required'),
 				},
@@ -66,12 +63,9 @@ describe('POST /users', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: '/users',
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('data.attributes.email.format'),
 				},
@@ -101,12 +95,9 @@ describe('POST /users', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: '/users',
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('email.unique'),
 				},
@@ -188,12 +179,9 @@ describe('GET /users', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: '/users',
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('page.required'),
 				},
@@ -216,12 +204,9 @@ describe('GET /users', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: '/users',
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('page.type'),
 				},
@@ -246,12 +231,9 @@ describe('GET /users', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: '/users',
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('page.number.required'),
 				},
@@ -276,12 +258,9 @@ describe('GET /users', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: '/users',
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('page.size.required'),
 				},
@@ -307,17 +286,14 @@ describe('GET /users', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: '/users',
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('page.number.type'),
 				},
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('page.size.type'),
 				},
@@ -392,12 +368,9 @@ describe('GET /users/{id}', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: '/users/invalid-id',
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('id.format'),
 				},
@@ -417,12 +390,9 @@ describe('GET /users/{id}', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: '/users/60677a98-a65e-4abc-831c-45dd76e8f990',
-			},
 			errors: [
 				{
-					status: StatusCodes.NOT_FOUND,
+					status: StatusCodes.NOT_FOUND.toString(),
 					title: ReasonPhrases.NOT_FOUND,
 					detail: getErrorMessage('user.exist'),
 				},
@@ -493,12 +463,9 @@ describe('PATCH /users/{id}', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: '/users/invalid-id',
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('id.format'),
 				},
@@ -523,12 +490,9 @@ describe('PATCH /users/{id}', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: '/users/60677a98-a65e-4abc-831c-45dd76e8f990',
-			},
 			errors: [
 				{
-					status: StatusCodes.NOT_FOUND,
+					status: StatusCodes.NOT_FOUND.toString(),
 					title: ReasonPhrases.NOT_FOUND,
 					detail: getErrorMessage('user.exist'),
 				},
@@ -556,12 +520,9 @@ describe('PATCH /users/{id}', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: `/users/${user.id}`,
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('data.attributes.first_name.type'),
 				},
@@ -589,12 +550,9 @@ describe('PATCH /users/{id}', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: `/users/${user.id}`,
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('data.attributes.first_name.minLength'),
 				},
@@ -622,12 +580,9 @@ describe('PATCH /users/{id}', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: `/users/${user.id}`,
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('data.attributes.first_name.type'),
 				},
@@ -771,12 +726,9 @@ describe('PATCH /users/{id}', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: `/users/${user.id}`,
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('data.attributes.email.type'),
 				},
@@ -804,12 +756,9 @@ describe('PATCH /users/{id}', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: `/users/${user.id}`,
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('data.attributes.email.format'),
 				},
@@ -837,12 +786,9 @@ describe('PATCH /users/{id}', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: `/users/${user.id}`,
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('data.attributes.email.type'),
 				},
@@ -870,12 +816,9 @@ describe('PATCH /users/{id}', () => {
 			jsonapi: {
 				version: '1.1',
 			},
-			links: {
-				self: `/users/${user.id}`,
-			},
 			errors: [
 				{
-					status: StatusCodes.BAD_REQUEST,
+					status: StatusCodes.BAD_REQUEST.toString(),
 					title: ReasonPhrases.BAD_REQUEST,
 					detail: getErrorMessage('data.attributes.email.format'),
 				},
