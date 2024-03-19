@@ -11,7 +11,7 @@ serve:
     base_url: http://kratos:4434/
 
 selfservice:
-  default_browser_return_url: http://127.0.0.1:4455/
+  default_browser_return_url: http://127.0.0.1:4455/welcome
   allowed_return_urls:
     - http://127.0.0.1:4455
     - http://localhost:19006/Callback
@@ -39,6 +39,18 @@ selfservice:
       ui_url: http://127.0.0.1:4455/settings
       privileged_session_max_age: 15m
       required_aal: highest_available
+      # after:
+      #   profile:
+      #     hooks:
+      #       - hook: web_hook
+      #         config:
+      #           url: |
+      #             http://backend:3000/users/{ identityId }
+      #           method: PATCH
+      #           body: file:///etc/config/kratos/hooks/after-profile-setting.jsonnet
+      #           response:
+      #             ignore: true
+      #             parse: false
 
     recovery:
       enabled: true
@@ -50,7 +62,7 @@ selfservice:
       ui_url: http://127.0.0.1:4455/verification
       use: code
       after:
-        default_browser_return_url: http://127.0.0.1:4455/
+        default_browser_return_url: http://127.0.0.1:4455/welcome
 
     logout:
       after:
