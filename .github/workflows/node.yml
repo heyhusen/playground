@@ -6,25 +6,39 @@ on:
       - "main"
       - "development"
     paths:
-      - "node/**"
+      - "backend/node/**"
       - ".github/workflows/node.yml"
   pull_request:
     branches:
       - "main"
       - "development"
     paths:
-      - "node/**"
+      - "backend/node/**"
       - ".github/workflows/node.yml"
 
 jobs:
   build:
     name: Build (Node v${{ matrix.node }})
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: docker.io/library/postgres:14-alpine
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
     strategy:
       matrix:
-        node: ['18', '20']
+        node: ['20', '21']
     env:
-      FOLDER: node
+      FOLDER: backend/node
 
     steps:
       - name: Checkout code
@@ -46,7 +60,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd ${{ env.FOLDER }}
-          pnpm i
+          pnpm install
 
       - name: Run linter
         run: |
@@ -58,6 +72,11 @@ jobs:
           cd ${{ env.FOLDER }}
           pnpm prettier
 
+      - name: Run typecheck
+        run: |
+          cd ${{ env.FOLDER }}
+          pnpm typecheck
+
       - name: Run build
         run: |
           cd ${{ env.FOLDER }}
@@ -66,11 +85,8 @@ jobs:
       - name: Run tests
         run: |
           cd ${{ env.FOLDER }}
-          cp .env.example .env
-          docker compose up -d
-          sleep 10s
+          cp .env.testing .env
           pnpm migrate:up
           pnpm seed:run
           pnpm test
-          docker compose down -v
 
