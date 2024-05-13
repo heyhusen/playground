@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import {
+	compatUpdate,
 	create,
 	findAll,
 	findOne,
@@ -11,6 +12,7 @@ import { uniqueUserEmail } from '../middlewares/unique-user-email';
 import { validate } from '../middlewares/validator';
 import { idParamSchema } from '../schemas/common.schema';
 import {
+	compatUpdateUserSchema,
 	createUserSchema,
 	findAllUserSchema,
 	updateUserSchema,
@@ -42,6 +44,13 @@ userRouter.patch(
 	[validate(idParamSchema, 'params'), validate(updateUserSchema)],
 	uniqueUserEmail(),
 	asyncHandler(update)
+);
+
+userRouter.put(
+	'/',
+	[validate(compatUpdateUserSchema)],
+	uniqueUserEmail(),
+	asyncHandler(compatUpdate)
 );
 
 userRouter.delete(

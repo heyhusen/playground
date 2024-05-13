@@ -62,6 +62,51 @@ paths:
                   - example:
                       links:
                         self: "/user"
+    put:
+      tags:
+        - "user"
+      summary: Update an user (for ORY compatibility).
+      operationId: update-compat
+      requestBody:
+        content:
+          "application/vnd.api+json":
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/UserRequestData"
+                - example:
+                    links:
+                      self: "/user"
+      responses:
+        "200":
+          description: Return updated user.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SingleUserResponseData"
+                  - example:
+                      links:
+                        self: "/user"
+        "400":
+          description: Invalid request body
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/UserRequestError"
+                  - example:
+                      links:
+                        self: "/user"
+        "500":
+          description: Internal server error.
+          content:
+            "application/vnd.api+json":
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InternalServerError"
+                  - example:
+                      links:
+                        self: "/user"
     get:
       tags:
         - "user"
@@ -261,7 +306,7 @@ components:
               type: string
       example:
         jsonapi:
-          version: "1.0"
+          version: "1.1"
     Data:
       type: object
       properties:

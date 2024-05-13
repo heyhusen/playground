@@ -243,3 +243,24 @@ export const updateUserSchema: AllowedSchema = {
 		dependencies: {},
 	},
 };
+
+const copiedUpdateUserSchema = structuredClone(updateUserSchema);
+export const compatUpdateUserSchema: AllowedSchema = {
+	...copiedUpdateUserSchema,
+	properties: {
+		...copiedUpdateUserSchema.properties,
+		data: {
+			...copiedUpdateUserSchema.properties?.data,
+			required: [
+				...(copiedUpdateUserSchema.properties?.data?.required as string[]),
+				'id',
+			],
+			errorMessage: {
+				required: {
+					type: getErrorMessage('data.type.required'),
+					id: getErrorMessage('data.id.required'),
+				},
+			},
+		},
+	},
+};

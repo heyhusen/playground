@@ -36,7 +36,7 @@ export async function create(
 	req: Request<unknown, unknown, JsonApiData<CreateUser>>,
 	res: Response<Partial<DataDocument<UserData>>>
 ) {
-	let request: HttpRequestBody<CreateUser> = {
+	const request: HttpRequestBody<CreateUser> = {
 		body: {
 			...req.body.data.attributes,
 			id: req.body.data.id,
@@ -46,8 +46,10 @@ export async function create(
 	if (req.file) {
 		const { filename, size, mimetype, path, originalname } = req.file;
 
-		request = {
-			...request,
+		Object.assign<
+			HttpRequestBody<CreateUser>,
+			Partial<HttpRequestBody<CreateUser>>
+		>(request, {
 			file: {
 				name: filename,
 				size,
@@ -55,7 +57,7 @@ export async function create(
 				extension: extname(originalname),
 				content: createReadStream(path),
 			},
-		};
+		});
 	}
 
 	const controller = createUserController(userRepository);
@@ -132,7 +134,7 @@ export async function update(
 	req: Request<UserRequestParams, unknown, JsonApiData<UpdateUser>>,
 	res: Response<Partial<DataDocument<UserData>>>
 ) {
-	let request: HttpRequest<unknown, UserRequestParams, UpdateUser> = {
+	const request: HttpRequest<unknown, UserRequestParams, UpdateUser> = {
 		params: req.params,
 		body: {
 			...req.body.data.attributes,
@@ -143,8 +145,10 @@ export async function update(
 	if (req.file) {
 		const { filename, size, mimetype, path, originalname } = req.file;
 
-		request = {
-			...request,
+		Object.assign<
+			HttpRequest<unknown, UserRequestParams, UpdateUser>,
+			Partial<HttpRequest<unknown, UserRequestParams, UpdateUser>>
+		>(request, {
 			file: {
 				name: filename,
 				size,
@@ -152,11 +156,54 @@ export async function update(
 				extension: extname(originalname),
 				content: createReadStream(path),
 			},
-		};
+		});
 	}
 
 	const controller = updateUserController(userRepository, fileService);
 
+	const { status, data } = await controller(request);
+
+	const result = await userSerializer.serialize(data, {
+		linkers: {
+			resource: UserLinker,
+		},
+	});
+
+	res.status(status).contentType('application/vnd.api+json').json(result);
+}
+
+export async function compatUpdate(
+	req: Request<unknown, unknown, JsonApiData<CreateUser>>,
+	res: Response<Partial<DataDocument<UserData>>>
+) {
+	const request: HttpRequest<unknown, UserRequestParams, UpdateUser> = {
+		body: {
+			...req.body.data.attributes,
+			id: req.body.data.id,
+		},
+		params: {
+			id: req.body.data.id,
+		},
+	};
+
+	if (req.file) {
+		const { filename, size, mimetype, path, originalname } = req.file;
+
+		Object.assign<
+			HttpRequest<unknown, UserRequestParams, UpdateUser>,
+			Partial<HttpRequest<unknown, UserRequestParams, UpdateUser>>
+		>(request, {
+			file: {
+				name: filename,
+				size,
+				type: mimetype,
+				extension: extname(originalname),
+				content: createReadStream(path),
+			},
+		});
+	}
+
+	const controller = updateUserController(userRepository, fileService);
 	const { status, data } = await controller(request);
 
 	const result = await userSerializer.serialize(data, {

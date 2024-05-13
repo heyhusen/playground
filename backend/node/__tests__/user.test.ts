@@ -880,3 +880,537 @@ describe('PATCH /users/{id}', () => {
 		);
 	});
 });
+
+describe('PUT /users', () => {
+	test('should return error when request body is empty', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.put('/users')
+			.set('Accept', 'application/vnd.api+json');
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST.toString(),
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.required'),
+				},
+			],
+		});
+	});
+
+	test('should return error when data is empty object', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.put('/users')
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST.toString(),
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.type.required'),
+				},
+				{
+					status: StatusCodes.BAD_REQUEST.toString(),
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.id.required'),
+				},
+			],
+		});
+	});
+
+	test('should return error when data.type is invalid', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.put('/users')
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					type: 'user',
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST.toString(),
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.type.pattern'),
+				},
+				{
+					status: StatusCodes.BAD_REQUEST.toString(),
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.id.required'),
+				},
+			],
+		});
+	});
+
+	test('should return error when data.attributes.id is missing', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.put('/users')
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					type: 'users',
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST.toString(),
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.id.required'),
+				},
+			],
+		});
+	});
+
+	test('should not update user', async () => {
+		const response: SupertestResponse<DataDocument<UserData>> = await request
+			.put('/users')
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					id: user.id,
+					type: 'users',
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'jsonapi.version',
+			'1.1'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.id',
+			user.id
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.type',
+			'users'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.first_name',
+			user.first_name
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.last_name',
+			String(user.last_name)
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.nickname'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.email',
+			user.email
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.photo',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.avatar',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.created_at'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.updated_at'
+		);
+	});
+
+	test('should return error when name is null', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.put(`/users`)
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					type: 'users',
+					id: user.id,
+					attributes: {
+						first_name: null,
+					},
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST.toString(),
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.first_name.type'),
+				},
+			],
+		});
+	});
+
+	test('should return error when name is null', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.put(`/users`)
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					id: user.id,
+					type: 'users',
+					attributes: {
+						first_name: null,
+					},
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST.toString(),
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.first_name.type'),
+				},
+			],
+		});
+	});
+
+	test('should return error when name is empty', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.put(`/users`)
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					id: user.id,
+					type: 'users',
+					attributes: {
+						first_name: '',
+					},
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST.toString(),
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.first_name.minLength'),
+				},
+			],
+		});
+	});
+
+	test('should return error when name is invalid', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.put(`/users`)
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					id: user.id,
+					type: 'users',
+					attributes: {
+						first_name: 12345,
+					},
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST.toString(),
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.first_name.type'),
+				},
+			],
+		});
+	});
+
+	test('should ok when username is null', async () => {
+		const response: SupertestResponse<DataDocument<UserData>> = await request
+			.put(`/users`)
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					id: user.id,
+					type: 'users',
+					attributes: {
+						nickname: null,
+					},
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'jsonapi.version',
+			'1.1'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.id',
+			user.id
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.type',
+			'users'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.first_name',
+			user.first_name
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.last_name',
+			String(user.last_name)
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.nickname',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.email',
+			user.email
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.photo',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.avatar',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.created_at'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.updated_at'
+		);
+	});
+
+	test('should ok when username is empty', async () => {
+		const response: SupertestResponse<DataDocument<UserData>> = await request
+			.put(`/users`)
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					id: user.id,
+					type: 'users',
+					attributes: {
+						nickname: '',
+					},
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'jsonapi.version',
+			'1.1'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.id',
+			user.id
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.type',
+			'users'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.first_name',
+			user.first_name
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.last_name',
+			String(user.last_name)
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.nickname',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.email',
+			user.email
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.photo',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<null>(
+			'data.attributes.avatar',
+			null
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.created_at'
+		);
+		expect<DataDocument<UserData>>(response.body).toHaveProperty<string>(
+			'data.attributes.updated_at'
+		);
+	});
+
+	test('should return error when email is null', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.put(`/users`)
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					id: user.id,
+					type: 'users',
+					attributes: {
+						email: null,
+					},
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST.toString(),
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.email.type'),
+				},
+			],
+		});
+	});
+
+	test('should return error when email is empty', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.put(`/users`)
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					id: user.id,
+					type: 'users',
+					attributes: {
+						email: '',
+					},
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST.toString(),
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.email.format'),
+				},
+			],
+		});
+	});
+
+	test('should return error when email is invalid', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.put(`/users`)
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					id: user.id,
+					type: 'users',
+					attributes: {
+						email: 12345,
+					},
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST.toString(),
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.email.type'),
+				},
+			],
+		});
+	});
+
+	test('should return error when email is invalid', async () => {
+		const response: SupertestResponse<JsonApiError> = await request
+			.put(`/users`)
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					id: user.id,
+					type: 'users',
+					attributes: {
+						email: 'johndoe',
+					},
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.BAD_REQUEST
+		);
+		expect<JsonApiError>(response.body).toStrictEqual<JsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			errors: [
+				{
+					status: StatusCodes.BAD_REQUEST.toString(),
+					title: ReasonPhrases.BAD_REQUEST,
+					detail: getErrorMessage('data.attributes.email.format'),
+				},
+			],
+		});
+	});
+});

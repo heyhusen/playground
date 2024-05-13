@@ -17,11 +17,17 @@ export function uniqueUserEmail() {
 			req: Request<
 				Pick<UserTable, 'id'>,
 				unknown,
-				JsonApiData<Pick<UpdateUserDto, 'email'>>
+				JsonApiData<Pick<UpdateUserDto, 'email' | 'id'>>
 			>,
 			_res: Response,
 			next: NextFunction
 		) => {
+			if (!req.params?.id && req.body.data?.id) {
+				Object.assign(req.params, {
+					id: req.body.data.id,
+				});
+			}
+
 			const httpRequest: HttpRequest<
 				unknown,
 				Pick<UserTable, 'id'>,

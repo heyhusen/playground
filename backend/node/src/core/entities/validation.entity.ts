@@ -24,6 +24,7 @@ interface ErrorSchemaError {
 	'id.required': string;
 	'id.format': string;
 	'user.exist': string;
+	'data.id.required': string;
 }
 
 const errorMessage: ErrorSchemaError = {
@@ -58,6 +59,7 @@ const errorMessage: ErrorSchemaError = {
 	'id.required': 'Validation failed (uuid v4 is expected).',
 	'id.format': 'Validation failed (uuid v4 is expected).',
 	'user.exist': 'The user is not found.',
+	'data.id.required': 'The data.attributes.id property is required.',
 };
 
 export function getErrorMessage(key: keyof ErrorSchemaError): string {
