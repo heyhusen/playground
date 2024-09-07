@@ -39,18 +39,17 @@ selfservice:
       ui_url: http://127.0.0.1:4455/settings
       privileged_session_max_age: 15m
       required_aal: highest_available
-      # after:
-      #   profile:
-      #     hooks:
-      #       - hook: web_hook
-      #         config:
-      #           url: |
-      #             http://backend:3000/users/{ identityId }
-      #           method: PATCH
-      #           body: file:///etc/config/kratos/hooks/after-profile-setting.jsonnet
-      #           response:
-      #             ignore: true
-      #             parse: false
+      after:
+        profile:
+          hooks:
+            - hook: web_hook
+              config:
+                url: http://app:3000/users/
+                method: PUT
+                body: file:///etc/config/kratos/hooks/after-profile-setting.jsonnet
+                response:
+                  ignore: true
+                  parse: false
 
     recovery:
       enabled: true
@@ -80,7 +79,7 @@ selfservice:
           hooks:
             - hook: web_hook
               config:
-                url: http://backend:3000/users
+                url: http://app:3000/users
                 method: POST
                 body: file:///etc/config/kratos/hooks/after-registration.jsonnet
                 response:

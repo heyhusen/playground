@@ -26,7 +26,7 @@ export async function updateUser(
 	userRepository: UserRepository,
 	fileService: FileService
 ): Promise<UserResult> {
-	const { first_name: firstName, nickname, email } = dto;
+	const { first_name: firstName, last_name: lastName, nickname, email } = dto;
 
 	let input: Partial<UserTableInput> = {};
 
@@ -34,6 +34,13 @@ export async function updateUser(
 		input = {
 			...input,
 			first_name: firstName,
+		};
+	}
+
+	if (lastName) {
+		input = {
+			...input,
+			last_name: lastName,
 		};
 	}
 
