@@ -6,16 +6,28 @@
 	"overrideCommand": true,
 	"shutdownAction": "stopCompose",
 	"features": {
+		"ghcr.io/schlich/devcontainer-features/starship:0": {},
 		"ghcr.io/devcontainers/features/go:1": {
 			"version": "1.23"
 		},
 		"ghcr.io/devcontainers/features/node:1": {
-			"version": "20"
+			"version": "22"
 		}
 	},
 	"customizations": {
 		"vscode": {
-			"extensions": ["EditorConfig.EditorConfig", "dbaeumer.vscode-eslint", "esbenp.prettier-vscode", "svelte.svelte-vscode", "golang.go", "Grafana.vscode-jsonnet", "redhat.vscode-yaml", "ionutvmi.path-autocomplete", "GitHub.vscode-github-actions"]
+			"extensions": [
+				"EditorConfig.EditorConfig",
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"svelte.svelte-vscode",
+				"golang.go",
+				"Grafana.vscode-jsonnet",
+				"redhat.vscode-yaml",
+				"ionutvmi.path-autocomplete",
+				"GitHub.vscode-github-actions",
+				"grafana.grafana-alloy"
+			]
 		}
 	}
 }

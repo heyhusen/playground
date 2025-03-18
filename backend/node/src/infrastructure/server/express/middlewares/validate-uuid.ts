@@ -1,21 +1,21 @@
 import type { NextFunction, Request, Response } from 'express';
-import { validateUuidController } from '../../../../adapters/controllers/validate-uuid.controller';
-import type { RequestIdParams } from '../../../../adapters/interfaces/common.interface';
-import type { HttpRequestParams } from '../../../../adapters/interfaces/http.interface';
+import { UuidValidatorController } from 'src/presentation/modules/common/controllers/uuid-validator.controller';
+import type { IHttpRequestParams } from '../../../../presentation/interfaces/http.interface';
+import type { IRequestIdParams } from '../../../../presentation/interfaces/request.interface';
 
 export function validateUuid() {
 	return (
-		req: Request<RequestIdParams>,
-		_res: Response,
+		request: Request<IRequestIdParams>,
+		_response: Response,
 		next: NextFunction
 	) => {
-		const httpRequest: HttpRequestParams<RequestIdParams> = {
-			params: {
-				id: req.params.id,
-			},
+		const req: IHttpRequestParams<IRequestIdParams> = {
+			headers: request.headers,
+			params: request.params,
 		};
 
-		validateUuidController(httpRequest);
+		const controller = new UuidValidatorController(req);
+		controller.execute();
 
 		next();
 	};

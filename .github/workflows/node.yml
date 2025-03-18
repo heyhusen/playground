@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: docker.io/library/postgres:16-alpine
+        image: docker.io/library/postgres:17-alpine
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -36,7 +36,7 @@ jobs:
           POSTGRES_DB: postgres
     strategy:
       matrix:
-        node: ['20', '21', '22']
+        node: ['22', '23']
     env:
       FOLDER: backend/node
 
@@ -86,7 +86,7 @@ jobs:
         run: |
           cd ${{ env.FOLDER }}
           cp .env.testing .env
-          pnpm migrate:up
-          pnpm seed:run
+          pnpm db:migrate
+          pnpm db:seed
           pnpm test
 

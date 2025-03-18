@@ -1,226 +1,153 @@
+import { SQL } from 'drizzle-orm';
 import type { Request, Response } from 'express';
-import { createReadStream } from 'fs';
-import { extname } from 'path';
 import { DataDocument, Linker, Paginator, Serializer } from 'ts-japi';
-import { createUserController } from '../../../../adapters/controllers/create-user.controller';
-import { findAllUsersController } from '../../../../adapters/controllers/find-all-users.controller';
-import { findOneUserController } from '../../../../adapters/controllers/find-one-user.controller';
-import { removeUserController } from '../../../../adapters/controllers/remove-user.controller';
-import { updateUserController } from '../../../../adapters/controllers/update-user.controller';
+import { UserEntity } from '../../../../domain/modules/users/entities/user.entity';
+import {
+	ICreateUserDTO,
+	IUpdateUserDTO,
+} from '../../../../domain/modules/users/interfaces/user-dto.interface';
 import type {
-	HttpRequest,
-	HttpRequestBody,
-	JsonApiData,
-	JsonApiPagination,
-} from '../../../../adapters/interfaces/http.interface';
-import type {
-	CreateUser,
-	UpdateUser,
-	UserData,
-	UserRequestParams,
-} from '../../../../adapters/interfaces/user.interface';
+	IJsonApiData,
+	IJsonApiPagination,
+	RequestParamId,
+} from '../../../../presentation/interfaces/http.interface';
+import { UserController } from '../../../../presentation/modules/users/controllers/user.controller';
 import { appConfig } from '../../../config/app';
-import { userRepository } from '../../../repositories/user.repository';
-import { fileService } from '../../../services/file.service';
+import { users } from '../../../dal/schemas';
+import { UnitOfWork } from '../../../dal/unit-of-work';
+import { UserFilter } from '../../../modules/users/filters/user.filter';
+import { IUserFilterParams } from '../../../modules/users/interfaces/user-filter-params.interface';
+import { BaseHandler } from '../base/base.handler';
+import { IUserHandler } from '../interfaces/user-handler.interface';
 
-const userPath = `${appConfig.url}/users`;
+export class UserHandler
+	extends BaseHandler<UserEntity>
+	implements IUserHandler
+{
+	private readonly unitOfWork = new UnitOfWork();
 
-const userSerializer = new Serializer<UserData>('users', {
-	version: '1.1',
-});
-const UserLinker = new Linker<[UserData]>((users) => {
-	return `${userPath}/${users.id}`;
-});
+	private readonly controller = new UserController(this.unitOfWork);
 
-export async function create(
-	req: Request<unknown, unknown, JsonApiData<CreateUser>>,
-	res: Response<Partial<DataDocument<UserData>>>
-) {
-	const request: HttpRequestBody<CreateUser> = {
-		body: {
-			...req.body.data.attributes,
-			id: req.body.data.id,
-		},
-	};
-
-	if (req.file) {
-		const { filename, size, mimetype, path, originalname } = req.file;
-
-		Object.assign<
-			HttpRequestBody<CreateUser>,
-			Partial<HttpRequestBody<CreateUser>>
-		>(request, {
-			file: {
-				name: filename,
-				size,
-				type: mimetype,
-				extension: extname(originalname),
-				content: createReadStream(path),
-			},
+	constructor() {
+		const path = `${appConfig.url}/users`;
+		const serializer = new Serializer<UserEntity>('users', {
+			version: '1.1',
 		});
+		const linker = new Linker<[UserEntity]>((user) => {
+			return `${path}/${user.id}`;
+		});
+
+		super(path, serializer, linker);
 	}
 
-	const controller = createUserController(userRepository);
-	const { status, data } = await controller(request);
-
-	const result = await userSerializer.serialize(data, {
-		linkers: {
-			resource: UserLinker,
-		},
-	});
-
-	res.status(status).contentType('application/vnd.api+json').json(result);
-}
-
-export async function findAll(
-	req: Request<unknown, unknown, unknown, JsonApiPagination>,
-	res: Response<Partial<DataDocument<UserData[]>>>
-) {
-	const controller = findAllUsersController(userRepository, fileService);
-	const { status, data, meta } = await controller({
-		params: req.query,
-	});
-
-	const UserPaginator = new Paginator<UserData>((_user) => {
-		const {
-			page: { size: limit, number: page },
-		} = req.query;
-		const totalPages = Math.ceil(Number(meta?.total) / limit);
-		const prevPage = page > 1 ? page - 1 : 0;
-		const nextPage = page < totalPages ? page + 1 : 0;
-
-		return {
-			first: `${userPath}/?page[number]=1&page[size]=${req.query.page.size}`,
-			last: `${userPath}/?page[number]=${totalPages}&page[size]=${req.query.page.size}`,
-			prev: prevPage
-				? `${userPath}/?page[number]=${prevPage}&page[size]=${req.query.page.size}`
-				: null,
-			next: nextPage
-				? `${userPath}/?page[number]=${nextPage}&page[size]=${req.query.page.size}`
-				: null,
-		};
-	});
-
-	const result = await userSerializer.serialize(data, {
-		linkers: {
-			resource: UserLinker,
-			paginator: UserPaginator,
-		},
-	});
-
-	res.status(status).contentType('application/vnd.api+json').json(result);
-}
-
-export async function findOne(
-	req: Request<UserRequestParams>,
-	res: Response<Partial<DataDocument<UserData>>>
-) {
-	const controller = findOneUserController(userRepository, fileService);
-
-	const { status, data } = await controller({
-		params: req.params,
-	});
-
-	const result = await userSerializer.serialize(data, {
-		linkers: {
-			resource: UserLinker,
-		},
-	});
-
-	res.status(status).contentType('application/vnd.api+json').json(result);
-}
-
-export async function update(
-	req: Request<UserRequestParams, unknown, JsonApiData<UpdateUser>>,
-	res: Response<Partial<DataDocument<UserData>>>
-) {
-	const request: HttpRequest<unknown, UserRequestParams, UpdateUser> = {
-		params: req.params,
-		body: {
-			...req.body.data.attributes,
-			id: req.body.data.id,
-		},
-	};
-
-	if (req.file) {
-		const { filename, size, mimetype, path, originalname } = req.file;
-
-		Object.assign<
-			HttpRequest<unknown, UserRequestParams, UpdateUser>,
-			Partial<HttpRequest<unknown, UserRequestParams, UpdateUser>>
-		>(request, {
-			file: {
-				name: filename,
-				size,
-				type: mimetype,
-				extension: extname(originalname),
-				content: createReadStream(path),
-			},
+	override async create(
+		request: Request<unknown, unknown, IJsonApiData<Partial<ICreateUserDTO>>>,
+		response: Response<Partial<DataDocument<UserEntity>>>
+	): Promise<void> {
+		const { status, data } = await this.controller.create({
+			headers: request.headers,
+			body: request.body as IJsonApiData<ICreateUserDTO>,
 		});
+
+		return this.createResponse(response, status, data);
 	}
 
-	const controller = updateUserController(userRepository, fileService);
-
-	const { status, data } = await controller(request);
-
-	const result = await userSerializer.serialize(data, {
-		linkers: {
-			resource: UserLinker,
-		},
-	});
-
-	res.status(status).contentType('application/vnd.api+json').json(result);
-}
-
-export async function compatUpdate(
-	req: Request<unknown, unknown, JsonApiData<CreateUser>>,
-	res: Response<Partial<DataDocument<UserData>>>
-) {
-	const request: HttpRequest<unknown, UserRequestParams, UpdateUser> = {
-		body: {
-			...req.body.data.attributes,
-			id: req.body.data.id,
-		},
-		params: {
-			id: req.body.data.id,
-		},
-	};
-
-	if (req.file) {
-		const { filename, size, mimetype, path, originalname } = req.file;
-
-		Object.assign<
-			HttpRequest<unknown, UserRequestParams, UpdateUser>,
-			Partial<HttpRequest<unknown, UserRequestParams, UpdateUser>>
-		>(request, {
-			file: {
-				name: filename,
-				size,
-				type: mimetype,
-				extension: extname(originalname),
-				content: createReadStream(path),
-			},
+	override async read(
+		request: Request<RequestParamId>,
+		response: Response<Partial<DataDocument<UserEntity>>, Record<string, any>>
+	): Promise<void> {
+		const { status, data } = await this.controller.read({
+			headers: request.headers,
+			params: request.params,
 		});
+
+		return this.createResponse(response, status, data);
 	}
 
-	const controller = updateUserController(userRepository, fileService);
-	const { status, data } = await controller(request);
+	override async readAll(
+		request: Request<
+			unknown,
+			unknown,
+			unknown,
+			IJsonApiPagination<IUserFilterParams>
+		>,
+		response: Response<Partial<DataDocument<UserEntity[]>>, Record<string, any>>
+	): Promise<void> {
+		const filterGenerator = new UserFilter(users, request.query.filter);
+		const filter = filterGenerator.execute();
 
-	const result = await userSerializer.serialize(data, {
-		linkers: {
-			resource: UserLinker,
-		},
-	});
+		const { status, data, meta } = await this.controller.readAll<
+			IUserFilterParams,
+			SQL[]
+		>(
+			{
+				headers: request.headers,
+				params: request.query,
+			},
+			filter
+		);
 
-	res.status(status).contentType('application/vnd.api+json').json(result);
-}
+		const paginator = new Paginator<UserEntity>((_user) => {
+			const {
+				page: { size: limit, number },
+			} = request.query;
+			const page = Number(number);
+			const totalPages = Math.ceil(Number(meta?.total) / limit);
+			const prevPage = page > 1 ? page - 1 : 0;
+			const nextPage = page < totalPages ? page + 1 : 0;
 
-export async function remove(req: Request<UserRequestParams>, res: Response) {
-	const controller = removeUserController(userRepository, fileService);
+			return {
+				first: `${this.path}/?page[number]=1&page[size]=${request.query.page.size}`,
+				last: `${this.path}/?page[number]=${totalPages}&page[size]=${request.query.page.size}`,
+				prev: prevPage
+					? `${this.path}/?page[number]=${prevPage}&page[size]=${request.query.page.size}`
+					: null,
+				next: nextPage
+					? `${this.path}/?page[number]=${nextPage}&page[size]=${request.query.page.size}`
+					: null,
+			};
+		});
 
-	const { status } = await controller({
-		params: req.params,
-	});
+		return this.createResponse(response, status, data, paginator);
+	}
 
-	res.status(status).contentType('application/vnd.api+json').end();
+	override async update(
+		request: Request<RequestParamId, unknown, IJsonApiData<IUpdateUserDTO>>,
+		response: Response<Partial<DataDocument<UserEntity>>>
+	): Promise<void> {
+		const { status, data } = await this.controller.update({
+			headers: request.headers,
+			params: request.params,
+			body: request.body,
+		});
+
+		return this.createResponse(response, status, data);
+	}
+
+	override async delete(
+		request: Request<RequestParamId>,
+		response: Response
+	): Promise<void> {
+		const { status } = await this.controller.delete({
+			headers: request.headers,
+			params: request.params,
+		});
+
+		return this.createResponse(response, status, null);
+	}
+
+	async addionalUpdate(
+		request: Request<unknown, unknown, IJsonApiData<ICreateUserDTO>>,
+		response: Response<Partial<DataDocument<UserEntity>>>
+	): Promise<void> {
+		const { status, data } = await this.controller.update({
+			headers: request.headers,
+			body: request.body,
+			params: {
+				id: request.body.data.id,
+			},
+		});
+
+		return this.createResponse(response, status, data);
+	}
 }

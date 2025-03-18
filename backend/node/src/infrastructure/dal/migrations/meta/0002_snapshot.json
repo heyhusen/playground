@@ -1,0 +1,136 @@
+{
+	"id": "40bdd3b8-1ac5-473e-b25b-933c07e74921",
+	"prevId": "b84d55da-1a72-48e1-bdf9-26112920c032",
+	"version": "7",
+	"dialect": "postgresql",
+	"tables": {
+		"public.users": {
+			"name": "users",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"version": {
+					"name": "version",
+					"type": "bigint",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 1
+				},
+				"cursor": {
+					"name": "cursor",
+					"type": "bigserial",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "bigint",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "bigint",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at_timezone_name": {
+					"name": "created_at_timezone_name",
+					"type": "varchar(20)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at_timezone_offset": {
+					"name": "created_at_timezone_offset",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"updated_at_timezone_name": {
+					"name": "updated_at_timezone_name",
+					"type": "varchar(20)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"updated_at_timezone_offset": {
+					"name": "updated_at_timezone_offset",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"delete_at": {
+					"name": "delete_at",
+					"type": "bigint",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"delete_at_timezone_name": {
+					"name": "delete_at_timezone_name",
+					"type": "varchar(20)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"delete_at_timezone_offset": {
+					"name": "delete_at_timezone_offset",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"first_name": {
+					"name": "first_name",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"last_name": {
+					"name": "last_name",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"nickname": {
+					"name": "nickname",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"email": {
+					"name": "email",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"users_email_unique": {
+					"name": "users_email_unique",
+					"nullsNotDistinct": false,
+					"columns": ["email"]
+				}
+			},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		}
+	},
+	"enums": {},
+	"schemas": {},
+	"sequences": {},
+	"roles": {},
+	"policies": {},
+	"views": {},
+	"_meta": {
+		"columns": {},
+		"schemas": {},
+		"tables": {}
+	}
+}

@@ -4,12 +4,12 @@ import {
 	PutObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import type { File } from '../../core/entities/common.entity';
-import type { FileService } from '../../core/interfaces/file.interface';
+import type { IBaseFileService } from '../../domain/base/interfaces/base-file-service.interface';
+import type { FileEntity } from '../../domain/entities/file.entity';
 import { s3 } from '../ports/s3';
 
-export const fileService: FileService = {
-	upload: async (file?: File, originalPath = null) => {
+export const fileService: IBaseFileService = {
+	upload: async (file?: FileEntity, originalPath = null) => {
 		let path = originalPath;
 
 		if (file) {

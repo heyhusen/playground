@@ -1,18 +1,15 @@
-import express, { json } from 'express';
-import { queryParser } from 'express-query-parser';
-import { errorHandler, notFoundHandler } from './middlewares/error';
-import { errorLogger, httpLogger } from './middlewares/logger';
+import express, { json, urlencoded } from 'express';
+import { defaultRequest } from './middlewares/default-request';
+import { globalErrorHandler, notFoundHandler } from './middlewares/error';
 import { router } from './routes';
 
 const app = express();
+app.set('query parser', 'extended');
 
-// Query parser
+// URL encode
 app.use(
-	queryParser({
-		parseNull: true,
-		parseUndefined: true,
-		parseBoolean: true,
-		parseNumber: true,
+	urlencoded({
+		extended: true,
 	})
 );
 
@@ -23,8 +20,7 @@ app.use(
 	})
 );
 
-// Http logger
-app.use(httpLogger());
+app.use(defaultRequest());
 
 // Routes
 app.use('/', router);
@@ -32,10 +28,7 @@ app.use('/', router);
 // 404 error handler
 app.use(notFoundHandler());
 
-// Error logger
-app.use(errorLogger());
-
 // Error handler
-app.use(errorHandler());
+app.use(globalErrorHandler());
 
 export { app };

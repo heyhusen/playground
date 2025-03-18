@@ -1,73 +1,73 @@
-import type { ErrorObject } from 'ajv';
 import type { NextFunction, Request, Response } from 'express';
-import { ValidationError } from 'express-json-validator-middleware';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
-import type { JsonApiError } from '../../../../adapters/interfaces/http.interface';
-import { NotFoundException } from '../../../../core/exceptions/not-found.exception';
-import type { HttpError } from '../../../../core/interfaces/http.interface';
+import { ZodError } from 'zod';
+import { HttpException } from '../../../../presentation/exceptions/http.exception';
+import { NotFoundException } from '../../../../presentation/exceptions/not-found.exception';
+import type {
+	IHttpError,
+	IJsonApiError,
+} from '../../../../presentation/interfaces/http.interface';
+import { Logger } from '../../../ports/logger';
 
 export function notFoundHandler() {
-	return (_req: Request, _res: Response, next: NextFunction) => {
-		next(new NotFoundException('Resource not found.'));
+	return (_request: Request, _response: Response, next: NextFunction) => {
+		next(new NotFoundException(ReasonPhrases.NOT_FOUND));
 	};
 }
 
-function createErrorArray(arr: ErrorObject[]): JsonApiError['errors'] {
-	return arr
-		.filter((item) => item.keyword !== 'if')
-		.map<JsonApiError['errors'][number]>((item) => {
-			return {
-				status: StatusCodes.BAD_REQUEST.toString(),
-				title: ReasonPhrases.BAD_REQUEST,
-				detail: item.message as string,
-			};
-		});
-}
+export function globalErrorHandler() {
+	const logger = new Logger();
 
-export function errorHandler() {
 	return (
-		err: HttpError,
-		_req: Request,
-		res: Response,
+		error: IHttpError,
+		_request: Request,
+		response: Response,
 		_next: NextFunction
 	) => {
-		const { name, message } = err;
-		let { status } = err;
-
-		let response: JsonApiError = {
-			jsonapi: {
-				version: '1.1',
+		const httpError: { status: number; response: IJsonApiError } = {
+			status: StatusCodes.INTERNAL_SERVER_ERROR,
+			response: {
+				jsonapi: {
+					version: '1.1',
+				},
+				errors: [
+					{
+						status: StatusCodes.INTERNAL_SERVER_ERROR.toString(),
+						title: 'Error',
+						detail: ReasonPhrases.INTERNAL_SERVER_ERROR,
+					},
+				],
 			},
-			errors: [
+		};
+
+		if (error instanceof HttpException) {
+			const { name, message, status } = error;
+
+			httpError.status = status;
+			httpError.response.errors = [
 				{
 					status: status?.toString(),
 					title: name,
 					detail: message,
 				},
-			],
-		};
-
-		if (err instanceof ValidationError) {
-			if (err.validationErrors.params) {
-				response = {
-					...response,
-					errors: createErrorArray(err.validationErrors.params),
-				};
-			} else if (err.validationErrors.query) {
-				response = {
-					...response,
-					errors: createErrorArray(err.validationErrors.query),
-				};
-			} else if (err.validationErrors.body) {
-				response = {
-					...response,
-					errors: createErrorArray(err.validationErrors.body),
-				};
-			}
-
-			status = 400;
+			];
 		}
 
-		res.status(status || 500).json(response);
+		if (error instanceof ZodError) {
+			httpError.status = StatusCodes.UNPROCESSABLE_ENTITY;
+			httpError.response.errors = error.issues.map<
+				IJsonApiError['errors'][number]
+			>((item) => {
+				return {
+					status: StatusCodes.UNPROCESSABLE_ENTITY.toString(),
+					title: ReasonPhrases.UNPROCESSABLE_ENTITY,
+					detail: item.message,
+				};
+			});
+		}
+
+		logger.error(error.message, error);
+
+		response.status(httpError.status).json(httpError.response);
 	};
 }

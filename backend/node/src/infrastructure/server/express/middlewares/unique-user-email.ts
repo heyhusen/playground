@@ -1,47 +1,36 @@
 import type { NextFunction, Request, Response } from 'express';
-import expressAsyncHandler from 'express-async-handler';
-import { uniqueUserEmailController } from '../../../../adapters/controllers/unique-user-email.controller';
-import type {
-	HttpRequest,
-	JsonApiData,
-} from '../../../../adapters/interfaces/http.interface';
-import type {
-	UpdateUserDto,
-	UserTable,
-} from '../../../../core/interfaces/user.interface';
-import { userRepository } from '../../../repositories/user.repository';
+import { UserEntity } from '../../../../domain/modules/users/entities/user.entity';
+import type { IUpdateUserDTO } from '../../../../domain/modules/users/interfaces/user-dto.interface';
+import type { IJsonApiData } from '../../../../presentation/interfaces/http.interface';
+import { UniqueUserEmailController } from '../../../../presentation/modules/common/controllers/unique-user-email.controller';
+import { UnitOfWork } from '../../../dal/unit-of-work';
 
 export function uniqueUserEmail() {
-	return expressAsyncHandler(
-		async (
-			req: Request<
-				Pick<UserTable, 'id'>,
-				unknown,
-				JsonApiData<Pick<UpdateUserDto, 'email' | 'id'>>
-			>,
-			_res: Response,
-			next: NextFunction
-		) => {
-			if (!req.params?.id && req.body.data?.id) {
-				Object.assign(req.params, {
-					id: req.body.data.id,
-				});
-			}
+	return async (
+		request: Request<
+			Pick<UserEntity, 'id'>,
+			unknown,
+			IJsonApiData<Pick<IUpdateUserDTO, 'email' | 'id'>>
+		>,
+		_response: Response,
+		next: NextFunction
+	) => {
+		const unitOfWork = new UnitOfWork();
 
-			const httpRequest: HttpRequest<
-				unknown,
-				Pick<UserTable, 'id'>,
-				Pick<UpdateUserDto, 'email'>
-			> = {
-				body: req.body.data.attributes,
-				params: req.params,
-			};
-
-			const controller = uniqueUserEmailController(userRepository);
-
-			await controller(httpRequest);
-
-			next();
+		if (!request.params?.id && request.body.data?.id) {
+			Object.assign(request.params, {
+				id: request.body.data.id,
+			});
 		}
-	);
+
+		const controller = new UniqueUserEmailController(unitOfWork, {
+			headers: request.headers,
+			body: request.body.data.attributes,
+			params: request.params,
+		});
+
+		await controller.execute();
+
+		next();
+	};
 }

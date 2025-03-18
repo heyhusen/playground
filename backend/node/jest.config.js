@@ -5,6 +5,7 @@ const config = {
 	coverageDirectory: 'coverage',
 	coverageProvider: 'v8',
 	setupFiles: ['dotenv/config'],
+	// globalSetup: './__tests__/setup.ts',
 	// globalTeardown: './__tests__/teardown.ts',
 	testMatch: ['**/src/**/*.spec.ts', '**/__tests__/**/*.test.ts'],
 	transform: {

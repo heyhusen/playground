@@ -1,40 +1,18 @@
-import ajvErrors from 'ajv-errors';
-import addFormats from 'ajv-formats';
-import type {
-	AllowedSchema,
-	OptionKey,
-} from 'express-json-validator-middleware';
-import { Validator } from 'express-json-validator-middleware';
+import { NextFunction, Request, Response } from 'express';
+import { AnyZodObject } from 'zod';
 
-const validator = new Validator({
-	allErrors: true,
-	$data: true,
-	removeAdditional: true,
-});
+export function validate(schema: AnyZodObject) {
+	return async (
+		request: Request<unknown, unknown, unknown>,
+		_response: Response,
+		next: NextFunction
+	) => {
+		await schema.parseAsync({
+			body: request.body,
+			query: request.query,
+			params: request.params,
+		});
 
-const { ajv } = validator;
-
-addFormats(ajv, ['email', 'uuid']);
-
-ajvErrors(ajv);
-
-export function validate(schema: AllowedSchema, key: OptionKey = 'body') {
-	switch (key) {
-		case 'params':
-			return validator.validate({
-				params: schema,
-			});
-		case 'query':
-			return validator.validate({
-				query: schema,
-			});
-		case 'body':
-			return validator.validate({
-				body: schema,
-			});
-		default:
-			return validator.validate({
-				body: schema,
-			});
-	}
+		return next();
+	};
 }

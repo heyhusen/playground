@@ -3,12 +3,10 @@ updates:
 
   - package-ecosystem: "github-actions"
     directory: "/"
-    target-branch: "development"
     schedule:
       interval: "daily"
 
   - package-ecosystem: "npm"
     directory: "/"
-    target-branch: "development"
     schedule:
       interval: "daily"
