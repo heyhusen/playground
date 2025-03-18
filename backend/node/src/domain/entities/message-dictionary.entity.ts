@@ -1,0 +1,31 @@
+export interface MessageDictionaryEntity {
+	'page.required': string;
+	'page.type': string;
+	'page.number.required': string;
+	'page.size.required': string;
+	'page.number.type': string;
+	'page.size.type': string;
+	'data.required': string;
+	'jsonapi.version.required': string;
+	'jsonapi.version.type': string;
+	'links.self.required': string;
+	'links.self.type': string;
+	'data.type.required': string;
+	'data.id.format': string;
+	'data.type.pattern': string;
+	'data.attributes.first_name.required': string;
+	'data.attributes.email.required': string;
+	'data.attributes.email.minLength': string;
+	'data.attributes.email.format': string;
+	'data.attributes.first_name.type': string;
+	'data.attributes.first_name.minLength': string;
+	'data.attributes.email.type': string;
+	'email.unique': string;
+	'id.required': string;
+	'id.format': string;
+	'user.exist': string;
+	'data.id.required': string;
+	'body.required': string;
+	'params.id.required': string;
+	'error.something.when.wrong': string;
+}
