@@ -14,7 +14,7 @@ export interface IHttpRequest<
 	Params = Record<string, unknown>,
 	Body = Record<string, unknown>,
 	Cookie = Record<string, unknown>,
-	User = Record<string, unknown>
+	User = Record<string, unknown>,
 > {
 	headers: Header;
 	params?: Params;

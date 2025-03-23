@@ -15,7 +15,7 @@ import { IBaseController } from './interfaces/base-controller.interface';
 export abstract class BaseController<
 	CreateDTO extends Dictionary<any>,
 	UpdateDTO extends Dictionary<any>,
-	Entity extends BaseEntity
+	Entity extends BaseEntity,
 > implements IBaseController<CreateDTO, UpdateDTO, Entity>
 {
 	abstract create(

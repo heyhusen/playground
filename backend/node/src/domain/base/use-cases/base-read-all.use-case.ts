@@ -6,7 +6,7 @@ import { IBasePaginatedUseCase } from '../interfaces/base-use-case.interface';
 export class BaseReadAllUseCase<
 	Entity extends BaseEntity,
 	Repository extends IBaseReadRepository<Entity>,
-	Options
+	Options,
 > implements IBasePaginatedUseCase<Entity>
 {
 	constructor(
