@@ -6,7 +6,7 @@ import { IBaseUseCase } from '../interfaces/base-use-case.interface';
 export class BaseUpdateUseCase<
 	RequestEntity extends IBaseRequest,
 	Entity extends BaseEntity,
-	Repository extends IBaseRepository<Entity>
+	Repository extends IBaseRepository<Entity>,
 > implements IBaseUseCase<Entity>
 {
 	constructor(

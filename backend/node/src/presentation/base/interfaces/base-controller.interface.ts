@@ -14,7 +14,7 @@ import { IResponse } from '../../interfaces/response.interface';
 export interface IBaseController<
 	CreateDTO extends Dictionary<any>,
 	UpdateDTO extends Dictionary<any>,
-	Entity extends BaseEntity
+	Entity extends BaseEntity,
 > {
 	create: (
 		request: IHttpRequestBody<IJsonApiData<CreateDTO>>
