@@ -52,7 +52,7 @@
 		"fastify": "^5.2.0",
 		"http-status-codes": "^2.3.0",
 		"ioredis": "5.3.2",
-		"multer": "1.4.5-lts.1",
+		"multer": "2.0.0",
 		"pg": "8.11.2",
 		"pino": "^9.5.0",
 		"pino-pretty": "^13.0.0",
