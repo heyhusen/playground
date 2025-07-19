@@ -14,6 +14,8 @@ export interface IBaseReadRepository<Entity extends BaseEntity> {
 export interface IBaseRepository<Entity extends BaseEntity>
 	extends IBaseReadRepository<Entity> {
 	create: (data: Entity) => Promise<Entity>;
+
 	update: (entityId: string, data: Partial<Entity>) => Promise<Entity>;
+
 	delete: (entityId: string) => Promise<Entity>;
 }
