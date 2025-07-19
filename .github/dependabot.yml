@@ -7,6 +7,7 @@ updates:
       interval: "daily"
 
   - package-ecosystem: "npm"
-    directory: "/"
+    directories:
+      - "/backend/node"
     schedule:
       interval: "daily"
