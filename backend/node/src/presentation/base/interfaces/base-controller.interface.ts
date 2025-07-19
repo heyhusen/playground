@@ -19,6 +19,7 @@ export interface IBaseController<
 	create: (
 		request: IHttpRequestBody<IJsonApiData<CreateDTO>>
 	) => Promise<IResponse<Entity>>;
+
 	update: (
 		request: IHttpRequest<
 			IBaseRequestHeader,
@@ -26,13 +27,16 @@ export interface IBaseController<
 			IJsonApiData<UpdateDTO>
 		>
 	) => Promise<IResponse<Entity>>;
+
 	delete: (
 		request: IHttpRequestParams<RequestParamId>
 	) => Promise<IResponse<Entity>>;
+
 	readAll: <Options>(
 		request: IHttpRequest<IBaseRequestHeader, IJsonApiPagination<Entity>>,
 		options: Options
 	) => Promise<IResponse<Entity>>;
+
 	read: (
 		request: IHttpRequestParams<RequestParamId>
 	) => Promise<IResponse<Entity>>;

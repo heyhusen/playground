@@ -36,7 +36,7 @@ jobs:
           POSTGRES_DB: postgres
     strategy:
       matrix:
-        node: ['22', '23']
+        node: ['22', '24']
     env:
       FOLDER: backend/node
 
@@ -89,4 +89,3 @@ jobs:
           pnpm db:migrate
           pnpm db:seed
           pnpm test
-

@@ -12,10 +12,12 @@ export interface IBaseHandler<Entity extends BaseEntity> {
 		request: Request<unknown, unknown, IJsonApiData<DTO>>,
 		response: Response<Partial<DataDocument<Entity>>>
 	) => Promise<void>;
+
 	read: (
 		request: Request<RequestParamId>,
 		response: Response<Partial<DataDocument<Entity>>>
 	) => Promise<void>;
+
 	readAll: <FilterEntity>(
 		request: Request<
 			unknown,
@@ -25,10 +27,12 @@ export interface IBaseHandler<Entity extends BaseEntity> {
 		>,
 		response: Response<Partial<DataDocument<Entity[]>>>
 	) => Promise<void>;
+
 	update: <DTO extends Dictionary<any>>(
 		request: Request<RequestParamId, unknown, IJsonApiData<DTO>>,
 		response: Response<Partial<DataDocument<Entity>>>
 	) => Promise<void>;
+
 	delete: (
 		request: Request<RequestParamId>,
 		response: Response
