@@ -1,14 +1,13 @@
-import { BaseEntity } from 'src/domain/entities/base.entity';
-import { IBaseRequestHeader } from 'src/presentation/interfaces/request.interface';
 import { Dictionary } from 'ts-japi';
+import { BaseEntity } from '../../../domain/entities/base.entity';
 import {
 	IHttpRequest,
 	IHttpRequestBody,
 	IHttpRequestParams,
 	IJsonApiData,
-	IJsonApiPagination,
 	RequestParamId,
 } from '../../interfaces/http.interface';
+import { IBaseRequestHeader } from '../../interfaces/request.interface';
 import { IResponse } from '../../interfaces/response.interface';
 
 export interface IBaseController<
@@ -29,15 +28,6 @@ export interface IBaseController<
 	) => Promise<IResponse<Entity>>;
 
 	delete: (
-		request: IHttpRequestParams<RequestParamId>
-	) => Promise<IResponse<Entity>>;
-
-	readAll: <Options>(
-		request: IHttpRequest<IBaseRequestHeader, IJsonApiPagination<Entity>>,
-		options: Options
-	) => Promise<IResponse<Entity>>;
-
-	read: (
 		request: IHttpRequestParams<RequestParamId>
 	) => Promise<IResponse<Entity>>;
 }

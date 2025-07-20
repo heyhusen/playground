@@ -1,7 +1,7 @@
 import { and, eq, SQL } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { UserEntity } from '../../../domain/modules/users/entities/user.entity';
-import { IUserReadRepository } from '../../../domain/modules/users/interfaces/user-repository.interface';
+import { UserEntity } from '../../../domain/modules/users/commands/entities/user.entity';
+import { IUserReadRepository } from '../../../domain/modules/users/queries/interfaces/user-repository-read.interface';
 import { BaseReadRepository } from '../../base/base-read.repository';
 import * as schema from '../schemas';
 

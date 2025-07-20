@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { reset } from 'drizzle-seed';
-import type {
+import {
 	BaseUserEntity,
 	UserEntity,
-} from '../src/domain/modules/users/entities/user.entity';
+} from '../src/domain/modules/users/commands/entities/user.entity';
 import * as schema from '../src/infrastructure/dal/schemas';
 import { UnitOfWork } from '../src/infrastructure/dal/unit-of-work';
 import { db } from '../src/infrastructure/ports/database';

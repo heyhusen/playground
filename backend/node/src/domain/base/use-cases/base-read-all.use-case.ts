@@ -1,6 +1,6 @@
-import { IBaseReadRepository } from 'src/domain/base/interfaces/base-repository.interface';
-import { IBasePaginatedResponse } from 'src/domain/base/interfaces/base-response.interface';
-import { BaseEntity } from 'src/domain/entities/base.entity';
+import { BaseEntity } from '../../entities/base.entity';
+import { IBaseReadRepository } from '../interfaces/base-repository.interface';
+import { IBasePaginatedResponse } from '../interfaces/base-response.interface';
 import { IBasePaginatedUseCase } from '../interfaces/base-use-case.interface';
 
 export class BaseReadAllUseCase<
