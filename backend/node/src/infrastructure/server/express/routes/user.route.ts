@@ -7,18 +7,19 @@ import {
 	findAllUserSchema,
 	updateUserSchema,
 } from '../../../schemas/user.schema';
+import { UserReadHandler } from '../handlers/user-read.handler';
 import { UserHandler } from '../handlers/user.handler';
 import { uniqueUserEmail } from '../middlewares/unique-user-email';
 import { validate } from '../middlewares/validator';
 
 const userRouter = Router();
-
 const handler = new UserHandler();
+const readHandler = new UserReadHandler();
 
 userRouter.get(
 	'/',
 	[validate(findAllUserSchema)],
-	handler.readAll.bind(handler)
+	readHandler.readAll.bind(readHandler)
 );
 
 userRouter.post(
@@ -28,7 +29,11 @@ userRouter.post(
 	handler.create.bind(handler)
 );
 
-userRouter.get('/:id', validate(idParamSchema), handler.read.bind(handler));
+userRouter.get(
+	'/:id',
+	validate(idParamSchema),
+	readHandler.read.bind(readHandler)
+);
 
 userRouter.patch(
 	'/:id',

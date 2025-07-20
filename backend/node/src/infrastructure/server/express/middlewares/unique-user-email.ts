@@ -1,8 +1,8 @@
 import type { NextFunction, Request, Response } from 'express';
-import { UserEntity } from '../../../../domain/modules/users/entities/user.entity';
-import type { IUpdateUserDTO } from '../../../../domain/modules/users/interfaces/user-dto.interface';
+import { UserEntity } from '../../../../domain/modules/users/commands/entities/user.entity';
+import type { IUpdateUserDTO } from '../../../../domain/modules/users/commands/interfaces/user-dto.interface';
 import type { IJsonApiData } from '../../../../presentation/interfaces/http.interface';
-import { UniqueUserEmailController } from '../../../../presentation/modules/common/controllers/unique-user-email.controller';
+import { UniqueUserEmailController } from '../../../../presentation/modules/common/commands/controllers/unique-user-email.controller';
 import { UnitOfWork } from '../../../dal/unit-of-work';
 
 export function uniqueUserEmail() {

@@ -1,5 +1,5 @@
-import { IBaseReadRepository } from 'src/domain/base/interfaces/base-repository.interface';
-import { BaseEntity } from 'src/domain/entities/base.entity';
+import { BaseEntity } from '../../entities/base.entity';
+import { IBaseReadRepository } from '../interfaces/base-repository.interface';
 import { IBaseUseCase } from '../interfaces/base-use-case.interface';
 
 export class BaseReadUseCase<

@@ -1,4 +1,4 @@
-import { BaseEntity } from 'src/domain/entities/base.entity';
+import { BaseEntity } from '../../entities/base.entity';
 import { IBasePaginatedResponse } from './base-response.interface';
 
 export interface IBaseCoreUseCase<Response> {

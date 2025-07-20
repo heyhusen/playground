@@ -1,8 +1,8 @@
 import { and, eq, SQL } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { PgTableWithColumns } from 'drizzle-orm/pg-core';
-import type { IBasePaginatedResponse } from 'src/domain/base/interfaces/base-response.interface';
 import type { IBaseReadRepository } from '../../domain/base/interfaces/base-repository.interface';
+import type { IBasePaginatedResponse } from '../../domain/base/interfaces/base-response.interface';
 import type { BaseEntity } from '../../domain/entities/base.entity';
 
 export class BaseReadRepository<Entity extends BaseEntity>

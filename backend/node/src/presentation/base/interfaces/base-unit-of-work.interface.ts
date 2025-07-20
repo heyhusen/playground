@@ -1,7 +1,5 @@
-import {
-	IUserReadRepository,
-	IUserRepository,
-} from 'src/domain/modules/users/interfaces/user-repository.interface';
+import { IUserRepository } from '../../../domain/modules/users/commands/interfaces/user-repository.interface';
+import { IUserReadRepository } from '../../../domain/modules/users/queries/interfaces/user-repository-read.interface';
 
 export interface IBaseUnitOfWork {
 	transaction: <Result>(

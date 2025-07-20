@@ -1,49 +1,27 @@
 import { Request, Response } from 'express';
-import { BaseEntity } from 'src/domain/entities/base.entity';
+import { DataDocument, Dictionary, Linker, Serializer } from 'ts-japi';
+import { BaseEntity } from '../../../../domain/entities/base.entity';
 import {
 	IJsonApiData,
-	IJsonApiPagination,
 	RequestParamId,
-} from 'src/presentation/interfaces/http.interface';
-import {
-	DataDocument,
-	Dictionary,
-	Linker,
-	nullish,
-	Paginator,
-	Serializer,
-	SerializerOptions,
-	SingleOrArray,
-} from 'ts-japi';
+} from '../../../../presentation/interfaces/http.interface';
+import { BaseCoreHandler } from './base-core.handler';
 import { IBaseHandler } from './interfaces/base-handler.interface';
 
 export abstract class BaseHandler<Entity extends BaseEntity>
+	extends BaseCoreHandler<Entity>
 	implements IBaseHandler<Entity>
 {
 	constructor(
-		protected readonly path: string,
-		protected readonly serializer: Serializer<Entity>,
-		protected readonly linker: Linker<[Entity]>
-	) {}
+		protected override readonly serializer: Serializer<Entity>,
+		protected override readonly linker: Linker<[Entity]>
+	) {
+		super(serializer, linker);
+	}
 
 	abstract create<DTO extends Dictionary<any>>(
 		request: Request<unknown, unknown, IJsonApiData<DTO>>,
 		response: Response<Partial<DataDocument<Entity>>>
-	): Promise<void>;
-
-	abstract read(
-		request: Request<RequestParamId>,
-		response: Response<Partial<DataDocument<Entity>>, Record<string, any>>
-	): Promise<void>;
-
-	abstract readAll<FilterEntity>(
-		request: Request<
-			unknown,
-			unknown,
-			unknown,
-			IJsonApiPagination<FilterEntity>
-		>,
-		response: Response<Partial<DataDocument<Entity[]>>, Record<string, any>>
 	): Promise<void>;
 
 	abstract update<DTO extends Dictionary<any>>(
@@ -55,31 +33,4 @@ export abstract class BaseHandler<Entity extends BaseEntity>
 		request: Request<RequestParamId>,
 		response: Response
 	): Promise<void>;
-
-	protected async createResponse(
-		response: Response,
-		status: number,
-		data: nullish | SingleOrArray<Entity>,
-		paginator?: Paginator<Entity>
-	) {
-		const options: Partial<SerializerOptions<Entity>> = {
-			linkers: {
-				resource: this.linker,
-			},
-		};
-
-		if (paginator) {
-			options.linkers = {
-				...options.linkers,
-				paginator,
-			};
-		}
-
-		const result = await this.serializer.serialize(data, options);
-
-		response
-			.contentType('application/vnd.api+json')
-			.status(status)
-			.json(result);
-	}
 }

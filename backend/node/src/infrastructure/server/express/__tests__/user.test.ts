@@ -3,7 +3,7 @@ import { DataDocument } from 'ts-japi';
 import { setup, testUser, user } from '../../../../../__tests__/setup';
 import { teardown } from '../../../../../__tests__/teardown';
 import { getMessage } from '../../../../domain/helpers/get-message.helper';
-import { UserEntity } from '../../../../domain/modules/users/entities/user.entity';
+import { UserEntity } from '../../../../domain/modules/users/commands/entities/user.entity';
 import {
 	IJsonApiError,
 	IJsonApiPagination,

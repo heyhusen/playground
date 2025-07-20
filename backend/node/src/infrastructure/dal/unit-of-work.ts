@@ -4,11 +4,9 @@ import {
 	NodePgQueryResultHKT,
 } from 'drizzle-orm/node-postgres';
 import { PgTransaction } from 'drizzle-orm/pg-core';
-import {
-	IUserReadRepository,
-	IUserRepository,
-} from 'src/domain/modules/users/interfaces/user-repository.interface';
-import { IBaseUnitOfWork } from 'src/presentation/base/interfaces/base-unit-of-work.interface';
+import { IUserRepository } from '../../domain/modules/users/commands/interfaces/user-repository.interface';
+import { IUserReadRepository } from '../../domain/modules/users/queries/interfaces/user-repository-read.interface';
+import { IBaseUnitOfWork } from '../../presentation/base/interfaces/base-unit-of-work.interface';
 import { BaseUnitOfWork } from '../base/base.unit-of-work';
 import { db } from '../ports/database';
 import { UserReadRepository } from './repositories/user-read.repository';

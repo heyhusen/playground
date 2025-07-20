@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
-import { UuidValidatorController } from 'src/presentation/modules/common/controllers/uuid-validator.controller';
 import type { IHttpRequestParams } from '../../../../presentation/interfaces/http.interface';
 import type { IRequestIdParams } from '../../../../presentation/interfaces/request.interface';
+import { UuidValidatorController } from '../../../../presentation/modules/common/commands/controllers/uuid-validator.controller';
 
 export function validateUuid() {
 	return (

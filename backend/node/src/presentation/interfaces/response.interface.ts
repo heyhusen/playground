@@ -1,5 +1,5 @@
-import type { IBasePaginatedResponse } from 'src/domain/base/interfaces/base-response.interface';
-import type { BaseEntity } from 'src/domain/entities/base.entity';
+import type { IBasePaginatedResponse } from '../../domain/base/interfaces/base-response.interface';
+import type { BaseEntity } from '../../domain/entities/base.entity';
 
 export interface ICoreResponse<Data> {
 	status: number;
