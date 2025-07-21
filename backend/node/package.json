@@ -30,7 +30,7 @@
 	"dependencies": {
 		"@aws-sdk/client-s3": "3.388.0",
 		"@aws-sdk/s3-request-presigner": "3.388.0",
-		"@lukeed/ms": "2.0.1",
+		"@lukeed/ms": "2.0.2",
 		"@opentelemetry/api": "^1.9.0",
 		"@opentelemetry/exporter-logs-otlp-grpc": "^0.56.0",
 		"@opentelemetry/exporter-metrics-otlp-grpc": "^0.203.0",
