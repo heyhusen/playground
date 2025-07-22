@@ -5,7 +5,9 @@ export const idParamSchema = z.object({
 	params: z.object({
 		id: z
 			.string({
-				required_error: getMessage('id.required'),
+				error: () => {
+					return getMessage('id.required');
+				},
 			})
 			.uuid(getMessage('id.format')),
 	}),

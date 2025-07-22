@@ -7,14 +7,19 @@ export const findAllUserSchema = z.object({
 			{
 				number: z
 					.string({
-						required_error: getMessage('page.number.required'),
-						invalid_type_error: getMessage('page.number.type'),
+						error: (issue) => {
+							if (issue.input === undefined) {
+								return getMessage('page.number.required');
+							}
+
+							return getMessage('page.number.type');
+						},
 					})
 					.transform((val, ctx) => {
 						const parsed = parseInt(val, 10);
 						if (Number.isNaN(parsed)) {
 							ctx.addIssue({
-								code: z.ZodIssueCode.custom,
+								code: 'custom',
 								message: getMessage('page.number.type'),
 							});
 
@@ -25,14 +30,19 @@ export const findAllUserSchema = z.object({
 					}),
 				size: z
 					.string({
-						required_error: getMessage('page.size.required'),
-						invalid_type_error: getMessage('page.size.type'),
+						error: (issue) => {
+							if (issue.input === undefined) {
+								return getMessage('page.size.required');
+							}
+
+							return getMessage('page.size.type');
+						},
 					})
 					.transform((val, ctx) => {
 						const parsed = parseInt(val, 10);
 						if (Number.isNaN(parsed)) {
 							ctx.addIssue({
-								code: z.ZodIssueCode.custom,
+								code: 'custom',
 								message: getMessage('page.size.type'),
 							});
 
@@ -43,8 +53,13 @@ export const findAllUserSchema = z.object({
 					}),
 			},
 			{
-				required_error: getMessage('page.required'),
-				invalid_type_error: getMessage('page.type'),
+				error: (issue) => {
+					if (issue.input === undefined) {
+						return getMessage('page.required');
+					}
+
+					return getMessage('page.type');
+				},
 			}
 		),
 	}),
@@ -56,50 +71,57 @@ export const createUserSchema = z.object({
 			jsonapi: z
 				.object({
 					version: z.string({
-						required_error: getMessage('jsonapi.version.required'),
-						invalid_type_error: getMessage('jsonapi.version.type'),
+						error: (issue) => {
+							if (issue.input === undefined) {
+								return getMessage('jsonapi.version.required');
+							}
+
+							return getMessage('jsonapi.version.type');
+						},
 					}),
 				})
 				.optional(),
 			data: z.object(
 				{
-					id: z.string().uuid(getMessage('data.id.format')).optional(),
-					type: z
-						.string({
-							required_error: getMessage('data.type.required'),
-						})
-						.includes('users', {
-							message: getMessage('data.type.pattern'),
-						}),
+					id: z.uuid(getMessage('data.id.format')).optional(),
+					type: z.string(getMessage('data.type.required')).includes('users', {
+						message: getMessage('data.type.pattern'),
+					}),
 					attributes: z.object({
-						first_name: z.string({
-							required_error: getMessage('data.attributes.first_name.required'),
-						}),
+						first_name: z.string(
+							getMessage('data.attributes.first_name.required')
+						),
 						last_name: z.string().optional(),
 						email: z
-							.string({
-								required_error: getMessage('data.attributes.email.required'),
+							.email({
+								error: (issue) => {
+									if (issue.input === undefined) {
+										return getMessage('data.attributes.email.format');
+									}
+
+									return getMessage('data.attributes.email.format');
+								},
 							})
-							.min(1, getMessage('data.attributes.email.minLength'))
-							.email(getMessage('data.attributes.email.format')),
+							.min(1, getMessage('data.attributes.email.minLength')),
 					}),
 				},
-				{
-					required_error: getMessage('data.required'),
-				}
+				getMessage('data.required')
 			),
 			links: z
 				.object({
 					self: z.string({
-						required_error: getMessage('links.self.required'),
-						invalid_type_error: getMessage('links.self.type'),
+						error: (issue) => {
+							if (issue.input === undefined) {
+								return getMessage('links.self.required');
+							}
+
+							return getMessage('links.self.type');
+						},
 					}),
 				})
 				.optional(),
 		},
-		{
-			required_error: getMessage('body.required'),
-		}
+		getMessage('body.required')
 	),
 });
 
@@ -109,52 +131,59 @@ export const updateUserSchema = z.object({
 			jsonapi: z
 				.object({
 					version: z.string({
-						required_error: getMessage('jsonapi.version.required'),
-						invalid_type_error: getMessage('jsonapi.version.type'),
+						error: (issue) => {
+							if (issue.input === undefined) {
+								return getMessage('jsonapi.version.required');
+							}
+
+							return getMessage('jsonapi.version.type');
+						},
 					}),
 				})
 				.optional(),
 			data: z.object(
 				{
 					id: z.string().uuid(getMessage('data.id.format')).optional(),
-					type: z
-						.string({
-							required_error: getMessage('data.type.required'),
-						})
-						.includes('users', {
-							message: getMessage('data.type.pattern'),
-						}),
+					type: z.string(getMessage('data.type.required')).includes('users', {
+						message: getMessage('data.type.pattern'),
+					}),
 					attributes: z
 						.object({
 							first_name: z
-								.string({
-									invalid_type_error: getMessage(
-										'data.attributes.first_name.type'
-									),
-								})
+								.string(getMessage('data.attributes.first_name.type'))
 								.min(1, getMessage('data.attributes.first_name.minLength'))
 								.optional(),
 							last_name: z.string().optional(),
 							nick_name: z.string().optional(),
 							email: z
-								.string({
-									invalid_type_error: getMessage('data.attributes.email.type'),
+								.email({
+									error: (issue) => {
+										if (issue.input === undefined) {
+											return getMessage('data.attributes.email.type');
+										}
+
+										return getMessage('data.attributes.email.format');
+									},
 								})
 								.min(1, getMessage('data.attributes.email.minLength'))
-								.email(getMessage('data.attributes.email.format'))
 								.optional(),
 						})
 						.optional(),
 				},
 				{
-					required_error: getMessage('data.required'),
+					error: getMessage('data.required'),
 				}
 			),
 			links: z
 				.object({
 					self: z.string({
-						required_error: getMessage('links.self.required'),
-						invalid_type_error: getMessage('links.self.type'),
+						error: (issue) => {
+							if (issue.input === undefined) {
+								return getMessage('links.self.required');
+							}
+
+							return getMessage('links.self.type');
+						},
 					}),
 				})
 				.optional(),
@@ -168,60 +197,69 @@ export const compatUpdateUserSchema = z.object({
 			jsonapi: z
 				.object({
 					version: z.string({
-						required_error: getMessage('jsonapi.version.required'),
-						invalid_type_error: getMessage('jsonapi.version.type'),
+						error: (issue) => {
+							if (issue.input === undefined) {
+								return getMessage('jsonapi.version.required');
+							}
+
+							return getMessage('jsonapi.version.type');
+						},
 					}),
 				})
 				.optional(),
 			data: z.object(
 				{
-					id: z
-						.string({ required_error: getMessage('data.id.required') })
-						.uuid(getMessage('data.id.format')),
-					type: z
-						.string({
-							required_error: getMessage('data.type.required'),
-						})
-						.includes('users', {
-							message: getMessage('data.type.pattern'),
-						}),
+					id: z.uuid({
+						error: (issue) => {
+							if (issue.input === undefined) {
+								return getMessage('data.id.required');
+							}
+
+							return getMessage('data.id.format');
+						},
+					}),
+					type: z.string(getMessage('data.type.required')).includes('users', {
+						message: getMessage('data.type.pattern'),
+					}),
 					attributes: z
 						.object({
 							first_name: z
-								.string({
-									invalid_type_error: getMessage(
-										'data.attributes.first_name.type'
-									),
-								})
+								.string(getMessage('data.attributes.first_name.type'))
 								.min(1, getMessage('data.attributes.first_name.minLength'))
 								.optional(),
 							last_name: z.string().optional(),
 							nick_name: z.string().optional(),
 							email: z
-								.string({
-									invalid_type_error: getMessage('data.attributes.email.type'),
+								.email({
+									error: (issue) => {
+										if (typeof issue.input !== 'string') {
+											return getMessage('data.attributes.email.type');
+										}
+
+										return getMessage('data.attributes.email.format');
+									},
 								})
 								.min(1, getMessage('data.attributes.email.minLength'))
-								.email(getMessage('data.attributes.email.format'))
 								.optional(),
 						})
 						.optional(),
 				},
-				{
-					required_error: getMessage('data.required'),
-				}
+				getMessage('data.required')
 			),
 			links: z
 				.object({
 					self: z.string({
-						required_error: getMessage('links.self.required'),
-						invalid_type_error: getMessage('links.self.type'),
+						error: (issue) => {
+							if (issue.input === undefined) {
+								return getMessage('links.self.required');
+							}
+
+							return getMessage('links.self.type');
+						},
 					}),
 				})
 				.optional(),
 		},
-		{
-			required_error: getMessage('body.required'),
-		}
+		getMessage('body.required')
 	),
 });
