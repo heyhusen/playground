@@ -715,7 +715,7 @@ describe('PATCH /users/{id}', () => {
 				{
 					status: StatusCodes.UNPROCESSABLE_ENTITY.toString(),
 					title: ReasonPhrases.UNPROCESSABLE_ENTITY,
-					detail: getMessage('data.attributes.email.type'),
+					detail: getMessage('data.attributes.email.format'),
 				},
 			],
 		});
@@ -745,12 +745,12 @@ describe('PATCH /users/{id}', () => {
 				{
 					status: StatusCodes.UNPROCESSABLE_ENTITY.toString(),
 					title: ReasonPhrases.UNPROCESSABLE_ENTITY,
-					detail: getMessage('data.attributes.email.required'),
+					detail: getMessage('data.attributes.email.format'),
 				},
 				{
 					status: StatusCodes.UNPROCESSABLE_ENTITY.toString(),
 					title: ReasonPhrases.UNPROCESSABLE_ENTITY,
-					detail: getMessage('data.attributes.email.format'),
+					detail: getMessage('data.attributes.email.required'),
 				},
 			],
 		});
@@ -780,7 +780,7 @@ describe('PATCH /users/{id}', () => {
 				{
 					status: StatusCodes.UNPROCESSABLE_ENTITY.toString(),
 					title: ReasonPhrases.UNPROCESSABLE_ENTITY,
-					detail: getMessage('data.attributes.email.type'),
+					detail: getMessage('data.attributes.email.format'),
 				},
 			],
 		});
@@ -1327,12 +1327,12 @@ describe('PUT /users', () => {
 				{
 					status: StatusCodes.UNPROCESSABLE_ENTITY.toString(),
 					title: ReasonPhrases.UNPROCESSABLE_ENTITY,
-					detail: getMessage('data.attributes.email.required'),
+					detail: getMessage('data.attributes.email.format'),
 				},
 				{
 					status: StatusCodes.UNPROCESSABLE_ENTITY.toString(),
 					title: ReasonPhrases.UNPROCESSABLE_ENTITY,
-					detail: getMessage('data.attributes.email.format'),
+					detail: getMessage('data.attributes.email.required'),
 				},
 			],
 		});
