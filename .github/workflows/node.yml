@@ -57,34 +57,38 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: ${{ env.FOLDER }}/pnpm-lock.yaml
 
+      - name: Cache pnpm store
+        uses: actions/cache@v3
+        id: pnpm-cache
+        with:
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ hashFiles(format('{0}/pnpm-lock.yaml', env.FOLDER)) }}
+          restore-keys: |
+            pnpm-store-
+
       - name: Install dependencies
-        run: |
-          cd ${{ env.FOLDER }}
-          pnpm install
+        working-directory: ${{ env.FOLDER }}
+        run: pnpm install
 
       - name: Run linter
-        run: |
-          cd ${{ env.FOLDER }}
-          pnpm lint
+        working-directory: ${{ env.FOLDER }}
+        run: pnpm lint
 
       - name: Run prettier
-        run: |
-          cd ${{ env.FOLDER }}
-          pnpm prettier
+        working-directory: ${{ env.FOLDER }}
+        run: pnpm prettier
 
       - name: Run typecheck
-        run: |
-          cd ${{ env.FOLDER }}
-          pnpm typecheck
+        working-directory: ${{ env.FOLDER }}
+        run: pnpm typecheck
 
       - name: Run build
-        run: |
-          cd ${{ env.FOLDER }}
-          pnpm build
+        working-directory: ${{ env.FOLDER }}
+        run: pnpm build
 
       - name: Run tests
+        working-directory: ${{ env.FOLDER }}
         run: |
-          cd ${{ env.FOLDER }}
           cp .env.testing .env
           pnpm db:migrate
           pnpm db:seed
