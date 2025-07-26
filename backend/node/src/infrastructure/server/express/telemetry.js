@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { NodeSDK } = require('@opentelemetry/sdk-node');
 const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
-const { Resource } = require('@opentelemetry/resources');
+const { resourceFromAttributes } = require('@opentelemetry/resources');
 const {
 	ATTR_SERVICE_NAME,
 	ATTR_SERVICE_VERSION,
@@ -24,7 +24,7 @@ const { PgInstrumentation } = require('@opentelemetry/instrumentation-pg');
 // diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
 
 const sdk = new NodeSDK({
-	resource: new Resource({
+	resource: resourceFromAttributes({
 		[ATTR_SERVICE_NAME]: 'playground',
 		[ATTR_SERVICE_VERSION]: '0.1.0',
 	}),
