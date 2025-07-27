@@ -87,8 +87,8 @@ importers:
         specifier: 8.11.2
         version: 8.11.2
       pino:
-        specifier: ^9.5.0
-        version: 9.5.0
+        specifier: ^9.7.0
+        version: 9.7.0
       pino-pretty:
         specifier: ^13.0.0
         version: 13.0.0
@@ -4003,8 +4003,8 @@ packages:
   pino-std-serializers@7.0.0:
     resolution: {integrity: sha512-e906FRY0+tV27iq4juKzSYPbUj2do2X2JX4EzSca1631EB2QJQUqGbDuERal7LCtOpxl6x3+nvo9NPZcmjkiFA==}
 
-  pino@9.5.0:
-    resolution: {integrity: sha512-xSEmD4pLnV54t0NOUN16yCl7RIB1c5UUOse5HSyEXtBp+FgFQyPeDutc+Q2ZO7/22vImV7VfEjH/1zV2QuqvYw==}
+  pino@9.7.0:
+    resolution: {integrity: sha512-vnMCM6xZTb1WDmLvtG2lE/2p+t9hDEIvTWJsu6FejkE62vB7gDhvzrpFR4Cw2to+9JNQxVnkAKVPA1KPB98vWg==}
     hasBin: true
 
   pirates@4.0.6:
@@ -4074,9 +4074,6 @@ packages:
   pretty-format@30.0.5:
     resolution: {integrity: sha512-D1tKtYvByrBkFLe2wHJl2bwMJIiT8rW+XA+TiataH79/FszLQMrpGEvzUVkzPau7OCO0Qnrhpe87PqtOAIB8Yw==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
-
-  process-warning@4.0.0:
-    resolution: {integrity: sha512-/MyYDxttz7DfGMMHiysAsFE4qF+pQYAA8ziO/3NcRVrQ5fSk+Mns4QZA/oRPFzvcqNoVJXQNWNAsdwBXLUkQKw==}
 
   process-warning@4.0.1:
     resolution: {integrity: sha512-3c2LzQ3rY9d0hc1emcsHhfT9Jwz0cChib/QN89oME2R451w5fy3f0afAhERFZAwrbDU43wk12d0ORBpDVME50Q==}
@@ -4258,8 +4255,8 @@ packages:
   safe-regex2@5.0.0:
     resolution: {integrity: sha512-YwJwe5a51WlK7KbOJREPdjNrpViQBI3p4T50lfwPuDhZnE3XGVTlGvi+aolc5+RvxDD6bnUmjVsU9n1eboLUYw==}
 
-  safe-stable-stringify@2.4.3:
-    resolution: {integrity: sha512-e2bDA2WJT0wxseVd4lsDP4+3ONX6HpMXQa1ZhFQ7SU+GjvORCmShbCMltrtIDfkYhVHrOcPtj+KhmDBdPdZD1g==}
+  safe-stable-stringify@2.5.0:
+    resolution: {integrity: sha512-b3rppTKm9T+PsVCBEOUR46GWI7fdOs00VKZ1+9c1EWDaDMvjQc6tUwuFyIprgGgTcWoVHSKrU8H31ZHA2e0RHA==}
     engines: {node: '>=10'}
 
   safer-buffer@2.1.2:
@@ -8132,7 +8129,7 @@ snapshots:
       fast-json-stringify: 6.0.1
       find-my-way: 9.3.0
       light-my-request: 6.6.0
-      pino: 9.5.0
+      pino: 9.7.0
       process-warning: 5.0.0
       rfdc: 1.4.1
       secure-json-parse: 4.0.0
@@ -9514,17 +9511,17 @@ snapshots:
 
   pino-std-serializers@7.0.0: {}
 
-  pino@9.5.0:
+  pino@9.7.0:
     dependencies:
       atomic-sleep: 1.0.0
       fast-redact: 3.5.0
       on-exit-leak-free: 2.1.2
       pino-abstract-transport: 2.0.0
       pino-std-serializers: 7.0.0
-      process-warning: 4.0.0
+      process-warning: 5.0.0
       quick-format-unescaped: 4.0.4
       real-require: 0.2.0
-      safe-stable-stringify: 2.4.3
+      safe-stable-stringify: 2.5.0
       sonic-boom: 4.2.0
       thread-stream: 3.1.0
 
@@ -9573,8 +9570,6 @@ snapshots:
       '@jest/schemas': 30.0.5
       ansi-styles: 5.2.0
       react-is: 18.3.1
-
-  process-warning@4.0.0: {}
 
   process-warning@4.0.1: {}
 
@@ -9788,7 +9783,7 @@ snapshots:
     dependencies:
       ret: 0.5.0
 
-  safe-stable-stringify@2.4.3: {}
+  safe-stable-stringify@2.5.0: {}
 
   safer-buffer@2.1.2: {}
 
