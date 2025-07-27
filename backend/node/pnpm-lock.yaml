@@ -106,8 +106,8 @@ importers:
         version: 4.0.5
     devDependencies:
       '@faker-js/faker':
-        specifier: ^8.4.0
-        version: 8.4.0
+        specifier: ^9.9.0
+        version: 9.9.0
       '@swc-node/register':
         specifier: ^1.6.8
         version: 1.6.8(@swc/core@1.11.18(@swc/helpers@0.5.3))(typescript@5.8.3)
@@ -851,10 +851,9 @@ packages:
     resolution: {integrity: sha512-Kn7K8dx/5U6+cT1yEhpX1w4PCSg0M+XyRILPgvwcEBjerFWCwQj5sbr3/VmxqV0JGHCBCzyd6LxypEuehypY1w==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
 
-  '@faker-js/faker@8.4.0':
-    resolution: {integrity: sha512-htW87352wzUCdX1jyUQocUcmAaFqcR/w082EC8iP/gtkF0K+aKcBp0hR5Arb7dzR8tQ1TrhE9DNa5EbJELm84w==}
-    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0, npm: '>=6.14.13'}
-    deprecated: Please update to a newer version
+  '@faker-js/faker@9.9.0':
+    resolution: {integrity: sha512-OEl393iCOoo/z8bMezRlJu+GlRGlsKbUAN7jKB6LhnKoqKve5DXRpalbItIIcwnCjs1k/FOPjFzcA6Qn+H+YbA==}
+    engines: {node: '>=18.0.0', npm: '>=9.0.0'}
 
   '@fastify/ajv-compiler@4.0.2':
     resolution: {integrity: sha512-Rkiu/8wIjpsf46Rr+Fitd3HRP+VsxUFDDeag0hs9L0ksfnwx2g7SPQQTFL0E8Qv+rfXzQOxBJnjUB9ITUDjfWQ==}
@@ -5670,7 +5669,7 @@ snapshots:
 
   '@eslint/js@8.53.0': {}
 
-  '@faker-js/faker@8.4.0': {}
+  '@faker-js/faker@9.9.0': {}
 
   '@fastify/ajv-compiler@4.0.2':
     dependencies:
