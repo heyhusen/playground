@@ -62,7 +62,7 @@
 		"zod": "^4.0.5"
 	},
 	"devDependencies": {
-		"@faker-js/faker": "^8.4.0",
+		"@faker-js/faker": "^9.9.0",
 		"@swc-node/register": "^1.6.8",
 		"@swc/core": "^1.11.18",
 		"@swc/helpers": "^0.5.1",
