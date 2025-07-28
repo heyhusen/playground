@@ -127,8 +127,8 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5
       '@types/cache-manager':
-        specifier: 4.0.2
-        version: 4.0.2
+        specifier: 5.0.0
+        version: 5.0.0
       '@types/cache-manager-ioredis':
         specifier: 2.0.3
         version: 2.0.3
@@ -1775,8 +1775,9 @@ packages:
   '@types/cache-manager-ioredis@2.0.3':
     resolution: {integrity: sha512-IIwKdlUSztH0TMk1ikRes2CDr2vV4UrSMKhdZ6fBN1++PdgAl/JsxHKRzaSThGqjDUb0UzcWo7dZF4RPPMInMA==}
 
-  '@types/cache-manager@4.0.2':
-    resolution: {integrity: sha512-fT5FMdzsiSX0AbgnS5gDvHl2Nco0h5zYyjwDQy4yPC7Ww6DeGMVKPRqIZtg9HOXDV2kkc18SL1B0N8f0BecrCA==}
+  '@types/cache-manager@5.0.0':
+    resolution: {integrity: sha512-YaQBBhn2OIShxGMH7l1qzGgXCQJ2TRYTqMhFMXRBkDcXQIlqXv+XFkBGstwXSyv7q+JQm3HbpVhaVF8l5tr+Hg==}
+    deprecated: This is a stub types definition. cache-manager provides its own type definitions, so you do not need this installed.
 
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
@@ -6935,10 +6936,12 @@ snapshots:
 
   '@types/cache-manager-ioredis@2.0.3':
     dependencies:
-      '@types/cache-manager': 4.0.2
+      '@types/cache-manager': 5.0.0
       '@types/ioredis': 4.28.10
 
-  '@types/cache-manager@4.0.2': {}
+  '@types/cache-manager@5.0.0':
+    dependencies:
+      cache-manager: 7.0.1
 
   '@types/connect@3.4.38':
     dependencies:
