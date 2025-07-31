@@ -60,8 +60,8 @@ importers:
         specifier: ^1.36.0
         version: 1.36.0
       cache-manager:
-        specifier: 7.0.1
-        version: 7.0.1
+        specifier: 7.1.0
+        version: 7.1.0
       cache-manager-ioredis:
         specifier: 2.1.0
         version: 2.1.0
@@ -2228,8 +2228,8 @@ packages:
     resolution: {integrity: sha512-TCxbp9ceuFveTKWuNaCX8QjoC41rAlHen4s63u9Yd+iXlw3efYmimc/u935PKPxSdhkXpnMes4mxtK3/yb0L4g==}
     engines: {node: '>=6.0.0'}
 
-  cache-manager@7.0.1:
-    resolution: {integrity: sha512-Hd7FOyTtwhwLgkKeKQWEw6Ixj63VKuUWYwkGgL6g6Q7eISW6uxci5+DtUXlqI0gtbLCPPdhL1+HP9Zht27DbrA==}
+  cache-manager@7.1.0:
+    resolution: {integrity: sha512-CzrGUt58dxUnbFo7OcmM5ee0SEo27ulCiXQIy6GbUMoSDs1UVlUSO00i+cPS+q994zcEy8KPN2JJF05Z8HEeiw==}
 
   call-bind-apply-helpers@1.0.2:
     resolution: {integrity: sha512-Sp1ablJ0ivDkSzjcaJdxEunN5/XvksFJ2sMBFfq6x0ryhQV/2b/KwFe21cMpmHtPOSij8K99/wSfoEuTObmuMQ==}
@@ -6848,7 +6848,7 @@ snapshots:
 
   '@types/cache-manager@5.0.0':
     dependencies:
-      cache-manager: 7.0.1
+      cache-manager: 7.1.0
 
   '@types/connect@3.4.38':
     dependencies:
@@ -7395,7 +7395,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  cache-manager@7.0.1:
+  cache-manager@7.1.0:
     dependencies:
       keyv: 5.4.0
 
