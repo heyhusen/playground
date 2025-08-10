@@ -3,6 +3,9 @@ version: "3"
 services:
   app:
     image: mcr.microsoft.com/devcontainers/base:ubuntu-24.04
+    userns_mode: keep-id
+    security_opt:
+      - label=disable
     volumes:
       - ../:/workspaces:cached
     command: sleep infinity
