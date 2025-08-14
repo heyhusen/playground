@@ -6,9 +6,16 @@
 	"overrideCommand": true,
 	"shutdownAction": "stopCompose",
 	"features": {
+		"ghcr.io/devcontainers-extra/features/gh-release:1": {
+			"repo": "air-verse/air",
+			"version": "latest",
+			"binaryNames": "air",
+			"assetRegex": "air_*.*.*_linux_amd64$"
+		},
 		"ghcr.io/schlich/devcontainer-features/starship:0": {},
 		"ghcr.io/devcontainers/features/go:1": {
-			"version": "1.23"
+			"version": "1.24",
+			"golangciLintVersion": "2.0.2"
 		},
 		"ghcr.io/devcontainers/features/node:1": {
 			"version": "22"
@@ -26,8 +33,23 @@
 				"redhat.vscode-yaml",
 				"ionutvmi.path-autocomplete",
 				"GitHub.vscode-github-actions",
-				"grafana.grafana-alloy"
-			]
+				"grafana.grafana-alloy",
+				"bradlc.vscode-tailwindcss"
+			],
+			"settings": {
+				"go.lintTool": "golangci-lint",
+				"go.lintFlags": [
+					"--fast-only"
+				],
+				"go.formatTool": "custom",
+				"go.alternateTools": {
+					"customFormatter": "golangci-lint"
+				},
+				"go.formatFlags": [
+					"fmt",
+					"--stdin"
+				]
+			}
 		}
 	}
 }
