@@ -2,7 +2,7 @@ version: "3"
 
 services:
   app:
-    image: ghcr.io/heyhusen/playground-devcontainer:latest
+    image: mcr.microsoft.com/devcontainers/base:ubuntu-24.04
     userns_mode: keep-id
     security_opt:
       - label=disable
