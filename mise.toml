@@ -1,0 +1,10 @@
+[tools]
+"aqua:grafana/jsonnet-language-server" = "latest"
+marksman = "latest"
+node = "22"
+"npm:@microsoft/compose-language-service" = "latest"
+"npm:dockerfile-language-server-nodejs" = "latest"
+"npm:typescript-language-server" = "latest"
+"npm:vscode-langservers-extracted" = "latest"
+"npm:yaml-language-server" = "latest"
+pnpm = "10"
