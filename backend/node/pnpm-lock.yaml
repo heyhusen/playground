@@ -45,8 +45,8 @@ importers:
         specifier: ^0.52.0
         version: 0.52.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/resources':
-        specifier: ^2.0.1
-        version: 2.0.1(@opentelemetry/api@1.9.0)
+        specifier: ^2.1.0
+        version: 2.1.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-metrics':
         specifier: ^2.0.1
         version: 2.0.1(@opentelemetry/api@1.9.0)
@@ -6380,7 +6380,7 @@ snapshots:
   '@opentelemetry/sql-common@0.41.0(@opentelemetry/api@1.9.0)':
     dependencies:
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/core': 2.0.1(@opentelemetry/api@1.9.0)
+      '@opentelemetry/core': 2.1.0(@opentelemetry/api@1.9.0)
 
   '@oxc-resolver/binding-android-arm-eabi@11.6.1':
     optional: true
