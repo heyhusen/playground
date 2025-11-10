@@ -66,8 +66,8 @@ importers:
         specifier: 2.1.0
         version: 2.1.0
       drizzle-orm:
-        specifier: ^0.44.4
-        version: 0.44.4(@opentelemetry/api@1.9.0)(@types/pg@8.15.5)(knex@2.5.1(pg@8.16.3))(pg@8.16.3)
+        specifier: ^0.44.7
+        version: 0.44.7(@opentelemetry/api@1.9.0)(@types/pg@8.15.5)(knex@2.5.1(pg@8.16.3))(pg@8.16.3)
       express:
         specifier: ^5.1.0
         version: 5.1.0
@@ -167,7 +167,7 @@ importers:
         version: 0.31.5
       drizzle-seed:
         specifier: ^0.3.1
-        version: 0.3.1(drizzle-orm@0.44.4(@opentelemetry/api@1.9.0)(@types/pg@8.15.5)(knex@2.5.1(pg@8.16.3))(pg@8.16.3))
+        version: 0.3.1(drizzle-orm@0.44.7(@opentelemetry/api@1.9.0)(@types/pg@8.15.5)(knex@2.5.1(pg@8.16.3))(pg@8.16.3))
       eslint:
         specifier: 8.47.0
         version: 8.47.0
@@ -2685,8 +2685,8 @@ packages:
     resolution: {integrity: sha512-+CHgPFzuoTQTt7cOYCV6MOw2w8vqEn/ap1yv4bpZOWL03u7rlVRQhUY0WYT3rHsgVTXwYQDZaSUJSQrMBUKuWg==}
     hasBin: true
 
-  drizzle-orm@0.44.4:
-    resolution: {integrity: sha512-ZyzKFpTC/Ut3fIqc2c0dPZ6nhchQXriTsqTNs4ayRgl6sZcFlMs9QZKPSHXK4bdOf41GHGWf+FrpcDDYwW+W6Q==}
+  drizzle-orm@0.44.7:
+    resolution: {integrity: sha512-quIpnYznjU9lHshEOAYLoZ9s3jweleHlZIAWR/jX9gAWNg/JhQ1wj0KGRf7/Zm+obRrYd9GjPVJg790QY9N5AQ==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=4'
@@ -8072,18 +8072,18 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.44.4(@opentelemetry/api@1.9.0)(@types/pg@8.15.5)(knex@2.5.1(pg@8.16.3))(pg@8.16.3):
+  drizzle-orm@0.44.7(@opentelemetry/api@1.9.0)(@types/pg@8.15.5)(knex@2.5.1(pg@8.16.3))(pg@8.16.3):
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
       '@types/pg': 8.15.5
       knex: 2.5.1(pg@8.16.3)
       pg: 8.16.3
 
-  drizzle-seed@0.3.1(drizzle-orm@0.44.4(@opentelemetry/api@1.9.0)(@types/pg@8.15.5)(knex@2.5.1(pg@8.16.3))(pg@8.16.3)):
+  drizzle-seed@0.3.1(drizzle-orm@0.44.7(@opentelemetry/api@1.9.0)(@types/pg@8.15.5)(knex@2.5.1(pg@8.16.3))(pg@8.16.3)):
     dependencies:
       pure-rand: 6.1.0
     optionalDependencies:
-      drizzle-orm: 0.44.4(@opentelemetry/api@1.9.0)(@types/pg@8.15.5)(knex@2.5.1(pg@8.16.3))(pg@8.16.3)
+      drizzle-orm: 0.44.7(@opentelemetry/api@1.9.0)(@types/pg@8.15.5)(knex@2.5.1(pg@8.16.3))(pg@8.16.3)
 
   dunder-proto@1.0.1:
     dependencies:
