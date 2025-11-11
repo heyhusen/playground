@@ -47,7 +47,7 @@
 		"@opentelemetry/semantic-conventions": "^1.37.0",
 		"cache-manager": "7.2.4",
 		"cache-manager-ioredis": "2.1.0",
-		"drizzle-orm": "^0.44.4",
+		"drizzle-orm": "^0.44.7",
 		"express": "^5.1.0",
 		"fastify": "^5.6.1",
 		"http-status-codes": "^2.3.0",
