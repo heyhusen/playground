@@ -1,7 +1,7 @@
 [tools]
 "aqua:grafana/jsonnet-language-server" = "latest"
 marksman = "latest"
-node = "22"
+node = "24"
 "npm:@microsoft/compose-language-service" = "latest"
 "npm:dockerfile-language-server-nodejs" = "latest"
 "npm:typescript-language-server" = "latest"
