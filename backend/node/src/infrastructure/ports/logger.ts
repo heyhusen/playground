@@ -25,15 +25,15 @@ export class Logger implements ILogger {
 	});
 
 	info(message: string, arg?: unknown): void {
-		this.logger.info(message, arg);
+		this.logger.info(message, arg as undefined);
 	}
 
 	http(message: string, arg?: unknown): void {
-		this.logger.trace(message, arg);
+		this.logger.trace(message, arg as undefined);
 	}
 
 	warn(message: string, arg?: unknown): void {
-		this.logger.warn(message, arg);
+		this.logger.warn(message, arg as undefined);
 	}
 
 	error(message: string, error: unknown, arg?: unknown): void {
@@ -41,6 +41,6 @@ export class Logger implements ILogger {
 	}
 
 	debug(message: string, arg?: unknown): void {
-		this.logger.debug(message, arg);
+		this.logger.debug(message, arg as undefined);
 	}
 }
