@@ -96,8 +96,8 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1(express@5.2.0)
       ts-japi:
-        specifier: ^1.12.0
-        version: 1.12.0
+        specifier: ^1.12.1
+        version: 1.12.1
       yaml:
         specifier: ^2.8.1
         version: 2.8.1
@@ -4874,8 +4874,8 @@ packages:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
 
-  ts-japi@1.12.0:
-    resolution: {integrity: sha512-mmATC0x9lYXbD5ziSdi1c+E+7tmzh/F5dJlZTpvXYjMyI4LJa0WMtAH/Go4Dsnm8vxSLTct1gdkk2b83MxfHZg==}
+  ts-japi@1.12.1:
+    resolution: {integrity: sha512-wATSiA26LAMXe9fEBm+UjuORWjqLhShBEgRw00ORAv5Lcq3OwdOpHnbqKuNGU077pit8p2MUga0fomBYBk39WA==}
     engines: {node: '>=10'}
 
   ts-node@10.9.2:
@@ -10845,7 +10845,7 @@ snapshots:
 
   toidentifier@1.0.1: {}
 
-  ts-japi@1.12.0: {}
+  ts-japi@1.12.1: {}
 
   ts-node@10.9.2(@swc/core@1.13.3(@swc/helpers@0.5.17))(@types/node@24.6.2)(typescript@5.9.2):
     dependencies:
