@@ -28,8 +28,8 @@
 		"test:watch": "NODE_ENV=testing jest --watch --detectOpenHandles"
 	},
 	"dependencies": {
-		"@aws-sdk/client-s3": "3.981.0",
-		"@aws-sdk/s3-request-presigner": "3.986.0",
+		"@aws-sdk/client-s3": "3.990.0",
+		"@aws-sdk/s3-request-presigner": "3.991.0",
 		"@lukeed/ms": "2.0.2",
 		"@opentelemetry/api": "^1.9.0",
 		"@opentelemetry/exporter-logs-otlp-grpc": "^0.208.0",
