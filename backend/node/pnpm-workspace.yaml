@@ -1,0 +1,7 @@
+allowBuilds:
+  '@scarf/scarf': true
+  '@swc/core': true
+  esbuild: true
+  oxc-resolver: true
+  protobufjs: true
+  unrs-resolver: true
