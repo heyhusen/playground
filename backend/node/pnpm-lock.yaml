@@ -1019,25 +1019,12 @@ packages:
   '@fastify/proxy-addr@5.1.0':
     resolution: {integrity: sha512-INS+6gh91cLUjB+PVHfu1UqcB76Sqtpyp7bnL+FYojhjygvOPA9ctiD/JDKsyD9Xgu4hUhCSJBPig/w7duNajw==}
 
-  '@grpc/grpc-js@1.14.0':
-    resolution: {integrity: sha512-N8Jx6PaYzcTRNzirReJCtADVoq4z7+1KQ4E70jTg/koQiMoUSN1kbNjPOqpPbhMFhfU1/l7ixspPl8dNY+FoUg==}
-    engines: {node: '>=12.10.0'}
-
-  '@grpc/grpc-js@1.14.2':
-    resolution: {integrity: sha512-QzVUtEFyu05UNx2xr0fCQmStUO17uVQhGNowtxs00IgTZT6/W2PBLfUkj30s0FKJ29VtTa3ArVNIhNP6akQhqA==}
-    engines: {node: '>=12.10.0'}
-
-  '@grpc/grpc-js@1.14.3':
-    resolution: {integrity: sha512-Iq8QQQ/7X3Sac15oB6p0FmUg/klxQvXLeileoqrTRGJYLV+/9tubbr9ipz0GKHjmXVsgFPo/+W+2cA8eNcR+XA==}
+  '@grpc/grpc-js@1.14.5':
+    resolution: {integrity: sha512-7VZM+SVdEcUUqSQeNI3zM8Qs/BhQKZndPo2h5VkYkAM8Iz0wJIa8mKV5ekQGqG8UUsnkQ0NMxIxwkIHYvj0qOw==}
     engines: {node: '>=12.10.0'}
 
   '@grpc/proto-loader@0.8.0':
     resolution: {integrity: sha512-rc1hOQtjIWGxcxpb9aHAfLpIctjEnsDehj0DAiVfBlmT84uvR0uUtN2hEi/ecvWVjXUGf5qPF4qEgiLOx1YIMQ==}
-    engines: {node: '>=6'}
-    hasBin: true
-
-  '@grpc/proto-loader@0.8.1':
-    resolution: {integrity: sha512-wtF6h+DY6M3YaDBPAmvuuA6jV8Sif9MjtOI5euKFWRgCDl5PeDpPsHR9u2l6St5ceY8AZgoNDww5+HvEsXFsGg==}
     engines: {node: '>=6'}
     hasBin: true
 
@@ -5942,29 +5929,12 @@ snapshots:
       '@fastify/forwarded': 3.0.2
       ipaddr.js: 2.5.0
 
-  '@grpc/grpc-js@1.14.0':
+  '@grpc/grpc-js@1.14.5':
     dependencies:
       '@grpc/proto-loader': 0.8.0
-      '@js-sdsl/ordered-map': 4.4.2
-
-  '@grpc/grpc-js@1.14.2':
-    dependencies:
-      '@grpc/proto-loader': 0.8.0
-      '@js-sdsl/ordered-map': 4.4.2
-
-  '@grpc/grpc-js@1.14.3':
-    dependencies:
-      '@grpc/proto-loader': 0.8.1
       '@js-sdsl/ordered-map': 4.4.2
 
   '@grpc/proto-loader@0.8.0':
-    dependencies:
-      lodash.camelcase: 4.3.0
-      long: 5.3.2
-      protobufjs: 7.6.0
-      yargs: 17.7.2
-
-  '@grpc/proto-loader@0.8.1':
     dependencies:
       lodash.camelcase: 4.3.0
       long: 5.3.2
@@ -6340,7 +6310,7 @@ snapshots:
 
   '@opentelemetry/exporter-logs-otlp-grpc@0.208.0(@opentelemetry/api@1.9.1)':
     dependencies:
-      '@grpc/grpc-js': 1.14.2
+      '@grpc/grpc-js': 1.14.5
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.2.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/otlp-exporter-base': 0.208.0(@opentelemetry/api@1.9.1)
@@ -6350,7 +6320,7 @@ snapshots:
 
   '@opentelemetry/exporter-logs-otlp-grpc@0.217.0(@opentelemetry/api@1.9.1)':
     dependencies:
-      '@grpc/grpc-js': 1.14.3
+      '@grpc/grpc-js': 1.14.5
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.7.1(@opentelemetry/api@1.9.1)
       '@opentelemetry/otlp-exporter-base': 0.217.0(@opentelemetry/api@1.9.1)
@@ -6380,7 +6350,7 @@ snapshots:
 
   '@opentelemetry/exporter-metrics-otlp-grpc@0.205.0(@opentelemetry/api@1.9.1)':
     dependencies:
-      '@grpc/grpc-js': 1.14.0
+      '@grpc/grpc-js': 1.14.5
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.1.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/exporter-metrics-otlp-http': 0.205.0(@opentelemetry/api@1.9.1)
@@ -6392,7 +6362,7 @@ snapshots:
 
   '@opentelemetry/exporter-metrics-otlp-grpc@0.217.0(@opentelemetry/api@1.9.1)':
     dependencies:
-      '@grpc/grpc-js': 1.14.3
+      '@grpc/grpc-js': 1.14.5
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.7.1(@opentelemetry/api@1.9.1)
       '@opentelemetry/exporter-metrics-otlp-http': 0.217.0(@opentelemetry/api@1.9.1)
@@ -6440,7 +6410,7 @@ snapshots:
 
   '@opentelemetry/exporter-trace-otlp-grpc@0.206.0(@opentelemetry/api@1.9.1)':
     dependencies:
-      '@grpc/grpc-js': 1.14.0
+      '@grpc/grpc-js': 1.14.5
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.1.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/otlp-exporter-base': 0.206.0(@opentelemetry/api@1.9.1)
@@ -6451,7 +6421,7 @@ snapshots:
 
   '@opentelemetry/exporter-trace-otlp-grpc@0.217.0(@opentelemetry/api@1.9.1)':
     dependencies:
-      '@grpc/grpc-js': 1.14.3
+      '@grpc/grpc-js': 1.14.5
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.7.1(@opentelemetry/api@1.9.1)
       '@opentelemetry/otlp-exporter-base': 0.217.0(@opentelemetry/api@1.9.1)
@@ -6605,7 +6575,7 @@ snapshots:
 
   '@opentelemetry/otlp-grpc-exporter-base@0.205.0(@opentelemetry/api@1.9.1)':
     dependencies:
-      '@grpc/grpc-js': 1.14.0
+      '@grpc/grpc-js': 1.14.5
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.1.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/otlp-exporter-base': 0.205.0(@opentelemetry/api@1.9.1)
@@ -6613,7 +6583,7 @@ snapshots:
 
   '@opentelemetry/otlp-grpc-exporter-base@0.206.0(@opentelemetry/api@1.9.1)':
     dependencies:
-      '@grpc/grpc-js': 1.14.2
+      '@grpc/grpc-js': 1.14.5
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.1.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/otlp-exporter-base': 0.206.0(@opentelemetry/api@1.9.1)
@@ -6621,7 +6591,7 @@ snapshots:
 
   '@opentelemetry/otlp-grpc-exporter-base@0.208.0(@opentelemetry/api@1.9.1)':
     dependencies:
-      '@grpc/grpc-js': 1.14.2
+      '@grpc/grpc-js': 1.14.5
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.2.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/otlp-exporter-base': 0.208.0(@opentelemetry/api@1.9.1)
@@ -6629,7 +6599,7 @@ snapshots:
 
   '@opentelemetry/otlp-grpc-exporter-base@0.217.0(@opentelemetry/api@1.9.1)':
     dependencies:
-      '@grpc/grpc-js': 1.14.3
+      '@grpc/grpc-js': 1.14.5
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.7.1(@opentelemetry/api@1.9.1)
       '@opentelemetry/otlp-exporter-base': 0.217.0(@opentelemetry/api@1.9.1)
