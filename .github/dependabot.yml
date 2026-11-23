@@ -11,3 +11,9 @@ updates:
       - "/api/node"
     schedule:
       interval: weekly
+
+  - package-ecosystem: "gomod"
+    directories:
+      - "/api/go"
+    schedule:
+      interval: weekly
