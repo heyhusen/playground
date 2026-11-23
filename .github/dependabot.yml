@@ -8,6 +8,6 @@ updates:
 
   - package-ecosystem: "npm"
     directories:
-      - "/backend/node"
+      - "/api/node"
     schedule:
       interval: weekly
