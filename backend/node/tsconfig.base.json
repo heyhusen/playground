@@ -1,8 +1,15 @@
 {
-	"extends": ["@tsconfig/strictest/tsconfig", "@tsconfig/node22/tsconfig"],
+	"extends": ["@tsconfig/strictest/tsconfig", "@tsconfig/node26/tsconfig"],
 	"include": ["./src/**/*.ts"],
 	"compilerOptions": {
 		"outDir": "dist",
+		// faker v10 is ESM-only. TS's node16 resolution rejects importing it from
+		// CommonJS files, while bundler resolution still emits CommonJS here.
+		"module": "commonjs",
+		"moduleResolution": "bundler",
+		// The current @typescript-eslint parser cannot parse the es2025/ESNext
+		// libs pulled in by @tsconfig/node26, so keep the lib at es2023.
+		"lib": ["es2023"],
 		"types": ["node", "jest"],
 		"incremental": true,
 		"noImplicitReturns": true,
