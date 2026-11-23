@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { UserEntity } from '../entities/user.entity';
 import { IUserRepository } from '../interfaces/user-repository.interface';
 import { mockedRequest } from './__mocks__/request.mock';
@@ -7,7 +8,7 @@ import { CreateUserUseCase } from './create-user.use-case';
 
 describe(CreateUserUseCase.name, () => {
 	beforeEach(() => {
-		mockUserRepository.create = jest.fn((data: UserEntity) => {
+		mockUserRepository.create = vi.fn((data: UserEntity) => {
 			return Promise.resolve<UserEntity>({
 				...mockedUser,
 				...data,

@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { faker } from '@faker-js/faker';
 import { getMessage } from '../../../../helpers/get-message.helper';
 import { mockUserRepositoryRead } from '../../queries/use-cases/__mocks__/user-repository-read.mock';
@@ -7,7 +8,7 @@ import { UniqueUserEmailUseCase } from './unique-user-email.use-case';
 
 describe(UniqueUserEmailUseCase.name, () => {
 	beforeAll(() => {
-		mockUserRepositoryRead.findOneByEmail = jest.fn((email) => {
+		mockUserRepositoryRead.findOneByEmail = vi.fn((email) => {
 			if (email === mockedUser.email) {
 				return Promise.resolve<UserEntity>(mockedUser);
 			}

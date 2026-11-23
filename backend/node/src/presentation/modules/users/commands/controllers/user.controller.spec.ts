@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { faker } from '@faker-js/faker';
 import { StatusCodes } from 'http-status-codes';
 import { IBaseRequest } from '../../../../../domain/base/interfaces/base-request.interface';
@@ -29,7 +30,7 @@ describe(UserController.name, () => {
 		};
 
 		test('should create an user', async () => {
-			mockUnitOfWork.transaction = jest.fn().mockReturnValue({
+			mockUnitOfWork.transaction = vi.fn().mockReturnValue({
 				status: StatusCodes.CREATED,
 				data: mockedUser,
 			});
@@ -65,7 +66,7 @@ describe(UserController.name, () => {
 		};
 
 		test('should not update user', async () => {
-			mockUnitOfWork.transaction = jest.fn().mockReturnValue({
+			mockUnitOfWork.transaction = vi.fn().mockReturnValue({
 				status: StatusCodes.OK,
 				data: mockedUser,
 			});
@@ -89,7 +90,7 @@ describe(UserController.name, () => {
 				first_name: faker.person.firstName(),
 				last_name: faker.person.lastName(),
 			};
-			mockUnitOfWork.transaction = jest.fn().mockReturnValue({
+			mockUnitOfWork.transaction = vi.fn().mockReturnValue({
 				status: StatusCodes.OK,
 				data: {
 					...mockedUser,
@@ -124,7 +125,7 @@ describe(UserController.name, () => {
 			const body = {
 				email: faker.internet.email(),
 			};
-			mockUnitOfWork.transaction = jest.fn().mockReturnValue({
+			mockUnitOfWork.transaction = vi.fn().mockReturnValue({
 				status: StatusCodes.OK,
 				data: {
 					...mockedUser,
@@ -163,7 +164,7 @@ describe(UserController.name, () => {
 		};
 
 		beforeAll(() => {
-			mockUnitOfWork.transaction = jest.fn().mockReturnValue(
+			mockUnitOfWork.transaction = vi.fn().mockReturnValue(
 				Promise.resolve({
 					status: StatusCodes.NO_CONTENT,
 				})

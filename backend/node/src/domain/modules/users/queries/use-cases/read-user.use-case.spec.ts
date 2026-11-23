@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { UserEntity } from '../../commands/entities/user.entity';
 import { IUserRepository } from '../../commands/interfaces/user-repository.interface';
 import { mockedUser } from '../../commands/use-cases/__mocks__/user.mock';
@@ -6,7 +7,7 @@ import { ReadUserUseCase } from './read-user.use-case';
 
 describe(ReadUserUseCase.name, () => {
 	beforeEach(() => {
-		mockUserRepositoryRead.read = jest.fn((_id) => {
+		mockUserRepositoryRead.read = vi.fn((_id) => {
 			return Promise.resolve<UserEntity>(mockedUser);
 		});
 	});

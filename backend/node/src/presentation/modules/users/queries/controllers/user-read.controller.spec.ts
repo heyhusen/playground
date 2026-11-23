@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { faker } from '@faker-js/faker';
 import { StatusCodes } from 'http-status-codes';
 import { IBaseRequest } from '../../../../../domain/base/interfaces/base-request.interface';
@@ -25,20 +26,20 @@ import { IResponse } from '../../../../interfaces/response.interface';
 import { mockUnitOfWork } from '../../commands/controllers/__mocks__/unit-of-work.mock';
 import { UserReadController } from './user-read.controller';
 
-jest.mock(
+vi.mock(
 	'../../../../../domain/modules/users/queries/use-cases/read-user.use-case'
 );
-const mockedReadUserUseCase = jest.mocked(ReadUserUseCase);
+const mockedReadUserUseCase = vi.mocked(ReadUserUseCase);
 
-jest.mock(
+vi.mock(
 	'../../../../../domain/modules/users/queries/use-cases/read-all-user.use-case'
 );
-const mockedReadAllUserUseCase = jest.mocked(ReadAllUserUseCase);
+const mockedReadAllUserUseCase = vi.mocked(ReadAllUserUseCase);
 
-jest.mock(
+vi.mock(
 	'../../../../../domain/modules/users/commands/use-cases/unique-user-email.use-case'
 );
-const mockedUniqueUserUseCase = jest.mocked(UniqueUserEmailUseCase);
+const mockedUniqueUserUseCase = vi.mocked(UniqueUserEmailUseCase);
 
 describe(UserReadController.name, () => {
 	describe(UserReadController.prototype.read.name, () => {
@@ -47,13 +48,15 @@ describe(UserReadController.name, () => {
 		};
 
 		beforeEach(() => {
-			mockedReadUserUseCase.mockImplementation((_repository, _id): any => {
-				return {
-					execute: () => {
-						return Promise.resolve<UserEntity>(mockedUser);
-					},
-				};
-			});
+			mockedReadUserUseCase.mockImplementation(
+				function (_repository, _id): any {
+					return {
+						execute: () => {
+							return Promise.resolve<UserEntity>(mockedUser);
+						},
+					};
+				}
+			);
 		});
 
 		const controller = new UserReadController(mockUnitOfWork);
@@ -107,7 +110,7 @@ describe(UserReadController.name, () => {
 		beforeEach(() => {
 			mockedReadAllUserUseCase.mockClear();
 			mockedReadAllUserUseCase.mockImplementation(
-				(_repository, _page, _limit, _options): any => {
+				function (_repository, _page, _limit, _options): any {
 					return {
 						execute: () => {
 							return Promise.resolve<IBasePaginatedResponse<UserEntity>>({
@@ -122,9 +125,9 @@ describe(UserReadController.name, () => {
 
 		test('should return empty array', async () => {
 			mockedReadAllUserUseCase.mockImplementation(
-				(_repository, _page, _limit, _options): any => {
+				function (_repository, _page, _limit, _options): any {
 					return {
-						execute: jest
+						execute: vi
 							.fn()
 							.mockReturnValue(
 								Promise.resolve<IBasePaginatedResponse<UserEntity>>(result)
@@ -160,9 +163,9 @@ describe(UserReadController.name, () => {
 
 		test('should return all users with avatar', async () => {
 			mockedReadAllUserUseCase.mockImplementation(
-				(_repository, _page, _limit, _options): any => {
+				function (_repository, _page, _limit, _options): any {
 					return {
-						execute: jest.fn().mockReturnValue(
+						execute: vi.fn().mockReturnValue(
 							Promise.resolve<IBasePaginatedResponse<UserEntity>>({
 								...result,
 								data: [mockedUser],
@@ -195,19 +198,20 @@ describe(UserReadController.name, () => {
 		};
 
 		beforeEach(() => {
-			mockedUniqueUserUseCase.mockImplementation(
-				(_repo: IUserReadRepository, email: string): any => {
-					return {
-						execute: () => {
-							if (email === mockedUser.email) {
-								throw new Error(getMessage('email.unique'));
-							}
+			mockedUniqueUserUseCase.mockImplementation(function (
+				_repo: IUserReadRepository,
+				email: string
+			): any {
+				return {
+					execute: () => {
+						if (email === mockedUser.email) {
+							throw new Error(getMessage('email.unique'));
+						}
 
-							return Promise.resolve<boolean>(true);
-						},
-					};
-				}
-			);
+						return Promise.resolve<boolean>(true);
+					},
+				};
+			});
 		});
 
 		test('should only check when email is provided', async () => {

@@ -1,9 +1,10 @@
+import { vi } from 'vitest';
 import { IUserRepository } from '../../interfaces/user-repository.interface';
 
 export const mockUserRepository: IUserRepository = {
-	create: jest.fn(),
-	readAll: jest.fn(),
-	read: jest.fn(),
-	update: jest.fn(),
-	delete: jest.fn(),
+	create: vi.fn(),
+	readAll: vi.fn(),
+	read: vi.fn(),
+	update: vi.fn(),
+	delete: vi.fn(),
 };

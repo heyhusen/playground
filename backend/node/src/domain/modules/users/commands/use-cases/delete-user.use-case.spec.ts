@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { UserEntity } from '../entities/user.entity';
 import { IUserRepository } from '../interfaces/user-repository.interface';
 import { mockUserRepository } from './__mocks__/user-repository.mock';
@@ -6,7 +7,7 @@ import { DeleteUserUseCase } from './delete-user.use-case';
 
 describe(DeleteUserUseCase.name, () => {
 	beforeEach(() => {
-		mockUserRepository.delete = jest.fn((_id) => {
+		mockUserRepository.delete = vi.fn((_id) => {
 			return Promise.resolve<UserEntity>(mockedUser);
 		});
 	});
