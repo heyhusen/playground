@@ -14,7 +14,6 @@ const {
 	OTLPMetricExporter,
 } = require('@opentelemetry/exporter-metrics-otlp-grpc');
 const { PinoInstrumentation } = require('@opentelemetry/instrumentation-pino');
-const { KnexInstrumentation } = require('@opentelemetry/instrumentation-knex');
 const { PgInstrumentation } = require('@opentelemetry/instrumentation-pg');
 
 const sdk = new NodeSDK({
@@ -28,9 +27,6 @@ const sdk = new NodeSDK({
 	}),
 	instrumentations: [
 		new HttpInstrumentation(),
-		new KnexInstrumentation({
-			maxQueryLength: 100,
-		}),
 		new PgInstrumentation(),
 		new PinoInstrumentation(),
 	],
