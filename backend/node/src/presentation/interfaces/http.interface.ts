@@ -42,8 +42,10 @@ export type IHttpRequestCookie<T = Record<string, unknown>> = IHttpRequest<
 	T
 >;
 
-export interface IJsonApiData<Entity extends Dictionary<any>>
-	extends Omit<DataDocument<Entity>, 'data'> {
+export interface IJsonApiData<Entity extends Dictionary<any>> extends Omit<
+	DataDocument<Entity>,
+	'data'
+> {
 	data: Omit<Resource<Entity>, 'attributes' | 'getKey'> & {
 		attributes: Entity;
 	};

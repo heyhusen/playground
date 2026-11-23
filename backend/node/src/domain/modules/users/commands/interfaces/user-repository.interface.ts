@@ -3,5 +3,6 @@ import { IUserReadRepository } from '../../queries/interfaces/user-repository-re
 import type { UserEntity } from '../entities/user.entity';
 
 export interface IUserRepository
-	extends IBaseRepository<UserEntity>,
+	extends
+		IBaseRepository<UserEntity>,
 		Omit<IUserReadRepository, 'findOneByEmail'> {}

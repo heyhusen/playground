@@ -5,9 +5,9 @@ import type { IBaseReadRepository } from '../../domain/base/interfaces/base-repo
 import type { IBasePaginatedResponse } from '../../domain/base/interfaces/base-response.interface';
 import type { BaseEntity } from '../../domain/entities/base.entity';
 
-export class BaseReadRepository<Entity extends BaseEntity>
-	implements IBaseReadRepository<Entity>
-{
+export class BaseReadRepository<
+	Entity extends BaseEntity,
+> implements IBaseReadRepository<Entity> {
 	constructor(
 		protected readonly db: NodePgDatabase<any>,
 		protected readonly entitySchema: PgTableWithColumns<any>

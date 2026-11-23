@@ -15,8 +15,7 @@ export abstract class BaseController<
 	CreateDTO extends Dictionary<any>,
 	UpdateDTO extends Dictionary<any>,
 	Entity extends BaseEntity,
-> implements IBaseController<CreateDTO, UpdateDTO, Entity>
-{
+> implements IBaseController<CreateDTO, UpdateDTO, Entity> {
 	abstract create(
 		request: IHttpRequestBody<IJsonApiData<CreateDTO>>
 	): Promise<IResponse<Entity>>;

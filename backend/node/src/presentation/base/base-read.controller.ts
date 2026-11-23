@@ -9,9 +9,9 @@ import { IBaseRequestHeader } from '../interfaces/request.interface';
 import { IResponse } from '../interfaces/response.interface';
 import { IBaseReadController } from './interfaces/base-read-controller.interface';
 
-export abstract class BaseReadController<Entity extends BaseEntity>
-	implements IBaseReadController<Entity>
-{
+export abstract class BaseReadController<
+	Entity extends BaseEntity,
+> implements IBaseReadController<Entity> {
 	abstract readAll<Options>(
 		request: IHttpRequest<IBaseRequestHeader, IJsonApiPagination>,
 		options: Options

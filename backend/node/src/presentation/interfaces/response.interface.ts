@@ -6,8 +6,9 @@ export interface ICoreResponse<Data> {
 	data?: Data | Data[];
 }
 
-export interface IResponse<Entity extends BaseEntity>
-	extends ICoreResponse<Entity> {
+export interface IResponse<
+	Entity extends BaseEntity,
+> extends ICoreResponse<Entity> {
 	status: number;
 	data?: Entity | Entity[];
 	meta?: IBasePaginatedResponse<Entity>['meta'];
