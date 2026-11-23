@@ -3,6 +3,7 @@ package openapi
 import (
 	"context"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"os"
@@ -72,16 +73,14 @@ func Load(path string) (*Document, error) {
 	return &Document{Spec: doc, YAML: raw}, nil
 }
 
-// Docs serves a Swagger UI page pointing at the local spec.
-func (d *Document) Docs(w http.ResponseWriter, _ *http.Request) {
+// HTML builds the Swagger UI page pointing at the local spec.
+func (d *Document) HTML() string {
 	title := "API Documentation"
 	if d.Spec != nil && d.Spec.Info.Title != "" {
 		title = d.Spec.Info.Title
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
-	_, _ = fmt.Fprintf(w, `<!doctype html>
+	return fmt.Sprintf(`<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -99,6 +98,13 @@ func (d *Document) Docs(w http.ResponseWriter, _ *http.Request) {
 		</script>
 	</body>
 </html>`, title)
+}
+
+// Docs serves the Swagger UI page.
+func (d *Document) Docs(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	_, _ = io.WriteString(w, d.HTML())
 }
 
 // YAML serves the raw OpenAPI document.

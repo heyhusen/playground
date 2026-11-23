@@ -1,4 +1,4 @@
-.PHONY: run run-chi run-echo test vet fmt check migrate-up migrate-down
+.PHONY: run run-chi run-echo run-fiber test vet fmt check migrate-up migrate-down
 
 run: run-chi
 
@@ -8,7 +8,10 @@ run-chi:
 run-echo:
 	go run ./cmd/server-echo
 
-# Both server suites share one database, so their packages run serially.
+run-fiber:
+	go run ./cmd/server-fiber
+
+# All server suites share one database, so their packages run serially.
 test:
 	go test -p 1 ./...
 
