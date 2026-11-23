@@ -6,3 +6,5 @@ allowBuilds:
   oxc-resolver: true
   protobufjs: true
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - hono@4.13.21
