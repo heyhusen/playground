@@ -17,6 +17,7 @@
 		"build": "run-s clean build:ts",
 		"build:ts": "tsc -p tsconfig.build.json",
 		"start:express": "node -r ./src/infrastructure/server/express/telemetry.js dist/infrastructure/server/express/index.js",
+		"start:fastify": "node -r ./src/infrastructure/server/fastify/telemetry.js dist/infrastructure/server/fastify/index.js",
 		"start": "run-s start:express",
 		"lint": "eslint --ignore-path .gitignore --ext .js,.ts .",
 		"lint:fix": "eslint --ignore-path .gitignore --ext .js,.ts --fix .",
