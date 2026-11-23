@@ -14,7 +14,7 @@ import (
 	"github.com/heyhusen/playground/api/go/internal/domain"
 	"github.com/heyhusen/playground/api/go/internal/domain/usecase"
 	"github.com/heyhusen/playground/api/go/internal/id"
-	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/chi/jsonapi"
+	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/shared/jsonapi"
 	"github.com/heyhusen/playground/api/go/internal/message"
 )
 

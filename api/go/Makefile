@@ -1,10 +1,16 @@
-.PHONY: run test vet fmt check migrate-up migrate-down
+.PHONY: run run-chi run-echo test vet fmt check migrate-up migrate-down
 
-run:
+run: run-chi
+
+run-chi:
 	go run ./cmd/server
 
+run-echo:
+	go run ./cmd/server-echo
+
+# Both server suites share one database, so their packages run serially.
 test:
-	go test ./...
+	go test -p 1 ./...
 
 vet:
 	go vet ./...

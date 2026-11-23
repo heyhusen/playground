@@ -18,7 +18,7 @@ import (
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/database"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/migration"
 	chiserver "github.com/heyhusen/playground/api/go/internal/infrastructure/server/chi"
-	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/chi/openapi"
+	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/shared/openapi"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/storage"
 )
 
