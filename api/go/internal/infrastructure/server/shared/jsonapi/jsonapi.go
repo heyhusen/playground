@@ -53,21 +53,29 @@ type Resource struct {
 	Links      map[string]string `json:"links,omitempty"`
 }
 
-// WriteData serializes data as a JSON:API document.
-func WriteData(w http.ResponseWriter, status int, data any, links map[string]any, meta map[string]any) {
-	w.Header().Set("Content-Type", "application/vnd.api+json")
-	w.WriteHeader(status)
-
-	_ = json.NewEncoder(w).Encode(Document{
+// MarshalData builds a JSON:API document body for frameworks that manage
+// their own response writer (Fiber, for example).
+func MarshalData(data any, links map[string]any, meta map[string]any) []byte {
+	body, _ := json.Marshal(Document{
 		JSONAPI: apiVersion{Version: version},
 		Data:    data,
 		Links:   links,
 		Meta:    meta,
 	})
+
+	return body
 }
 
-// WriteError serializes a domain error as a JSON:API error document.
-func WriteError(w http.ResponseWriter, err *domain.Error) {
+// WriteData serializes data as a JSON:API document.
+func WriteData(w http.ResponseWriter, status int, data any, links map[string]any, meta map[string]any) {
+	w.Header().Set("Content-Type", "application/vnd.api+json")
+	w.WriteHeader(status)
+
+	_, _ = w.Write(MarshalData(data, links, meta))
+}
+
+// MarshalError builds a JSON:API error body.
+func MarshalError(err *domain.Error) []byte {
 	details := err.Details
 	if len(details) == 0 {
 		details = []string{err.Detail}
@@ -82,13 +90,20 @@ func WriteError(w http.ResponseWriter, err *domain.Error) {
 		})
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(err.Status)
-
-	_ = json.NewEncoder(w).Encode(ErrorDocument{
+	body, _ := json.Marshal(ErrorDocument{
 		JSONAPI: apiVersion{Version: version},
 		Errors:  items,
 	})
+
+	return body
+}
+
+// WriteError serializes a domain error as a JSON:API error document.
+func WriteError(w http.ResponseWriter, err *domain.Error) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(err.Status)
+
+	_, _ = w.Write(MarshalError(err))
 }
 
 // WriteNotFound writes the framework's 404 error document.
