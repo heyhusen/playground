@@ -8,6 +8,12 @@ updates:
 
   - package-ecosystem: "npm"
     directories:
-      - "/backend/node"
+      - "/api/node"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: "gomod"
+    directories:
+      - "/api/go"
     schedule:
       interval: weekly

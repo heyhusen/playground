@@ -1,5 +1,8 @@
 [tools]
 "aqua:grafana/jsonnet-language-server" = "latest"
+go = "1.27"
+"go:golang.org/x/tools/gopls" = "latest"
+golangci-lint = "latest"
 marksman = "latest"
 node = "26"
 "npm:@microsoft/compose-language-service" = "latest"
