@@ -7,8 +7,7 @@ export class BaseReadAllUseCase<
 	Entity extends BaseEntity,
 	Repository extends IBaseReadRepository<Entity>,
 	Options,
-> implements IBasePaginatedUseCase<Entity>
-{
+> implements IBasePaginatedUseCase<Entity> {
 	constructor(
 		protected readonly repository: Repository,
 		protected readonly page: number,

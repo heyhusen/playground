@@ -5,9 +5,9 @@ import type { IBaseRepository } from '../../domain/base/interfaces/base-reposito
 import type { IBasePaginatedResponse } from '../../domain/base/interfaces/base-response.interface';
 import type { BaseEntity } from '../../domain/entities/base.entity';
 
-export class BaseRepository<Entity extends BaseEntity>
-	implements IBaseRepository<Entity>
-{
+export class BaseRepository<
+	Entity extends BaseEntity,
+> implements IBaseRepository<Entity> {
 	constructor(
 		protected readonly trx: PgTransaction<
 			NodePgQueryResultHKT,

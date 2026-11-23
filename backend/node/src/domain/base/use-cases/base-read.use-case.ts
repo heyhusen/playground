@@ -5,8 +5,7 @@ import { IBaseUseCase } from '../interfaces/base-use-case.interface';
 export class BaseReadUseCase<
 	Entity extends BaseEntity,
 	Repository extends IBaseReadRepository<Entity>,
-> implements IBaseUseCase<Entity>
-{
+> implements IBaseUseCase<Entity> {
 	constructor(
 		protected readonly repository: Repository,
 		protected readonly entityId: string

@@ -7,8 +7,7 @@ export class BaseCreateUseCase<
 	RequestEntity extends IBaseRequest,
 	Entity extends BaseEntity,
 	Repository extends IBaseRepository<Entity>,
-> implements IBaseUseCase<Entity>
-{
+> implements IBaseUseCase<Entity> {
 	constructor(
 		protected readonly repository: Repository,
 		protected readonly request: RequestEntity,

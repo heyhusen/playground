@@ -11,8 +11,9 @@ export interface IBaseReadRepository<Entity extends BaseEntity> {
 	) => Promise<IBasePaginatedResponse<Entity>>;
 }
 
-export interface IBaseRepository<Entity extends BaseEntity>
-	extends IBaseReadRepository<Entity> {
+export interface IBaseRepository<
+	Entity extends BaseEntity,
+> extends IBaseReadRepository<Entity> {
 	create: (data: Entity) => Promise<Entity>;
 
 	update: (entityId: string, data: Partial<Entity>) => Promise<Entity>;
