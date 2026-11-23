@@ -32,43 +32,11 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: postgres
-      redis:
-        image: docker.io/library/redis:7.2.4-alpine
-        options: >-
-          --health-cmd redis-cli ping
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
-      minio:
-        image: docker.io/minio/minio:RELEASE.2025-01-18T00-31-37Z
-        options: >-
-          --health-cmd "curl -f http://127.0.0.1:9000/minio/health/live"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 9000:9000
-        env:
-          MINIO_ROOT_USER: miniosudo
-          MINIO_ROOT_PASSWORD: miniosudo
     strategy:
       matrix:
         go: ["1.27"]
     env:
       FOLDER: api/go
-      DB_HOST: localhost
-      DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
-      DB_DATABASE: postgres
-      REDIS_HOST: localhost
-      REDIS_PORT: 6379
-      S3_ENDPOINT: localhost
-      S3_PORT: 9000
-      S3_ACCESS_KEY_ID: miniosudo
-      S3_SECRET_ACCESS_KEY: miniosudo
 
     steps:
       - name: Checkout code

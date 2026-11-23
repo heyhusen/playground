@@ -14,18 +14,15 @@ import (
 	"github.com/heyhusen/playground/api/go/internal/config"
 	"github.com/heyhusen/playground/api/go/internal/domain/entity"
 	"github.com/heyhusen/playground/api/go/internal/domain/usecase"
-	"github.com/heyhusen/playground/api/go/internal/infrastructure/cache"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/dal"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/database"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/migration"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/chi/openapi"
-	"github.com/heyhusen/playground/api/go/internal/infrastructure/storage"
 )
 
 var (
-	testDB    *sql.DB
-	testCache *cache.Redis
-	testCfg   config.Config
+	testDB  *sql.DB
+	testCfg config.Config
 )
 
 const seedID = "11111111-1111-4111-8111-111111111111"
@@ -37,10 +34,6 @@ func TestMain(m *testing.M) {
 		"DB_USERNAME": "postgres",
 		"DB_PASSWORD": "postgres",
 		"DB_DATABASE": "postgres",
-		"REDIS_HOST":  "localhost",
-		"REDIS_PORT":  "6379",
-		"S3_ENDPOINT": "localhost",
-		"S3_PORT":     "9000",
 		"APP_URL":     "http://localhost:3000",
 	} {
 		if os.Getenv(key) == "" {
@@ -72,20 +65,8 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	testCache = cache.New(testCfg)
-
-	s3, err := storage.New(testCfg)
-	if err != nil {
-		panic(err)
-	}
-
-	if err := s3.EnsureBucket(context.Background()); err != nil {
-		panic(err)
-	}
-
 	code := m.Run()
 
-	_ = testCache.Close()
 	_ = testDB.Close()
 	os.Exit(code)
 }
@@ -97,10 +78,6 @@ func setup(t *testing.T) (*httptest.Server, entity.User) {
 	if _, err := testDB.ExecContext(context.Background(), "TRUNCATE users RESTART IDENTITY"); err != nil {
 		t.Fatalf("truncate users: %v", err)
 	}
-	if err := testCache.Flush(context.Background()); err != nil {
-		t.Fatalf("flush redis: %v", err)
-	}
-
 	seeded := entity.User{
 		ID:                      seedID,
 		Version:                 1,
