@@ -12,8 +12,7 @@
 		"vscode": {
 			"extensions": [
 				"EditorConfig.EditorConfig",
-				"dbaeumer.vscode-eslint",
-				"esbenp.prettier-vscode",
+				"oxc.oxc-vscode",
 				"svelte.svelte-vscode",
 				"golang.go",
 				"Grafana.vscode-jsonnet",

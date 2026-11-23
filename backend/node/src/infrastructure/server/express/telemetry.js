@@ -16,12 +16,9 @@ const {
 const {
 	OTLPMetricExporter,
 } = require('@opentelemetry/exporter-metrics-otlp-grpc');
-const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
 const { PinoInstrumentation } = require('@opentelemetry/instrumentation-pino');
 const { KnexInstrumentation } = require('@opentelemetry/instrumentation-knex');
 const { PgInstrumentation } = require('@opentelemetry/instrumentation-pg');
-
-// diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
 
 const sdk = new NodeSDK({
 	resource: resourceFromAttributes({

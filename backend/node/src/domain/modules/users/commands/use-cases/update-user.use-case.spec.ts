@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { faker } from '@faker-js/faker';
 import { UserEntity } from '../entities/user.entity';
 import { mockedRequest } from './__mocks__/request.mock';
@@ -7,7 +8,7 @@ import { UpdateUserUseCase } from './update-user.use-case';
 
 describe(UpdateUserUseCase.name, () => {
 	beforeEach(() => {
-		mockUserRepository.update = jest.fn((_id, data) => {
+		mockUserRepository.update = vi.fn((_id, data) => {
 			return Promise.resolve<UserEntity>({
 				...mockedUser,
 				...data,

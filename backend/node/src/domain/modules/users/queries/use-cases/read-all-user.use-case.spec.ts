@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import type { IBasePaginatedResponse } from '../../../../base/interfaces/base-response.interface';
 import type { UserEntity } from '../../commands/entities/user.entity';
 import { IUserRepository } from '../../commands/interfaces/user-repository.interface';
@@ -16,7 +17,7 @@ describe(ReadAllUserUseCase.name, () => {
 	};
 
 	beforeEach(() => {
-		mockUserRepositoryRead.readAll = jest.fn().mockReturnValue(
+		mockUserRepositoryRead.readAll = vi.fn().mockReturnValue(
 			Promise.resolve<IBasePaginatedResponse<UserEntity>>({
 				...result,
 				data: [mockedUser],
@@ -25,7 +26,7 @@ describe(ReadAllUserUseCase.name, () => {
 	});
 
 	test('should return empty array', async () => {
-		mockUserRepositoryRead.readAll = jest
+		mockUserRepositoryRead.readAll = vi
 			.fn()
 			.mockReturnValue(
 				Promise.resolve<IBasePaginatedResponse<UserEntity>>(result)

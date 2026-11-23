@@ -7,10 +7,9 @@
 		// CommonJS files, while bundler resolution still emits CommonJS here.
 		"module": "commonjs",
 		"moduleResolution": "bundler",
-		// The current @typescript-eslint parser cannot parse the es2025/ESNext
-		// libs pulled in by @tsconfig/node26, so keep the lib at es2023.
+		// Keep the lib at es2023 to stay aligned with the runtime target.
 		"lib": ["es2023"],
-		"types": ["node", "jest"],
+		"types": ["node", "vitest/globals"],
 		"incremental": true,
 		"noImplicitReturns": true,
 		"experimentalDecorators": true,

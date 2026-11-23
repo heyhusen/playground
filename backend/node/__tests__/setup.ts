@@ -23,7 +23,7 @@ export const user: UserEntity = {
 	updated_at: Number(new Date()),
 };
 
-const { id, ...tempUser } = user;
+const { id: _id, ...tempUser } = user;
 
 export const testUser: BaseUserEntity = {
 	...tempUser,

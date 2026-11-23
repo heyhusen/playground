@@ -63,9 +63,9 @@ jobs:
         working-directory: ${{ env.FOLDER }}
         run: pnpm lint
 
-      - name: Run prettier
+      - name: Run formatter
         working-directory: ${{ env.FOLDER }}
-        run: pnpm prettier
+        run: pnpm fmt:check
 
       - name: Run typecheck
         working-directory: ${{ env.FOLDER }}
