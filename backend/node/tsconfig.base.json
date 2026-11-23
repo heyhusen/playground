@@ -2,8 +2,8 @@
 	"extends": ["@tsconfig/strictest/tsconfig", "@tsconfig/node22/tsconfig"],
 	"include": ["./src/**/*.ts"],
 	"compilerOptions": {
-		"baseUrl": "./",
 		"outDir": "dist",
+		"types": ["node", "jest"],
 		"incremental": true,
 		"noImplicitReturns": true,
 		"experimentalDecorators": true,
