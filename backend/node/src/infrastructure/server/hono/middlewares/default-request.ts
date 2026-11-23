@@ -1,0 +1,15 @@
+import type { Context, Next } from 'hono';
+import { getHeaders } from '../helpers/request';
+
+export function defaultRequest() {
+	return async (context: Context, next: Next) => {
+		const headers = getHeaders(context);
+
+		Object.assign(headers, {
+			timezone_name: headers.timezone_name ?? 'Asia/Jakarta',
+			timezone_offset: headers.timezone_offset ?? 7,
+		});
+
+		await next();
+	};
+}
