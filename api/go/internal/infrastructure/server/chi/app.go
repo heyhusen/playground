@@ -8,9 +8,9 @@ import (
 	"github.com/heyhusen/playground/api/go/internal/config"
 	"github.com/heyhusen/playground/api/go/internal/domain/usecase"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/chi/handler"
-	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/chi/jsonapi"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/chi/middleware"
-	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/chi/openapi"
+	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/shared/jsonapi"
+	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/shared/openapi"
 )
 
 // New builds the chi router with the same routes as the Node servers.

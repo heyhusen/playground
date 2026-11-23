@@ -17,7 +17,7 @@ import (
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/dal"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/database"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/migration"
-	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/chi/openapi"
+	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/shared/openapi"
 )
 
 var (
