@@ -1,6 +1,6 @@
 import type { Context, Next } from 'hono';
 import { ZodObject } from 'zod';
-import { getBody, getQuery } from '../helpers/request';
+import { getBody, getQuery } from '../helpers/request.js';
 
 export function validate(schema: ZodObject) {
 	return async (context: Context, next: Next) => {

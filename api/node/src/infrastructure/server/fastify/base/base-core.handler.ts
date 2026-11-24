@@ -7,7 +7,7 @@ import {
 	SerializerOptions,
 	SingleOrArray,
 } from 'ts-japi';
-import { BaseEntity } from '../../../../domain/entities/base.entity';
+import { BaseEntity } from '../../../../domain/entities/base.entity.js';
 
 export abstract class BaseCoreHandler<Entity extends BaseEntity> {
 	constructor(

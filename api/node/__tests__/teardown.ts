@@ -1,6 +1,6 @@
-import { pool } from '../src/infrastructure/ports/database';
-import { redis } from '../src/infrastructure/ports/redis';
-import { s3 } from '../src/infrastructure/ports/s3';
+import { pool } from '../src/infrastructure/ports/database.js';
+import { redis } from '../src/infrastructure/ports/redis.js';
+import { s3 } from '../src/infrastructure/ports/s3.js';
 
 export async function teardown() {
 	await redis.quit();

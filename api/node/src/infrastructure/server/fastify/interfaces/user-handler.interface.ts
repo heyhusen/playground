@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import { ICreateUserDTO } from '../../../../domain/modules/users/commands/interfaces/user-dto.interface';
-import { IJsonApiData } from '../../../../presentation/interfaces/http.interface';
-import { IBaseHandler } from '../base/interfaces/base-handler.interface';
+import { ICreateUserDTO } from '../../../../domain/modules/users/commands/interfaces/user-dto.interface.js';
+import { IJsonApiData } from '../../../../presentation/interfaces/http.interface.js';
+import { IBaseHandler } from '../base/interfaces/base-handler.interface.js';
 
 export interface IUserHandler extends IBaseHandler {
 	addionalUpdate: (

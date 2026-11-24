@@ -1,9 +1,9 @@
 import { and, eq, SQL } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { UserEntity } from '../../../domain/modules/users/commands/entities/user.entity';
-import { IUserReadRepository } from '../../../domain/modules/users/queries/interfaces/user-repository-read.interface';
-import { BaseReadRepository } from '../../base/base-read.repository';
-import * as schema from '../schemas';
+import { UserEntity } from '../../../domain/modules/users/commands/entities/user.entity.js';
+import { IUserReadRepository } from '../../../domain/modules/users/queries/interfaces/user-repository-read.interface.js';
+import { BaseReadRepository } from '../../base/base-read.repository.js';
+import * as schema from '../schemas/index.js';
 
 export class UserReadRepository
 	extends BaseReadRepository<UserEntity>

@@ -1,4 +1,4 @@
-import { FileEntity } from '../../entities/file.entity';
+import { FileEntity } from '../../entities/file.entity.js';
 
 export interface IBaseFileService {
 	upload: (

@@ -1,7 +1,7 @@
 import type {
 	IBaseErrorObject,
 	IHttpError,
-} from '../interfaces/http.interface';
+} from '../interfaces/http.interface.js';
 
 export class HttpException extends Error implements IHttpError {
 	readonly status: number;

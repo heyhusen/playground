@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { DataDocument, Dictionary } from 'ts-japi';
-import { BaseEntity } from '../../../../../domain/entities/base.entity';
+import { BaseEntity } from '../../../../../domain/entities/base.entity.js';
 import {
 	IJsonApiData,
 	RequestParamId,
-} from '../../../../../presentation/interfaces/http.interface';
+} from '../../../../../presentation/interfaces/http.interface.js';
 
 export interface IBaseHandler<Entity extends BaseEntity> {
 	create: <DTO extends Dictionary<any>>(

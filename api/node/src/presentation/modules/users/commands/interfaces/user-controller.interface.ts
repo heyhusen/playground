@@ -1,9 +1,9 @@
-import { UserEntity } from '../../../../../domain/modules/users/commands/entities/user.entity';
+import { UserEntity } from '../../../../../domain/modules/users/commands/entities/user.entity.js';
 import {
 	ICreateUserDTO,
 	IUpdateUserDTO,
-} from '../../../../../domain/modules/users/commands/interfaces/user-dto.interface';
-import { IBaseController } from '../../../../base/interfaces/base-controller.interface';
+} from '../../../../../domain/modules/users/commands/interfaces/user-dto.interface.js';
+import { IBaseController } from '../../../../base/interfaces/base-controller.interface.js';
 
 export type IUserController = IBaseController<
 	ICreateUserDTO,

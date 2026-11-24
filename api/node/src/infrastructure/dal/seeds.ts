@@ -2,8 +2,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { faker } from '@faker-js/faker';
 import { reset, seed } from 'drizzle-seed';
-import { db } from '../ports/database';
-import * as schema from './schemas';
+import { db } from '../ports/database.js';
+import * as schema from './schemas/index.js';
 
 async function main() {
 	await reset(db, schema);

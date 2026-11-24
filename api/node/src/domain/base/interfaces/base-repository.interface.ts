@@ -1,5 +1,5 @@
-import { BaseEntity } from '../../entities/base.entity';
-import { IBasePaginatedResponse } from './base-response.interface';
+import { BaseEntity } from '../../entities/base.entity.js';
+import { IBasePaginatedResponse } from './base-response.interface.js';
 
 export interface IBaseReadRepository<Entity extends BaseEntity> {
 	read: (entityId: string) => Promise<Entity>;

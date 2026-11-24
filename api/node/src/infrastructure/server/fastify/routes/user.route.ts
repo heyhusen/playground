@@ -3,24 +3,24 @@ import type { FastifyInstance } from 'fastify';
 import {
 	ICreateUserDTO,
 	IUpdateUserDTO,
-} from '../../../../domain/modules/users/commands/interfaces/user-dto.interface';
+} from '../../../../domain/modules/users/commands/interfaces/user-dto.interface.js';
 import {
 	IJsonApiData,
 	IJsonApiPagination,
 	RequestParamId,
-} from '../../../../presentation/interfaces/http.interface';
-import { idParamSchema } from '../../../schemas/common.schema';
+} from '../../../../presentation/interfaces/http.interface.js';
+import { idParamSchema } from '../../../schemas/common.schema.js';
 import {
 	compatUpdateUserSchema,
 	createUserSchema,
 	findAllUserSchema,
 	updateUserSchema,
-} from '../../../schemas/user.schema';
-import { IUserFilterParams } from '../../../modules/users/interfaces/user-filter-params.interface';
-import { UserReadHandler } from '../handlers/user-read.handler';
-import { UserHandler } from '../handlers/user.handler';
-import { uniqueUserEmail } from '../middlewares/unique-user-email';
-import { validate } from '../middlewares/validator';
+} from '../../../schemas/user.schema.js';
+import { IUserFilterParams } from '../../../modules/users/interfaces/user-filter-params.interface.js';
+import { UserReadHandler } from '../handlers/user-read.handler.js';
+import { UserHandler } from '../handlers/user.handler.js';
+import { uniqueUserEmail } from '../middlewares/unique-user-email.js';
+import { validate } from '../middlewares/validator.js';
 
 export function userRouter(app: FastifyInstance) {
 	const handler = new UserHandler();

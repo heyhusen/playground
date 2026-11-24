@@ -1,10 +1,10 @@
-import { getMessage } from '../../../../../domain/helpers/get-message.helper';
-import { validateUuid } from '../../../../../domain/modules/common/commands/use-cases/validate-uuid.use-case';
-import { BaseSingleController } from '../../../../base/base-single.controller';
-import { BadRequestException } from '../../../../exceptions/bad-request.exception';
-import type { IHttpRequestParams } from '../../../../interfaces/http.interface';
-import type { IRequestIdParams } from '../../../../interfaces/request.interface';
-import { IUuidValidatorController } from '../interfaces/uuid-validator-controller.interface';
+import { getMessage } from '../../../../../domain/helpers/get-message.helper.js';
+import { validateUuid } from '../../../../../domain/modules/common/commands/use-cases/validate-uuid.use-case.js';
+import { BaseSingleController } from '../../../../base/base-single.controller.js';
+import { BadRequestException } from '../../../../exceptions/bad-request.exception.js';
+import type { IHttpRequestParams } from '../../../../interfaces/http.interface.js';
+import type { IRequestIdParams } from '../../../../interfaces/request.interface.js';
+import { IUuidValidatorController } from '../interfaces/uuid-validator-controller.interface.js';
 
 export class UuidValidatorController
 	extends BaseSingleController<boolean>

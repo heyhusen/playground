@@ -1,5 +1,5 @@
-import type { IBaseCacheService } from '../../domain/base/interfaces/base-cache-service.interface';
-import { redis } from '../ports/redis';
+import type { IBaseCacheService } from '../../domain/base/interfaces/base-cache-service.interface.js';
+import { redis } from '../ports/redis.js';
 
 export const redisService: IBaseCacheService = {
 	set: async (key: string, data: string, ttl?: number) => {

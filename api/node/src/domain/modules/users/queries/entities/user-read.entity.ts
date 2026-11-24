@@ -1,4 +1,4 @@
-import { BaseEntity } from '../../../../entities/base.entity';
+import { BaseEntity } from '../../../../entities/base.entity.js';
 
 export interface BaseUserReadEntity {
 	first_name: string;

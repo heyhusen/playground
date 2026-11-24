@@ -1,4 +1,4 @@
-import { IBaseRequest } from '../../domain/base/interfaces/base-request.interface';
+import { IBaseRequest } from '../../domain/base/interfaces/base-request.interface.js';
 
 export interface IRequestIdParams {
 	id: string;

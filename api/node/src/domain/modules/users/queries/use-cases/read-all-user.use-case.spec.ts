@@ -1,10 +1,10 @@
 import { vi } from 'vitest';
-import type { IBasePaginatedResponse } from '../../../../base/interfaces/base-response.interface';
-import type { UserEntity } from '../../commands/entities/user.entity';
-import { IUserRepository } from '../../commands/interfaces/user-repository.interface';
-import { mockedUser } from '../../commands/use-cases/__mocks__/user.mock';
-import { mockUserRepositoryRead } from './__mocks__/user-repository-read.mock';
-import { ReadAllUserUseCase } from './read-all-user.use-case';
+import type { IBasePaginatedResponse } from '../../../../base/interfaces/base-response.interface.js';
+import type { UserEntity } from '../../commands/entities/user.entity.js';
+import { IUserRepository } from '../../commands/interfaces/user-repository.interface.js';
+import { mockedUser } from '../../commands/use-cases/__mocks__/user.mock.js';
+import { mockUserRepositoryRead } from './__mocks__/user-repository-read.mock.js';
+import { ReadAllUserUseCase } from './read-all-user.use-case.js';
 
 describe(ReadAllUserUseCase.name, () => {
 	const result: IBasePaginatedResponse<UserEntity> = {

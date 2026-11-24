@@ -1,6 +1,6 @@
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
-import { IBaseErrorObject } from '../interfaces/http.interface';
-import { HttpException } from './http.exception';
+import { IBaseErrorObject } from '../interfaces/http.interface.js';
+import { HttpException } from './http.exception.js';
 
 export class BadRequestException extends HttpException {
 	declare readonly error?: IBaseErrorObject | Record<string, unknown>;

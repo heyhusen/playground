@@ -1,5 +1,5 @@
 import z from 'zod';
-import { getMessage } from '../../domain/helpers/get-message.helper';
+import { getMessage } from '../../domain/helpers/get-message.helper.js';
 
 export const idParamSchema = z.object({
 	params: z.object({

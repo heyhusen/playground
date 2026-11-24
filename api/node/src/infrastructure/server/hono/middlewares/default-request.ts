@@ -1,5 +1,5 @@
 import type { Context, Next } from 'hono';
-import { getHeaders } from '../helpers/request';
+import { getHeaders } from '../helpers/request.js';
 
 export function defaultRequest() {
 	return async (context: Context, next: Next) => {

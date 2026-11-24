@@ -1,4 +1,4 @@
-import { IBaseCoreUseCase } from '../interfaces/base-use-case.interface';
+import { IBaseCoreUseCase } from '../interfaces/base-use-case.interface.js';
 
 export abstract class BaseCoreUseCase<
 	Response,

@@ -1,30 +1,30 @@
 import { vi } from 'vitest';
 import { faker } from '@faker-js/faker';
 import { StatusCodes } from 'http-status-codes';
-import { IBaseRequest } from '../../../../../domain/base/interfaces/base-request.interface';
-import { IBasePaginatedResponse } from '../../../../../domain/base/interfaces/base-response.interface';
-import { getMessage } from '../../../../../domain/helpers/get-message.helper';
-import { UserEntity } from '../../../../../domain/modules/users/commands/entities/user.entity';
-import { IUpdateUserDTO } from '../../../../../domain/modules/users/commands/interfaces/user-dto.interface';
-import { mockedRequest } from '../../../../../domain/modules/users/commands/use-cases/__mocks__/request.mock';
+import { IBaseRequest } from '../../../../../domain/base/interfaces/base-request.interface.js';
+import { IBasePaginatedResponse } from '../../../../../domain/base/interfaces/base-response.interface.js';
+import { getMessage } from '../../../../../domain/helpers/get-message.helper.js';
+import { UserEntity } from '../../../../../domain/modules/users/commands/entities/user.entity.js';
+import { IUpdateUserDTO } from '../../../../../domain/modules/users/commands/interfaces/user-dto.interface.js';
+import { mockedRequest } from '../../../../../domain/modules/users/commands/use-cases/__mocks__/request.mock.js';
 import {
 	mockedDto,
 	mockedUser,
-} from '../../../../../domain/modules/users/commands/use-cases/__mocks__/user.mock';
-import { UniqueUserEmailUseCase } from '../../../../../domain/modules/users/commands/use-cases/unique-user-email.use-case';
-import { IUserReadRepository } from '../../../../../domain/modules/users/queries/interfaces/user-repository-read.interface';
-import { ReadAllUserUseCase } from '../../../../../domain/modules/users/queries/use-cases/read-all-user.use-case';
-import { ReadUserUseCase } from '../../../../../domain/modules/users/queries/use-cases/read-user.use-case';
-import { BadRequestException } from '../../../../exceptions/bad-request.exception';
+} from '../../../../../domain/modules/users/commands/use-cases/__mocks__/user.mock.js';
+import { UniqueUserEmailUseCase } from '../../../../../domain/modules/users/commands/use-cases/unique-user-email.use-case.js';
+import { IUserReadRepository } from '../../../../../domain/modules/users/queries/interfaces/user-repository-read.interface.js';
+import { ReadAllUserUseCase } from '../../../../../domain/modules/users/queries/use-cases/read-all-user.use-case.js';
+import { ReadUserUseCase } from '../../../../../domain/modules/users/queries/use-cases/read-user.use-case.js';
+import { BadRequestException } from '../../../../exceptions/bad-request.exception.js';
 import {
 	IHttpRequest,
 	IHttpRequestParams,
 	IJsonApiPagination,
 	RequestParamId,
-} from '../../../../interfaces/http.interface';
-import { IResponse } from '../../../../interfaces/response.interface';
-import { mockUnitOfWork } from '../../commands/controllers/__mocks__/unit-of-work.mock';
-import { UserReadController } from './user-read.controller';
+} from '../../../../interfaces/http.interface.js';
+import { IResponse } from '../../../../interfaces/response.interface.js';
+import { mockUnitOfWork } from '../../commands/controllers/__mocks__/unit-of-work.mock.js';
+import { UserReadController } from './user-read.controller.js';
 
 vi.mock(
 	'../../../../../domain/modules/users/queries/use-cases/read-user.use-case'

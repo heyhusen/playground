@@ -1,6 +1,6 @@
 import { inArray, SQL } from 'drizzle-orm';
-import { BaseFilter } from '../../../base/base.filter';
-import { IUserFilterParams } from '../interfaces/user-filter-params.interface';
+import { BaseFilter } from '../../../base/base.filter.js';
+import { IUserFilterParams } from '../interfaces/user-filter-params.interface.js';
 
 export class UserFilter extends BaseFilter<IUserFilterParams> {
 	override execute(): SQL[] {

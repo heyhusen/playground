@@ -1,9 +1,9 @@
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { ZodError } from 'zod';
-import { HttpException } from '../../../../presentation/exceptions/http.exception';
-import { NotFoundException } from '../../../../presentation/exceptions/not-found.exception';
-import type { IJsonApiError } from '../../../../presentation/interfaces/http.interface';
-import { Logger } from '../../../ports/logger';
+import { HttpException } from '../../../../presentation/exceptions/http.exception.js';
+import { NotFoundException } from '../../../../presentation/exceptions/not-found.exception.js';
+import type { IJsonApiError } from '../../../../presentation/interfaces/http.interface.js';
+import { Logger } from '../../../ports/logger.js';
 
 function buildHttpError(error: Error): {
 	status: number;

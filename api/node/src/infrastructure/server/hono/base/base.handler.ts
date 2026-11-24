@@ -1,8 +1,8 @@
 import type { Context } from 'hono';
 import { Linker, Serializer } from 'ts-japi';
-import { BaseEntity } from '../../../../domain/entities/base.entity';
-import { BaseCoreHandler } from './base-core.handler';
-import { IBaseHandler } from './interfaces/base-handler.interface';
+import { BaseEntity } from '../../../../domain/entities/base.entity.js';
+import { BaseCoreHandler } from './base-core.handler.js';
+import { IBaseHandler } from './interfaces/base-handler.interface.js';
 
 export abstract class BaseHandler<Entity extends BaseEntity>
 	extends BaseCoreHandler<Entity>

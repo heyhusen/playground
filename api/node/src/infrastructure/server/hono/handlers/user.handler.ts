@@ -1,20 +1,20 @@
 import type { Context } from 'hono';
 import { Linker, Serializer } from 'ts-japi';
-import { UserEntity } from '../../../../domain/modules/users/commands/entities/user.entity';
+import { UserEntity } from '../../../../domain/modules/users/commands/entities/user.entity.js';
 import {
 	ICreateUserDTO,
 	IUpdateUserDTO,
-} from '../../../../domain/modules/users/commands/interfaces/user-dto.interface';
+} from '../../../../domain/modules/users/commands/interfaces/user-dto.interface.js';
 import type {
 	IJsonApiData,
 	RequestParamId,
-} from '../../../../presentation/interfaces/http.interface';
-import { UserController } from '../../../../presentation/modules/users/commands/controllers/user.controller';
-import { appConfig } from '../../../config/app';
-import { UnitOfWork } from '../../../dal/unit-of-work';
-import { getBody, getHeaders, getParams } from '../helpers/request';
-import { BaseHandler } from '../base/base.handler';
-import { IUserHandler } from '../interfaces/user-handler.interface';
+} from '../../../../presentation/interfaces/http.interface.js';
+import { UserController } from '../../../../presentation/modules/users/commands/controllers/user.controller.js';
+import { appConfig } from '../../../config/app.js';
+import { UnitOfWork } from '../../../dal/unit-of-work.js';
+import { getBody, getHeaders, getParams } from '../helpers/request.js';
+import { BaseHandler } from '../base/base.handler.js';
+import { IUserHandler } from '../interfaces/user-handler.interface.js';
 
 export class UserHandler
 	extends BaseHandler<UserEntity>

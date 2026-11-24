@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { BaseUserEntity, UserEntity } from '../../entities/user.entity';
-import { ICreateUserDTO } from '../../interfaces/user-dto.interface';
+import { BaseUserEntity, UserEntity } from '../../entities/user.entity.js';
+import { ICreateUserDTO } from '../../interfaces/user-dto.interface.js';
 
 export const mockedDto: ICreateUserDTO = {
 	id: faker.string.uuid(),

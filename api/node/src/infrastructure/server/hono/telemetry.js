@@ -1,4 +1,8 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+import { createRequire } from 'node:module';
+
+// The OpenTelemetry packages only expose a working CommonJS build; their ESM
+// entrypoint fails to import named exports from @opentelemetry/api on Node.
+const require = createRequire(import.meta.url);
 const { NodeSDK } = require('@opentelemetry/sdk-node');
 const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
 const { resourceFromAttributes } = require('@opentelemetry/resources');

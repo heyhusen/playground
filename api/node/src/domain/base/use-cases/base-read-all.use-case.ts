@@ -1,7 +1,7 @@
-import { BaseEntity } from '../../entities/base.entity';
-import { IBaseReadRepository } from '../interfaces/base-repository.interface';
-import { IBasePaginatedResponse } from '../interfaces/base-response.interface';
-import { IBasePaginatedUseCase } from '../interfaces/base-use-case.interface';
+import { BaseEntity } from '../../entities/base.entity.js';
+import { IBaseReadRepository } from '../interfaces/base-repository.interface.js';
+import { IBasePaginatedResponse } from '../interfaces/base-response.interface.js';
+import { IBasePaginatedUseCase } from '../interfaces/base-use-case.interface.js';
 
 export class BaseReadAllUseCase<
 	Entity extends BaseEntity,

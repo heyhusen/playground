@@ -1,6 +1,6 @@
-import { IUserRepository } from '../../domain/modules/users/commands/interfaces/user-repository.interface';
-import { IUserReadRepository } from '../../domain/modules/users/queries/interfaces/user-repository-read.interface';
-import { IBaseUnitOfWork } from '../../presentation/base/interfaces/base-unit-of-work.interface';
+import { IUserRepository } from '../../domain/modules/users/commands/interfaces/user-repository.interface.js';
+import { IUserReadRepository } from '../../domain/modules/users/queries/interfaces/user-repository-read.interface.js';
+import { IBaseUnitOfWork } from '../../presentation/base/interfaces/base-unit-of-work.interface.js';
 
 export abstract class BaseUnitOfWork implements IBaseUnitOfWork {
 	abstract transaction<Result>(

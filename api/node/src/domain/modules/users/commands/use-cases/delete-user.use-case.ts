@@ -1,7 +1,7 @@
-import { BaseDeleteUseCase } from '../../../../base/use-cases/base-delete.use-case';
-import { UserEntity } from '../entities/user.entity';
-import { IDeleteUserUseCase } from '../interfaces/use-cases/delete-user-use-case.interface';
-import { IUserRepository } from '../interfaces/user-repository.interface';
+import { BaseDeleteUseCase } from '../../../../base/use-cases/base-delete.use-case.js';
+import { UserEntity } from '../entities/user.entity.js';
+import { IDeleteUserUseCase } from '../interfaces/use-cases/delete-user-use-case.interface.js';
+import { IUserRepository } from '../interfaces/user-repository.interface.js';
 
 /**
  * Delete an user.

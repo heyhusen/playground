@@ -1,6 +1,6 @@
 import type { Context } from 'hono';
-import type { IBaseRequestHeader } from '../../../../presentation/interfaces/request.interface';
-import { parseQuery } from './parse-query';
+import type { IBaseRequestHeader } from '../../../../presentation/interfaces/request.interface.js';
+import { parseQuery } from './parse-query.js';
 
 export async function getBody(context: Context): Promise<unknown> {
 	if (!['POST', 'PUT', 'PATCH'].includes(context.req.method)) {

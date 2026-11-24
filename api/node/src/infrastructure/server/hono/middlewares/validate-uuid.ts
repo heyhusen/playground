@@ -1,8 +1,8 @@
 import type { Context, Next } from 'hono';
-import type { IHttpRequestParams } from '../../../../presentation/interfaces/http.interface';
-import type { IRequestIdParams } from '../../../../presentation/interfaces/request.interface';
-import { UuidValidatorController } from '../../../../presentation/modules/common/commands/controllers/uuid-validator.controller';
-import { getHeaders, getParams } from '../helpers/request';
+import type { IHttpRequestParams } from '../../../../presentation/interfaces/http.interface.js';
+import type { IRequestIdParams } from '../../../../presentation/interfaces/request.interface.js';
+import { UuidValidatorController } from '../../../../presentation/modules/common/commands/controllers/uuid-validator.controller.js';
+import { getHeaders, getParams } from '../helpers/request.js';
 
 export function validateUuid() {
 	return async (context: Context, next: Next) => {

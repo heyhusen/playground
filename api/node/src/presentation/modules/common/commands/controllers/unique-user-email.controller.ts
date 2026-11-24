@@ -1,13 +1,13 @@
-import { IBaseRequest } from '../../../../../domain/base/interfaces/base-request.interface';
-import { getMessage } from '../../../../../domain/helpers/get-message.helper';
-import { UserEntity } from '../../../../../domain/modules/users/commands/entities/user.entity';
-import { IUpdateUserDTO } from '../../../../../domain/modules/users/commands/interfaces/user-dto.interface';
-import { UniqueUserEmailUseCase } from '../../../../../domain/modules/users/commands/use-cases/unique-user-email.use-case';
-import { BaseSingleController } from '../../../../base/base-single.controller';
-import { IBaseUnitOfWork } from '../../../../base/interfaces/base-unit-of-work.interface';
-import { BadRequestException } from '../../../../exceptions/bad-request.exception';
-import { IHttpRequest } from '../../../../interfaces/http.interface';
-import { IUniqueUserEmailController } from '../interfaces/unique-user-email-controller.interface';
+import { IBaseRequest } from '../../../../../domain/base/interfaces/base-request.interface.js';
+import { getMessage } from '../../../../../domain/helpers/get-message.helper.js';
+import { UserEntity } from '../../../../../domain/modules/users/commands/entities/user.entity.js';
+import { IUpdateUserDTO } from '../../../../../domain/modules/users/commands/interfaces/user-dto.interface.js';
+import { UniqueUserEmailUseCase } from '../../../../../domain/modules/users/commands/use-cases/unique-user-email.use-case.js';
+import { BaseSingleController } from '../../../../base/base-single.controller.js';
+import { IBaseUnitOfWork } from '../../../../base/interfaces/base-unit-of-work.interface.js';
+import { BadRequestException } from '../../../../exceptions/bad-request.exception.js';
+import { IHttpRequest } from '../../../../interfaces/http.interface.js';
+import { IUniqueUserEmailController } from '../interfaces/unique-user-email-controller.interface.js';
 
 export class UniqueUserEmailController
 	extends BaseSingleController<Promise<boolean>>

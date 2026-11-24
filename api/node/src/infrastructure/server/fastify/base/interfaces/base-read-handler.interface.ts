@@ -2,7 +2,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import {
 	IJsonApiPagination,
 	RequestParamId,
-} from '../../../../../presentation/interfaces/http.interface';
+} from '../../../../../presentation/interfaces/http.interface.js';
 
 export interface IBaseReadHandler {
 	read: (

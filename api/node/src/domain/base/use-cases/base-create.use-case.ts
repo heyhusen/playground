@@ -1,7 +1,7 @@
-import { BaseEntity } from '../../entities/base.entity';
-import { IBaseRepository } from '../interfaces/base-repository.interface';
-import { IBaseRequest } from '../interfaces/base-request.interface';
-import { IBaseUseCase } from '../interfaces/base-use-case.interface';
+import { BaseEntity } from '../../entities/base.entity.js';
+import { IBaseRepository } from '../interfaces/base-repository.interface.js';
+import { IBaseRequest } from '../interfaces/base-request.interface.js';
+import { IBaseUseCase } from '../interfaces/base-use-case.interface.js';
 
 export class BaseCreateUseCase<
 	RequestEntity extends IBaseRequest,

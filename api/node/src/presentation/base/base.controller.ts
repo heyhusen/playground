@@ -1,15 +1,15 @@
 import { Dictionary } from 'ts-japi';
-import { BaseEntity } from '../../domain/entities/base.entity';
+import { BaseEntity } from '../../domain/entities/base.entity.js';
 import {
 	IHttpRequest,
 	IHttpRequestBody,
 	IHttpRequestParams,
 	IJsonApiData,
 	RequestParamId,
-} from '../interfaces/http.interface';
-import { IBaseRequestHeader } from '../interfaces/request.interface';
-import { IResponse } from '../interfaces/response.interface';
-import { IBaseController } from './interfaces/base-controller.interface';
+} from '../interfaces/http.interface.js';
+import { IBaseRequestHeader } from '../interfaces/request.interface.js';
+import { IResponse } from '../interfaces/response.interface.js';
+import { IBaseController } from './interfaces/base-controller.interface.js';
 
 export abstract class BaseController<
 	CreateDTO extends Dictionary<any>,

@@ -4,10 +4,9 @@ import type {
 	ErrorDocument,
 	JapiError,
 } from 'ts-japi';
-import Resource from 'ts-japi/lib/models/resource.model';
-import { BaseEntity } from '../../domain/entities/base.entity';
-import type { FileEntity } from '../../domain/entities/file.entity';
-import { IBaseRequestHeader } from './request.interface';
+import { BaseEntity } from '../../domain/entities/base.entity.js';
+import type { FileEntity } from '../../domain/entities/file.entity.js';
+import { IBaseRequestHeader } from './request.interface.js';
 
 export interface IHttpRequest<
 	Header extends IBaseRequestHeader,
@@ -41,6 +40,10 @@ export type IHttpRequestCookie<T = Record<string, unknown>> = IHttpRequest<
 	unknown,
 	T
 >;
+
+// Under NodeNext, a default import of this CJS module resolves to the module
+// namespace; the inline import type reaches the class itself.
+type Resource<T> = import('ts-japi/lib/models/resource.model.js').default<T>;
 
 export interface IJsonApiData<Entity extends Dictionary<any>> extends Omit<
 	DataDocument<Entity>,

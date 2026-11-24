@@ -3,10 +3,11 @@
 	"include": ["./src/**/*.ts"],
 	"compilerOptions": {
 		"outDir": "dist",
-		// faker v10 is ESM-only. TS's node16 resolution rejects importing it from
-		// CommonJS files, while bundler resolution still emits CommonJS here.
-		"module": "commonjs",
-		"moduleResolution": "bundler",
+		// NodeNext emits native ESM (package.json has "type": "module") and keeps
+		// ESM-only dependencies such as faker v10 resolvable. Relative imports
+		// therefore carry explicit .js extensions.
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		// Keep the lib at es2023 to stay aligned with the runtime target.
 		"lib": ["es2023"],
 		"types": ["node", "vitest/globals"],

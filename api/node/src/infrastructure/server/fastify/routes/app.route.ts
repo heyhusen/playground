@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { readFileSync } from 'fs';
-import { HomeHandler } from '../handlers/home.handler';
+import { HomeHandler } from '../handlers/home.handler.js';
 
 export function appRouter(app: FastifyInstance) {
 	const handler = new HomeHandler();

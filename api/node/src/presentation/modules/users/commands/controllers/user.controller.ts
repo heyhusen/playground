@@ -1,26 +1,26 @@
 import { StatusCodes } from 'http-status-codes';
-import { IBaseRequest } from '../../../../../domain/base/interfaces/base-request.interface';
-import { getMessage } from '../../../../../domain/helpers/get-message.helper';
-import { UserEntity } from '../../../../../domain/modules/users/commands/entities/user.entity';
+import { IBaseRequest } from '../../../../../domain/base/interfaces/base-request.interface.js';
+import { getMessage } from '../../../../../domain/helpers/get-message.helper.js';
+import { UserEntity } from '../../../../../domain/modules/users/commands/entities/user.entity.js';
 import type {
 	ICreateUserDTO,
 	IUpdateUserDTO,
-} from '../../../../../domain/modules/users/commands/interfaces/user-dto.interface';
-import { CreateUserUseCase } from '../../../../../domain/modules/users/commands/use-cases/create-user.use-case';
-import { DeleteUserUseCase } from '../../../../../domain/modules/users/commands/use-cases/delete-user.use-case';
-import { UpdateUserUseCase } from '../../../../../domain/modules/users/commands/use-cases/update-user.use-case';
-import { BaseController } from '../../../../base/base.controller';
-import { IBaseUnitOfWork } from '../../../../base/interfaces/base-unit-of-work.interface';
-import { BadRequestException } from '../../../../exceptions/bad-request.exception';
-import { NotFoundException } from '../../../../exceptions/not-found.exception';
+} from '../../../../../domain/modules/users/commands/interfaces/user-dto.interface.js';
+import { CreateUserUseCase } from '../../../../../domain/modules/users/commands/use-cases/create-user.use-case.js';
+import { DeleteUserUseCase } from '../../../../../domain/modules/users/commands/use-cases/delete-user.use-case.js';
+import { UpdateUserUseCase } from '../../../../../domain/modules/users/commands/use-cases/update-user.use-case.js';
+import { BaseController } from '../../../../base/base.controller.js';
+import { IBaseUnitOfWork } from '../../../../base/interfaces/base-unit-of-work.interface.js';
+import { BadRequestException } from '../../../../exceptions/bad-request.exception.js';
+import { NotFoundException } from '../../../../exceptions/not-found.exception.js';
 import type {
 	IHttpRequest,
 	IHttpRequestParams,
 	IJsonApiData,
 	RequestParamId,
-} from '../../../../interfaces/http.interface';
-import type { IResponse } from '../../../../interfaces/response.interface';
-import { IUserController } from '../interfaces/user-controller.interface';
+} from '../../../../interfaces/http.interface.js';
+import type { IResponse } from '../../../../interfaces/response.interface.js';
+import { IUserController } from '../interfaces/user-controller.interface.js';
 
 export class UserController
 	extends BaseController<ICreateUserDTO, IUpdateUserDTO, UserEntity>

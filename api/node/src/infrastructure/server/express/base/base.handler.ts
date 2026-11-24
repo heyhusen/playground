@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import { DataDocument, Dictionary, Linker, Serializer } from 'ts-japi';
-import { BaseEntity } from '../../../../domain/entities/base.entity';
+import { BaseEntity } from '../../../../domain/entities/base.entity.js';
 import {
 	IJsonApiData,
 	RequestParamId,
-} from '../../../../presentation/interfaces/http.interface';
-import { BaseCoreHandler } from './base-core.handler';
-import { IBaseHandler } from './interfaces/base-handler.interface';
+} from '../../../../presentation/interfaces/http.interface.js';
+import { BaseCoreHandler } from './base-core.handler.js';
+import { IBaseHandler } from './interfaces/base-handler.interface.js';
 
 export abstract class BaseHandler<Entity extends BaseEntity>
 	extends BaseCoreHandler<Entity>

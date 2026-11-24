@@ -4,9 +4,9 @@ import {
 	PutObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import type { IBaseFileService } from '../../domain/base/interfaces/base-file-service.interface';
-import type { FileEntity } from '../../domain/entities/file.entity';
-import { s3 } from '../ports/s3';
+import type { IBaseFileService } from '../../domain/base/interfaces/base-file-service.interface.js';
+import type { FileEntity } from '../../domain/entities/file.entity.js';
+import { s3 } from '../ports/s3.js';
 
 export const fileService: IBaseFileService = {
 	upload: async (file?: FileEntity, originalPath = null) => {
