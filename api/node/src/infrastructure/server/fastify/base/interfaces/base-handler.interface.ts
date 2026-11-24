@@ -3,7 +3,7 @@ import { Dictionary } from 'ts-japi';
 import {
 	IJsonApiData,
 	RequestParamId,
-} from '../../../../../presentation/interfaces/http.interface';
+} from '../../../../../presentation/interfaces/http.interface.js';
 
 export interface IBaseHandler {
 	create: <DTO extends Dictionary<any>>(

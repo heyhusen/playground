@@ -1,19 +1,19 @@
 import { SQL } from 'drizzle-orm';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { Linker, Paginator, Serializer } from 'ts-japi';
-import { UserReadEntity } from '../../../../domain/modules/users/queries/entities/user-read.entity';
+import { UserReadEntity } from '../../../../domain/modules/users/queries/entities/user-read.entity.js';
 import {
 	IJsonApiPagination,
 	RequestParamId,
-} from '../../../../presentation/interfaces/http.interface';
-import { UserReadController } from '../../../../presentation/modules/users/queries/controllers/user-read.controller';
-import { appConfig } from '../../../config/app';
-import { users } from '../../../dal/schemas';
-import { UnitOfWork } from '../../../dal/unit-of-work';
-import { UserFilter } from '../../../modules/users/filters/user.filter';
-import { IUserFilterParams } from '../../../modules/users/interfaces/user-filter-params.interface';
-import { BaseReadHandler } from '../base/base-read.handler';
-import { IUserReadHandler } from '../interfaces/user-read-handler.interface';
+} from '../../../../presentation/interfaces/http.interface.js';
+import { UserReadController } from '../../../../presentation/modules/users/queries/controllers/user-read.controller.js';
+import { appConfig } from '../../../config/app.js';
+import { users } from '../../../dal/schemas/index.js';
+import { UnitOfWork } from '../../../dal/unit-of-work.js';
+import { UserFilter } from '../../../modules/users/filters/user.filter.js';
+import { IUserFilterParams } from '../../../modules/users/interfaces/user-filter-params.interface.js';
+import { BaseReadHandler } from '../base/base-read.handler.js';
+import { IUserReadHandler } from '../interfaces/user-read-handler.interface.js';
 
 export class UserReadHandler
 	extends BaseReadHandler<UserReadEntity>

@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { DataDocument } from 'ts-japi';
-import { UserEntity } from '../../../../domain/modules/users/commands/entities/user.entity';
-import { ICreateUserDTO } from '../../../../domain/modules/users/commands/interfaces/user-dto.interface';
-import { IJsonApiData } from '../../../../presentation/interfaces/http.interface';
-import { IBaseHandler } from '../base/interfaces/base-handler.interface';
+import { UserEntity } from '../../../../domain/modules/users/commands/entities/user.entity.js';
+import { ICreateUserDTO } from '../../../../domain/modules/users/commands/interfaces/user-dto.interface.js';
+import { IJsonApiData } from '../../../../presentation/interfaces/http.interface.js';
+import { IBaseHandler } from '../base/interfaces/base-handler.interface.js';
 
 export interface IUserHandler extends IBaseHandler<UserEntity> {
 	addionalUpdate: (

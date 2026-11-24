@@ -1,10 +1,10 @@
-import { getMessage } from '../../../../../domain/helpers/get-message.helper';
-import { mockedRequest as headers } from '../../../../../domain/modules/users/commands/use-cases/__mocks__/request.mock';
-import { mockedUser } from '../../../../../domain/modules/users/commands/use-cases/__mocks__/user.mock';
-import { BadRequestException } from '../../../../exceptions/bad-request.exception';
-import type { IHttpRequestParams } from '../../../../interfaces/http.interface';
-import type { IRequestIdParams } from '../../../../interfaces/request.interface';
-import { UuidValidatorController } from './uuid-validator.controller';
+import { getMessage } from '../../../../../domain/helpers/get-message.helper.js';
+import { mockedRequest as headers } from '../../../../../domain/modules/users/commands/use-cases/__mocks__/request.mock.js';
+import { mockedUser } from '../../../../../domain/modules/users/commands/use-cases/__mocks__/user.mock.js';
+import { BadRequestException } from '../../../../exceptions/bad-request.exception.js';
+import type { IHttpRequestParams } from '../../../../interfaces/http.interface.js';
+import type { IRequestIdParams } from '../../../../interfaces/request.interface.js';
+import { UuidValidatorController } from './uuid-validator.controller.js';
 
 describe(UuidValidatorController.name, () => {
 	let request: IHttpRequestParams<IRequestIdParams> = {

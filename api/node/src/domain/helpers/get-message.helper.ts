@@ -1,4 +1,4 @@
-import { MessageDictionaryEntity } from '../entities/message-dictionary.entity';
+import { MessageDictionaryEntity } from '../entities/message-dictionary.entity.js';
 
 const errorMessage: MessageDictionaryEntity = {
 	'page.required': 'The page property is required.',

@@ -1,8 +1,8 @@
-import { IBaseRequest } from '../../../../base/interfaces/base-request.interface';
-import { BaseUpdateUseCase } from '../../../../base/use-cases/base-update.use-case';
-import { UserEntity } from '../entities/user.entity';
-import { IUpdateUserUseCase } from '../interfaces/use-cases/update-user-use-case.interface';
-import { IUserRepository } from '../interfaces/user-repository.interface';
+import { IBaseRequest } from '../../../../base/interfaces/base-request.interface.js';
+import { BaseUpdateUseCase } from '../../../../base/use-cases/base-update.use-case.js';
+import { UserEntity } from '../entities/user.entity.js';
+import { IUpdateUserUseCase } from '../interfaces/use-cases/update-user-use-case.interface.js';
+import { IUserRepository } from '../interfaces/user-repository.interface.js';
 
 /**
  * Update an user.

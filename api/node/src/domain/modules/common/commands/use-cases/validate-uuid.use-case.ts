@@ -1,4 +1,4 @@
-import { getMessage } from '../../../../helpers/get-message.helper';
+import { getMessage } from '../../../../helpers/get-message.helper.js';
 
 /**
  * Validate UUID v4

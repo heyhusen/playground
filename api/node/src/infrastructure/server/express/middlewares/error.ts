@@ -1,13 +1,13 @@
 import type { NextFunction, Request, Response } from 'express';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { ZodError } from 'zod';
-import { HttpException } from '../../../../presentation/exceptions/http.exception';
-import { NotFoundException } from '../../../../presentation/exceptions/not-found.exception';
+import { HttpException } from '../../../../presentation/exceptions/http.exception.js';
+import { NotFoundException } from '../../../../presentation/exceptions/not-found.exception.js';
 import type {
 	IHttpError,
 	IJsonApiError,
-} from '../../../../presentation/interfaces/http.interface';
-import { Logger } from '../../../ports/logger';
+} from '../../../../presentation/interfaces/http.interface.js';
+import { Logger } from '../../../ports/logger.js';
 
 export function notFoundHandler() {
 	return (_request: Request, _response: Response, next: NextFunction) => {

@@ -1,23 +1,23 @@
 import { StatusCodes } from 'http-status-codes';
-import { IBaseRequest } from '../../../../../domain/base/interfaces/base-request.interface';
-import { getMessage } from '../../../../../domain/helpers/get-message.helper';
-import { IUpdateUserDTO } from '../../../../../domain/modules/users/commands/interfaces/user-dto.interface';
-import { UniqueUserEmailUseCase } from '../../../../../domain/modules/users/commands/use-cases/unique-user-email.use-case';
-import { UserReadEntity } from '../../../../../domain/modules/users/queries/entities/user-read.entity';
-import { ReadAllUserUseCase } from '../../../../../domain/modules/users/queries/use-cases/read-all-user.use-case';
-import { ReadUserUseCase } from '../../../../../domain/modules/users/queries/use-cases/read-user.use-case';
-import { BaseReadController } from '../../../../base/base-read.controller';
-import { IBaseUnitOfWork } from '../../../../base/interfaces/base-unit-of-work.interface';
-import { BadRequestException } from '../../../../exceptions/bad-request.exception';
-import { NotFoundException } from '../../../../exceptions/not-found.exception';
+import { IBaseRequest } from '../../../../../domain/base/interfaces/base-request.interface.js';
+import { getMessage } from '../../../../../domain/helpers/get-message.helper.js';
+import { IUpdateUserDTO } from '../../../../../domain/modules/users/commands/interfaces/user-dto.interface.js';
+import { UniqueUserEmailUseCase } from '../../../../../domain/modules/users/commands/use-cases/unique-user-email.use-case.js';
+import { UserReadEntity } from '../../../../../domain/modules/users/queries/entities/user-read.entity.js';
+import { ReadAllUserUseCase } from '../../../../../domain/modules/users/queries/use-cases/read-all-user.use-case.js';
+import { ReadUserUseCase } from '../../../../../domain/modules/users/queries/use-cases/read-user.use-case.js';
+import { BaseReadController } from '../../../../base/base-read.controller.js';
+import { IBaseUnitOfWork } from '../../../../base/interfaces/base-unit-of-work.interface.js';
+import { BadRequestException } from '../../../../exceptions/bad-request.exception.js';
+import { NotFoundException } from '../../../../exceptions/not-found.exception.js';
 import {
 	IHttpRequest,
 	IHttpRequestParams,
 	IJsonApiPagination,
 	RequestParamId,
-} from '../../../../interfaces/http.interface';
-import { IResponse } from '../../../../interfaces/response.interface';
-import { IUserReadController } from '../interfaces/user-read-controller.interface';
+} from '../../../../interfaces/http.interface.js';
+import { IResponse } from '../../../../interfaces/response.interface.js';
+import { IUserReadController } from '../interfaces/user-read-controller.interface.js';
 
 export class UserReadController
 	extends BaseReadController<UserReadEntity>

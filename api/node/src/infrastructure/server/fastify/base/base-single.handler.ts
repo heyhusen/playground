@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import { IBaseSingleHandler } from './interfaces/base-single-handles.interface';
+import { IBaseSingleHandler } from './interfaces/base-single-handles.interface.js';
 
 export abstract class BaseSingleHandler<
 	Result,

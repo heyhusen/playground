@@ -1,10 +1,10 @@
 import { vi } from 'vitest';
 import { faker } from '@faker-js/faker';
-import { getMessage } from '../../../../helpers/get-message.helper';
-import { mockUserRepositoryRead } from '../../queries/use-cases/__mocks__/user-repository-read.mock';
-import { UserEntity } from '../entities/user.entity';
-import { mockedUser } from './__mocks__/user.mock';
-import { UniqueUserEmailUseCase } from './unique-user-email.use-case';
+import { getMessage } from '../../../../helpers/get-message.helper.js';
+import { mockUserRepositoryRead } from '../../queries/use-cases/__mocks__/user-repository-read.mock.js';
+import { UserEntity } from '../entities/user.entity.js';
+import { mockedUser } from './__mocks__/user.mock.js';
+import { UniqueUserEmailUseCase } from './unique-user-email.use-case.js';
 
 describe(UniqueUserEmailUseCase.name, () => {
 	beforeAll(() => {

@@ -1,5 +1,5 @@
 import pino from 'pino';
-import { ILogger } from '../../domain/interfaces/logger.interface';
+import { ILogger } from '../../domain/interfaces/logger.interface.js';
 
 function getLevel(): pino.LevelWithSilentOrString {
 	if (process.env.NODE_ENV === 'testing') {

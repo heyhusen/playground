@@ -1,7 +1,7 @@
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
-import { teardown } from '../../../../../__tests__/teardown';
-import { IJsonApiError } from '../../../../presentation/interfaces/http.interface';
-import { SupertestResponse, ready, request } from './setup';
+import { teardown } from '../../../../../__tests__/teardown.js';
+import { IJsonApiError } from '../../../../presentation/interfaces/http.interface.js';
+import { SupertestResponse, ready, request } from './setup.js';
 
 beforeAll(async () => {
 	await ready;

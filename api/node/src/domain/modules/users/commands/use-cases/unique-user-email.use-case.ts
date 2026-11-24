@@ -1,7 +1,7 @@
-import { BaseCoreUseCase } from '../../../../base/use-cases/base.use-case';
-import { getMessage } from '../../../../helpers/get-message.helper';
-import { IUserReadRepository } from '../../queries/interfaces/user-repository-read.interface';
-import { IUniqueUserUserUseCase } from '../interfaces/use-cases/unique-user-use-case.interface';
+import { BaseCoreUseCase } from '../../../../base/use-cases/base.use-case.js';
+import { getMessage } from '../../../../helpers/get-message.helper.js';
+import { IUserReadRepository } from '../../queries/interfaces/user-repository-read.interface.js';
+import { IUniqueUserUserUseCase } from '../interfaces/use-cases/unique-user-use-case.interface.js';
 
 export class UniqueUserEmailUseCase
 	extends BaseCoreUseCase<Promise<boolean>>

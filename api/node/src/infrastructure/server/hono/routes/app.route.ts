@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { readFileSync } from 'fs';
-import { HomeHandler } from '../handlers/home.handler';
+import { HomeHandler } from '../handlers/home.handler.js';
 
 const appRouter = new Hono();
 

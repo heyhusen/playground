@@ -1,8 +1,8 @@
 /* eslint-disable class-methods-use-this */
 import { StatusCodes } from 'http-status-codes';
-import { BaseSingleController } from '../../../../base/base-single.controller';
-import { ICoreResponse } from '../../../../interfaces/response.interface';
-import { IHomeController } from '../interfaces/home-controller.interface';
+import { BaseSingleController } from '../../../../base/base-single.controller.js';
+import { ICoreResponse } from '../../../../interfaces/response.interface.js';
+import { IHomeController } from '../interfaces/home-controller.interface.js';
 
 export class HomeController
 	extends BaseSingleController<ICoreResponse<string>>

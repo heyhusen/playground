@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { IUserRepository } from '../../interfaces/user-repository.interface';
+import { IUserRepository } from '../../interfaces/user-repository.interface.js';
 
 export const mockUserRepository: IUserRepository = {
 	create: vi.fn(),

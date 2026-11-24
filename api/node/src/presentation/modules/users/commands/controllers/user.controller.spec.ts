@@ -1,27 +1,27 @@
 import { vi } from 'vitest';
 import { faker } from '@faker-js/faker';
 import { StatusCodes } from 'http-status-codes';
-import { IBaseRequest } from '../../../../../domain/base/interfaces/base-request.interface';
-import { UserEntity } from '../../../../../domain/modules/users/commands/entities/user.entity';
+import { IBaseRequest } from '../../../../../domain/base/interfaces/base-request.interface.js';
+import { UserEntity } from '../../../../../domain/modules/users/commands/entities/user.entity.js';
 import {
 	ICreateUserDTO,
 	IUpdateUserDTO,
-} from '../../../../../domain/modules/users/commands/interfaces/user-dto.interface';
-import { mockedRequest } from '../../../../../domain/modules/users/commands/use-cases/__mocks__/request.mock';
+} from '../../../../../domain/modules/users/commands/interfaces/user-dto.interface.js';
+import { mockedRequest } from '../../../../../domain/modules/users/commands/use-cases/__mocks__/request.mock.js';
 import {
 	mockedDto,
 	mockedUser,
-} from '../../../../../domain/modules/users/commands/use-cases/__mocks__/user.mock';
+} from '../../../../../domain/modules/users/commands/use-cases/__mocks__/user.mock.js';
 import {
 	IHttpRequest,
 	IHttpRequestBody,
 	IHttpRequestParams,
 	IJsonApiData,
 	RequestParamId,
-} from '../../../../interfaces/http.interface';
-import { IResponse } from '../../../../interfaces/response.interface';
-import { mockUnitOfWork } from './__mocks__/unit-of-work.mock';
-import { UserController } from './user.controller';
+} from '../../../../interfaces/http.interface.js';
+import { IResponse } from '../../../../interfaces/response.interface.js';
+import { mockUnitOfWork } from './__mocks__/unit-of-work.mock.js';
+import { UserController } from './user.controller.js';
 
 describe(UserController.name, () => {
 	describe(UserController.prototype.create.name, () => {

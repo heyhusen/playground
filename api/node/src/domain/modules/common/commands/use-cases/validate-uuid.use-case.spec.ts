@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { getMessage } from '../../../../helpers/get-message.helper';
-import { validateUuid } from './validate-uuid.use-case';
+import { getMessage } from '../../../../helpers/get-message.helper.js';
+import { validateUuid } from './validate-uuid.use-case.js';
 
 describe(validateUuid.name, () => {
 	test('should throw error if uuid is invalid', () => {

@@ -1,14 +1,14 @@
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { DataDocument } from 'ts-japi';
-import { setup, testUser, user } from '../../../../../__tests__/setup';
-import { teardown } from '../../../../../__tests__/teardown';
-import { getMessage } from '../../../../domain/helpers/get-message.helper';
-import { UserEntity } from '../../../../domain/modules/users/commands/entities/user.entity';
+import { setup, testUser, user } from '../../../../../__tests__/setup.js';
+import { teardown } from '../../../../../__tests__/teardown.js';
+import { getMessage } from '../../../../domain/helpers/get-message.helper.js';
+import { UserEntity } from '../../../../domain/modules/users/commands/entities/user.entity.js';
 import {
 	IJsonApiError,
 	IJsonApiPagination,
-} from '../../../../presentation/interfaces/http.interface';
-import { SupertestResponse, ready, request } from './setup';
+} from '../../../../presentation/interfaces/http.interface.js';
+import { SupertestResponse, ready, request } from './setup.js';
 
 beforeAll(async () => {
 	await ready;

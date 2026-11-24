@@ -6,7 +6,7 @@ import { Router } from 'express';
 import { readFileSync } from 'fs';
 import { JsonObject, serve, setup } from 'swagger-ui-express';
 import { parse } from 'yaml';
-import { HomeHandler } from '../handlers/home.handler';
+import { HomeHandler } from '../handlers/home.handler.js';
 
 const appRouter = Router();
 

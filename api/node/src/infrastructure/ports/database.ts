@@ -1,9 +1,9 @@
 import { Logger as ILogger } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
-import { databaseConfig } from '../config/database';
-import * as schema from '../dal/schemas';
-import { Logger } from './logger';
+import { databaseConfig } from '../config/database.js';
+import * as schema from '../dal/schemas/index.js';
+import { Logger } from './logger.js';
 
 export const pool = new Pool(databaseConfig);
 

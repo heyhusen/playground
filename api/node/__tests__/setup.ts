@@ -3,10 +3,10 @@ import { reset } from 'drizzle-seed';
 import {
 	BaseUserEntity,
 	UserEntity,
-} from '../src/domain/modules/users/commands/entities/user.entity';
-import * as schema from '../src/infrastructure/dal/schemas';
-import { UnitOfWork } from '../src/infrastructure/dal/unit-of-work';
-import { db } from '../src/infrastructure/ports/database';
+} from '../src/domain/modules/users/commands/entities/user.entity.js';
+import * as schema from '../src/infrastructure/dal/schemas/index.js';
+import { UnitOfWork } from '../src/infrastructure/dal/unit-of-work.js';
+import { db } from '../src/infrastructure/ports/database.js';
 
 export const user: UserEntity = {
 	id: faker.string.uuid(),

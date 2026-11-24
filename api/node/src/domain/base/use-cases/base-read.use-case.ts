@@ -1,6 +1,6 @@
-import { BaseEntity } from '../../entities/base.entity';
-import { IBaseReadRepository } from '../interfaces/base-repository.interface';
-import { IBaseUseCase } from '../interfaces/base-use-case.interface';
+import { BaseEntity } from '../../entities/base.entity.js';
+import { IBaseReadRepository } from '../interfaces/base-repository.interface.js';
+import { IBaseUseCase } from '../interfaces/base-use-case.interface.js';
 
 export class BaseReadUseCase<
 	Entity extends BaseEntity,

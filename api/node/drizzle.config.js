@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/no-default-export */
-const { defineConfig } = require('drizzle-kit');
+import { defineConfig } from 'drizzle-kit';
 
 export default defineConfig({
 	dialect: 'postgresql',

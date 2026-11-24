@@ -1,6 +1,6 @@
 import { createAdaptorServer } from '@hono/node-server';
 import supertest, { Response } from 'supertest';
-import { app } from '../app';
+import { app } from '../app.js';
 
 const server = createAdaptorServer({ fetch: app.fetch, port: 0 });
 

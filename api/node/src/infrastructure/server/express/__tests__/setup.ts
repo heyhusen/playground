@@ -1,5 +1,5 @@
 import supertest, { Response } from 'supertest';
-import { app } from '../app';
+import { app } from '../app.js';
 
 export const request = supertest(app);
 

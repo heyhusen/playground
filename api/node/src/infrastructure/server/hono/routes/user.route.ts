@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { Hono } from 'hono';
-import { idParamSchema } from '../../../schemas/common.schema';
+import { idParamSchema } from '../../../schemas/common.schema.js';
 import {
 	compatUpdateUserSchema,
 	createUserSchema,
 	findAllUserSchema,
 	updateUserSchema,
-} from '../../../schemas/user.schema';
-import { UserReadHandler } from '../handlers/user-read.handler';
-import { UserHandler } from '../handlers/user.handler';
-import { uniqueUserEmail } from '../middlewares/unique-user-email';
-import { validate } from '../middlewares/validator';
+} from '../../../schemas/user.schema.js';
+import { UserReadHandler } from '../handlers/user-read.handler.js';
+import { UserHandler } from '../handlers/user.handler.js';
+import { uniqueUserEmail } from '../middlewares/unique-user-email.js';
+import { validate } from '../middlewares/validator.js';
 
 const userRouter = new Hono();
 const handler = new UserHandler();

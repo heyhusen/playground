@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
-import { ICoreResponse } from '../../../../interfaces/response.interface';
-import { HomeController } from './home.controller';
+import { ICoreResponse } from '../../../../interfaces/response.interface.js';
+import { HomeController } from './home.controller.js';
 
 describe(HomeController.name, () => {
 	test('should return hello world!', () => {

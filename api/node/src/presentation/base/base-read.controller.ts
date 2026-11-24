@@ -1,13 +1,13 @@
-import { BaseEntity } from '../../domain/entities/base.entity';
+import { BaseEntity } from '../../domain/entities/base.entity.js';
 import {
 	IHttpRequest,
 	IHttpRequestParams,
 	IJsonApiPagination,
 	RequestParamId,
-} from '../interfaces/http.interface';
-import { IBaseRequestHeader } from '../interfaces/request.interface';
-import { IResponse } from '../interfaces/response.interface';
-import { IBaseReadController } from './interfaces/base-read-controller.interface';
+} from '../interfaces/http.interface.js';
+import { IBaseRequestHeader } from '../interfaces/request.interface.js';
+import { IResponse } from '../interfaces/response.interface.js';
+import { IBaseReadController } from './interfaces/base-read-controller.interface.js';
 
 export abstract class BaseReadController<
 	Entity extends BaseEntity,

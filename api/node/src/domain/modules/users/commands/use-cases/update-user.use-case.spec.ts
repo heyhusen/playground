@@ -1,10 +1,10 @@
 import { vi } from 'vitest';
 import { faker } from '@faker-js/faker';
-import { UserEntity } from '../entities/user.entity';
-import { mockedRequest } from './__mocks__/request.mock';
-import { mockUserRepository } from './__mocks__/user-repository.mock';
-import { mockedUser } from './__mocks__/user.mock';
-import { UpdateUserUseCase } from './update-user.use-case';
+import { UserEntity } from '../entities/user.entity.js';
+import { mockedRequest } from './__mocks__/request.mock.js';
+import { mockUserRepository } from './__mocks__/user-repository.mock.js';
+import { mockedUser } from './__mocks__/user.mock.js';
+import { UpdateUserUseCase } from './update-user.use-case.js';
 
 describe(UpdateUserUseCase.name, () => {
 	beforeEach(() => {

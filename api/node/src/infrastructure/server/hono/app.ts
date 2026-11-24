@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
-import { defaultRequest } from './middlewares/default-request';
-import { globalErrorHandler, notFoundHandler } from './middlewares/error';
-import { router } from './routes';
+import { defaultRequest } from './middlewares/default-request.js';
+import { globalErrorHandler, notFoundHandler } from './middlewares/error.js';
+import { router } from './routes/index.js';
 
 const app = new Hono();
 

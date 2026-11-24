@@ -1,8 +1,8 @@
-import { IBaseRequest } from '../../../../base/interfaces/base-request.interface';
-import { BaseCreateUseCase } from '../../../../base/use-cases/base-create.use-case';
-import { UserEntity } from '../entities/user.entity';
-import { ICreateUserUseCase } from '../interfaces/use-cases/create-user-use-case.interface';
-import { IUserRepository } from '../interfaces/user-repository.interface';
+import { IBaseRequest } from '../../../../base/interfaces/base-request.interface.js';
+import { BaseCreateUseCase } from '../../../../base/use-cases/base-create.use-case.js';
+import { UserEntity } from '../entities/user.entity.js';
+import { ICreateUserUseCase } from '../interfaces/use-cases/create-user-use-case.interface.js';
+import { IUserRepository } from '../interfaces/user-repository.interface.js';
 
 /**
  * Create an user.

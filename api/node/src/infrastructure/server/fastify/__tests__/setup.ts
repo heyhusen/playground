@@ -1,5 +1,5 @@
 import supertest, { Response } from 'supertest';
-import { app } from '../app';
+import { app } from '../app.js';
 
 // Fastify finalizes its routes on `ready()`. Supertest uses the raw
 // `app.server`, so it must be ready before the first request is issued.

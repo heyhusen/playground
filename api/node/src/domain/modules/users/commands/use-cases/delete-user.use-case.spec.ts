@@ -1,9 +1,9 @@
 import { vi } from 'vitest';
-import { UserEntity } from '../entities/user.entity';
-import { IUserRepository } from '../interfaces/user-repository.interface';
-import { mockUserRepository } from './__mocks__/user-repository.mock';
-import { mockedUser } from './__mocks__/user.mock';
-import { DeleteUserUseCase } from './delete-user.use-case';
+import { UserEntity } from '../entities/user.entity.js';
+import { IUserRepository } from '../interfaces/user-repository.interface.js';
+import { mockUserRepository } from './__mocks__/user-repository.mock.js';
+import { mockedUser } from './__mocks__/user.mock.js';
+import { DeleteUserUseCase } from './delete-user.use-case.js';
 
 describe(DeleteUserUseCase.name, () => {
 	beforeEach(() => {

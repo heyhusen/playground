@@ -1,10 +1,10 @@
 import { vi } from 'vitest';
-import { UserEntity } from '../entities/user.entity';
-import { IUserRepository } from '../interfaces/user-repository.interface';
-import { mockedRequest } from './__mocks__/request.mock';
-import { mockUserRepository } from './__mocks__/user-repository.mock';
-import { mockedUser } from './__mocks__/user.mock';
-import { CreateUserUseCase } from './create-user.use-case';
+import { UserEntity } from '../entities/user.entity.js';
+import { IUserRepository } from '../interfaces/user-repository.interface.js';
+import { mockedRequest } from './__mocks__/request.mock.js';
+import { mockUserRepository } from './__mocks__/user-repository.mock.js';
+import { mockedUser } from './__mocks__/user.mock.js';
+import { CreateUserUseCase } from './create-user.use-case.js';
 
 describe(CreateUserUseCase.name, () => {
 	beforeEach(() => {
