@@ -20,6 +20,11 @@ export interface MessageDictionaryEntity {
 	'data.attributes.first_name.type': string;
 	'data.attributes.first_name.minLength': string;
 	'data.attributes.email.type': string;
+	'data.attributes.version.required': string;
+	'data.attributes.version.type': string;
+	'version.conflict': string;
+	'idempotency.in_progress': string;
+	'idempotency.mismatch': string;
 	'email.unique': string;
 	'id.required': string;
 	'id.format': string;

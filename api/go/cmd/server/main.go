@@ -59,7 +59,10 @@ func main() {
 		slog.Warn("openapi spec unavailable", "error", err)
 	}
 
-	service := &usecase.Service{Users: dal.NewUserRepository(db)}
+	service := &usecase.Service{
+		Users:       dal.NewUserRepository(db),
+		Idempotency: cache.NewIdempotency(redisCache),
+	}
 	handler := chiserver.New(cfg, service, doc)
 
 	server := &http.Server{

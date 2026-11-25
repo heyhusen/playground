@@ -10,6 +10,17 @@ import {
 } from '../../../../presentation/interfaces/http.interface.js';
 import { SupertestResponse, request } from './setup.js';
 
+/** Updates are version-guarded, so fetch the current version before each write. */
+async function currentVersion(): Promise<number> {
+	const response: SupertestResponse<DataDocument<UserEntity>> = await request
+		.get(`/users/${user.id}`)
+		.set('Accept', 'application/vnd.api+json');
+
+	const data = response.body.data as unknown as { attributes: UserEntity };
+
+	return data.attributes.version;
+}
+
 beforeAll(async () => {
 	await setup();
 });
@@ -481,6 +492,9 @@ describe('PATCH /users/{id}', () => {
 			.send({
 				data: {
 					type: 'users',
+					attributes: {
+						version: await currentVersion(),
+					},
 				},
 			});
 
@@ -509,6 +523,7 @@ describe('PATCH /users/{id}', () => {
 				data: {
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						first_name: null,
 					},
 				},
@@ -539,6 +554,7 @@ describe('PATCH /users/{id}', () => {
 				data: {
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						first_name: '',
 					},
 				},
@@ -569,6 +585,7 @@ describe('PATCH /users/{id}', () => {
 				data: {
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						first_name: 12345,
 					},
 				},
@@ -599,6 +616,7 @@ describe('PATCH /users/{id}', () => {
 				data: {
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						nickname: null,
 					},
 				},
@@ -649,6 +667,7 @@ describe('PATCH /users/{id}', () => {
 				data: {
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						nickname: '',
 					},
 				},
@@ -699,6 +718,7 @@ describe('PATCH /users/{id}', () => {
 				data: {
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						email: null,
 					},
 				},
@@ -729,6 +749,7 @@ describe('PATCH /users/{id}', () => {
 				data: {
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						email: '',
 					},
 				},
@@ -764,6 +785,7 @@ describe('PATCH /users/{id}', () => {
 				data: {
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						email: 12345,
 					},
 				},
@@ -794,6 +816,7 @@ describe('PATCH /users/{id}', () => {
 				data: {
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						email: 'johndoe',
 					},
 				},
@@ -823,6 +846,9 @@ describe('PATCH /users/{id}', () => {
 			.send({
 				data: {
 					type: 'users',
+					attributes: {
+						version: await currentVersion(),
+					},
 				},
 			});
 
@@ -860,6 +886,110 @@ describe('PATCH /users/{id}', () => {
 		expect<DataDocument<UserEntity>>(response.body).toHaveProperty<string>(
 			'data.attributes.updated_at'
 		);
+	});
+	test('should ignore a missing version and still increment it', async () => {
+		const version = await currentVersion();
+
+		const response: SupertestResponse<DataDocument<UserEntity>> = await request
+			.patch(`/users/${user.id}`)
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					type: 'users',
+					attributes: {
+						nickname: 'no-version',
+					},
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		const data = response.body.data as unknown as { attributes: UserEntity };
+		expect<number>(data.attributes.version).toStrictEqual(version + 1);
+	});
+
+	test('should return error when version is not a positive integer', async () => {
+		const response: SupertestResponse<IJsonApiError> = await request
+			.patch(`/users/${user.id}`)
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					type: 'users',
+					attributes: {
+						version: 0,
+					},
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.UNPROCESSABLE_ENTITY
+		);
+		expect<IJsonApiError>(response.body).toStrictEqual<IJsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			errors: [
+				{
+					status: StatusCodes.UNPROCESSABLE_ENTITY.toString(),
+					title: ReasonPhrases.UNPROCESSABLE_ENTITY,
+					detail: getMessage('data.attributes.version.type'),
+				},
+			],
+		});
+	});
+
+	test('should return conflict when the version does not match', async () => {
+		const staleVersion = (await currentVersion()) + 1;
+
+		const response: SupertestResponse<IJsonApiError> = await request
+			.patch(`/users/${user.id}`)
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					type: 'users',
+					attributes: {
+						version: staleVersion,
+						nickname: 'stale',
+					},
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.CONFLICT
+		);
+		expect<IJsonApiError>(response.body).toStrictEqual<IJsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			errors: [
+				{
+					status: StatusCodes.CONFLICT.toString(),
+					title: ReasonPhrases.CONFLICT,
+					detail: getMessage('version.conflict'),
+				},
+			],
+		});
+	});
+
+	test('should increment the version after an update', async () => {
+		const version = await currentVersion();
+
+		const response: SupertestResponse<DataDocument<UserEntity>> = await request
+			.patch(`/users/${user.id}`)
+			.set('Accept', 'application/vnd.api+json')
+			.send({
+				data: {
+					type: 'users',
+					attributes: {
+						version,
+						nickname: 'versioned',
+					},
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		const data = response.body.data as unknown as { attributes: UserEntity };
+		expect<number>(data.attributes.version).toStrictEqual(version + 1);
+		expect<number>(await currentVersion()).toStrictEqual(version + 1);
 	});
 });
 
@@ -914,7 +1044,11 @@ describe('PUT /users', () => {
 			.put('/users')
 			.set('Accept', 'application/vnd.api+json')
 			.send({
-				data: {},
+				data: {
+					attributes: {
+						version: await currentVersion(),
+					},
+				},
 			});
 
 		expect<number>(response.status).toStrictEqual<StatusCodes>(
@@ -946,6 +1080,9 @@ describe('PUT /users', () => {
 			.send({
 				data: {
 					type: 'user',
+					attributes: {
+						version: await currentVersion(),
+					},
 				},
 			});
 
@@ -978,6 +1115,9 @@ describe('PUT /users', () => {
 			.send({
 				data: {
 					type: 'users',
+					attributes: {
+						version: await currentVersion(),
+					},
 				},
 			});
 
@@ -1006,6 +1146,9 @@ describe('PUT /users', () => {
 				data: {
 					id: user.id,
 					type: 'users',
+					attributes: {
+						version: await currentVersion(),
+					},
 				},
 			});
 
@@ -1054,6 +1197,7 @@ describe('PUT /users', () => {
 					type: 'users',
 					id: user.id,
 					attributes: {
+						version: await currentVersion(),
 						first_name: null,
 					},
 				},
@@ -1085,6 +1229,7 @@ describe('PUT /users', () => {
 					id: user.id,
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						first_name: null,
 					},
 				},
@@ -1116,6 +1261,7 @@ describe('PUT /users', () => {
 					id: user.id,
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						first_name: '',
 					},
 				},
@@ -1147,6 +1293,7 @@ describe('PUT /users', () => {
 					id: user.id,
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						first_name: 12345,
 					},
 				},
@@ -1178,6 +1325,7 @@ describe('PUT /users', () => {
 					id: user.id,
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						nickname: null,
 					},
 				},
@@ -1229,6 +1377,7 @@ describe('PUT /users', () => {
 					id: user.id,
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						nickname: '',
 					},
 				},
@@ -1280,6 +1429,7 @@ describe('PUT /users', () => {
 					id: user.id,
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						email: null,
 					},
 				},
@@ -1311,6 +1461,7 @@ describe('PUT /users', () => {
 					id: user.id,
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						email: '',
 					},
 				},
@@ -1347,6 +1498,7 @@ describe('PUT /users', () => {
 					id: user.id,
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						email: 12345,
 					},
 				},
@@ -1378,6 +1530,7 @@ describe('PUT /users', () => {
 					id: user.id,
 					type: 'users',
 					attributes: {
+						version: await currentVersion(),
 						email: 'johndoe',
 					},
 				},
@@ -1395,6 +1548,125 @@ describe('PUT /users', () => {
 					status: StatusCodes.UNPROCESSABLE_ENTITY.toString(),
 					title: ReasonPhrases.UNPROCESSABLE_ENTITY,
 					detail: getMessage('data.attributes.email.format'),
+				},
+			],
+		});
+	});
+});
+
+describe('Idempotency-Key', () => {
+	test('should replay a create instead of creating a duplicate', async () => {
+		const payload = {
+			data: {
+				type: 'users',
+				attributes: {
+					first_name: 'Idempotent',
+					email: 'idempotent-create@example.com',
+				},
+			},
+		};
+
+		const first: SupertestResponse<DataDocument<UserEntity>> = await request
+			.post('/users')
+			.set('Accept', 'application/vnd.api+json')
+			.set('Idempotency-Key', `create-idempotent-user-${user.id}`)
+			.send(payload);
+		const second: SupertestResponse<DataDocument<UserEntity>> = await request
+			.post('/users')
+			.set('Accept', 'application/vnd.api+json')
+			.set('Idempotency-Key', `create-idempotent-user-${user.id}`)
+			.send(payload);
+
+		expect<number>(first.status).toStrictEqual<StatusCodes>(
+			StatusCodes.CREATED
+		);
+		expect<number>(second.status).toStrictEqual<StatusCodes>(
+			StatusCodes.CREATED
+		);
+		const firstData = first.body.data as unknown as { id: string };
+		const secondData = second.body.data as unknown as { id: string };
+		expect<string>(secondData.id).toStrictEqual(firstData.id);
+	});
+
+	test('should replay an update without a second version bump', async () => {
+		const version = await currentVersion();
+		const payload = {
+			data: {
+				type: 'users',
+				attributes: {
+					version,
+					nickname: 'idempotent-update',
+				},
+			},
+		};
+
+		const first: SupertestResponse<DataDocument<UserEntity>> = await request
+			.patch(`/users/${user.id}`)
+			.set('Accept', 'application/vnd.api+json')
+			.set('Idempotency-Key', `update-idempotent-user-${user.id}`)
+			.send(payload);
+		const second: SupertestResponse<DataDocument<UserEntity>> = await request
+			.patch(`/users/${user.id}`)
+			.set('Accept', 'application/vnd.api+json')
+			.set('Idempotency-Key', `update-idempotent-user-${user.id}`)
+			.send(payload);
+
+		expect<number>(first.status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		expect<number>(second.status).toStrictEqual<StatusCodes>(StatusCodes.OK);
+		const secondData = second.body.data as unknown as {
+			attributes: UserEntity;
+		};
+		expect<number>(secondData.attributes.version).toStrictEqual(version + 1);
+		expect<string>(secondData.attributes.nickname ?? '').toStrictEqual(
+			'idempotent-update'
+		);
+		expect<number>(await currentVersion()).toStrictEqual(version + 1);
+	});
+
+	test('should return conflict when a key is reused with a different payload', async () => {
+		const first = await request
+			.post('/users')
+			.set('Accept', 'application/vnd.api+json')
+			.set('Idempotency-Key', `create-key-mismatch-${user.id}`)
+			.send({
+				data: {
+					type: 'users',
+					attributes: {
+						first_name: 'First',
+						email: 'idempotent-mismatch@example.com',
+					},
+				},
+			});
+		expect<number>(first.status).toStrictEqual<StatusCodes>(
+			StatusCodes.CREATED
+		);
+
+		const response: SupertestResponse<IJsonApiError> = await request
+			.post('/users')
+			.set('Accept', 'application/vnd.api+json')
+			.set('Idempotency-Key', `create-key-mismatch-${user.id}`)
+			.send({
+				data: {
+					type: 'users',
+					attributes: {
+						first_name: 'Different',
+						email: 'idempotent-mismatch-other@example.com',
+					},
+				},
+			});
+
+		expect<number>(response.status).toStrictEqual<StatusCodes>(
+			StatusCodes.CONFLICT
+		);
+		expect<IJsonApiError>(response.body).toStrictEqual<IJsonApiError>({
+			jsonapi: {
+				version: '1.1',
+			},
+			errors: [
+				{
+					status: StatusCodes.CONFLICT.toString(),
+					title: ReasonPhrases.CONFLICT,
+					detail: getMessage('idempotency.mismatch'),
 				},
 			],
 		});

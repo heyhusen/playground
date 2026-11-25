@@ -9,6 +9,7 @@ import (
 	"github.com/heyhusen/playground/api/go/internal/domain/entity"
 	"github.com/heyhusen/playground/api/go/internal/domain/usecase"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/fiber/middleware"
+	idem "github.com/heyhusen/playground/api/go/internal/infrastructure/server/shared/idempotency"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/shared/jsonapi"
 )
 
@@ -27,6 +28,7 @@ func resource(user *entity.User, baseURL string) jsonapi.Resource {
 			LastName:  user.LastName,
 			Nickname:  user.Nickname,
 			Email:     user.Email,
+			Version:   user.Version,
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 		},
@@ -59,6 +61,8 @@ func (h *User) Create(c fiber.Ctx) error {
 			Nickname:  body.Nickname,
 			Email:     body.Email,
 		},
+		IdempotencyKey: string(c.Request().Header.Peek("Idempotency-Key")),
+		Fingerprint:    idem.Fingerprint(body),
 	})
 	if apiErr != nil {
 		return apiErr
@@ -127,9 +131,12 @@ func (h *User) Update(c fiber.Ctx) error {
 	body := middleware.UpdateBody(c)
 
 	user, apiErr := h.Service.Update(c.Context(), usecase.UpdateInput{
-		RequestInfo: middleware.RequestInfo(c),
-		ID:          body.ID,
-		Attributes:  body.Attributes,
+		RequestInfo:     middleware.RequestInfo(c),
+		ID:              body.ID,
+		Attributes:      body.Attributes,
+		ExpectedVersion: body.Version,
+		IdempotencyKey:  string(c.Request().Header.Peek("Idempotency-Key")),
+		Fingerprint:     idem.Fingerprint(body.Attributes),
 	})
 	if apiErr != nil {
 		return apiErr

@@ -41,6 +41,7 @@ type CreatePayload struct {
 type UpdatePayload struct {
 	ID         string
 	Attributes map[string]any
+	Version    *int64
 }
 
 // Page is the validated pagination query.
@@ -337,6 +338,26 @@ func validateEmail(attributes map[string]any, details *[]string, compat bool) {
 	}
 }
 
+// versionOf extracts the optional optimistic-concurrency token. Invalid
+// values are reported as validation errors; absence means no version guard.
+func versionOf(attributes map[string]any, details *[]string) *int64 {
+	value, exists := attributes["version"]
+	if !exists {
+		return nil
+	}
+
+	number, ok := value.(float64)
+	if !ok || number <= 0 || float64(int64(number)) != number {
+		*details = append(*details, message.VersionType)
+
+		return nil
+	}
+
+	version := int64(number)
+
+	return &version
+}
+
 func attributesOf(data map[string]any) map[string]any {
 	attributes, ok := data["attributes"].(map[string]any)
 	if !ok {
@@ -444,6 +465,7 @@ func updateMiddleware(compat bool) func(http.Handler) http.Handler {
 			attributes := attributesOf(data)
 			validateFirstName(attributes, &details)
 			validateEmail(attributes, &details, compat)
+			version := versionOf(attributes, &details)
 
 			if len(details) > 0 {
 				jsonapi.WriteError(w, domain.NewValidationError(details...))
@@ -456,7 +478,7 @@ func updateMiddleware(compat bool) func(http.Handler) http.Handler {
 				userID, _ = data["id"].(string)
 			}
 
-			payload := UpdatePayload{ID: userID, Attributes: attributes}
+			payload := UpdatePayload{ID: userID, Attributes: attributes, Version: version}
 			ctx := context.WithValue(r.Context(), keyUpdate, payload)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})

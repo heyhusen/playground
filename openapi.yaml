@@ -20,6 +20,15 @@ paths:
         - "user"
       summary: Create an user.
       operationId: create
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: false
+          description: >
+            Client-generated key. A retry with the same key and payload returns
+            the original response instead of creating a duplicate user.
+          schema:
+            type: string
       requestBody:
         content:
           "application/vnd.api+json":
@@ -65,6 +74,15 @@ paths:
         - "user"
       summary: Update an user (for ORY compatibility).
       operationId: update-compat
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: false
+          description: >
+            Client-generated key. A retry with the same key and payload returns
+            the original response without applying the update again.
+          schema:
+            type: string
       requestBody:
         content:
           "application/vnd.api+json":
@@ -95,6 +113,8 @@ paths:
                   - example:
                       links:
                         self: "/user"
+        "409":
+          $ref: "#/components/responses/IdempotencyConflict"
         "500":
           description: Internal server error.
           content:
@@ -207,6 +227,14 @@ paths:
           required: true
           schema:
             type: string
+        - in: header
+          name: Idempotency-Key
+          required: false
+          description: >
+            Client-generated key. A retry with the same key and payload returns
+            the original response without applying the update again.
+          schema:
+            type: string
       requestBody:
         content:
           "application/vnd.api+json":
@@ -240,6 +268,8 @@ paths:
                         self: "/user/{id}"
         "404":
           $ref: "#/components/responses/UserNotFound"
+        "409":
+          $ref: "#/components/responses/VersionConflict"
         "500":
           description: Internal server error.
           content:
@@ -368,6 +398,14 @@ components:
           type: string
         email:
           type: string
+        version:
+          type: integer
+          minimum: 1
+          description: >
+            Optimistic concurrency token. Assigned 1 on create and incremented
+            on every update. Optional on updates: when supplied, a stale value
+            returns 409 Conflict; when omitted the update is unconditional but
+            the version is still incremented.
         photo:
           type: string
           writeOnly: true
@@ -412,6 +450,7 @@ components:
                 nickname: John
                 email: johndoe@example.com
                 avatar: <your-s3-url-here>
+                version: 1
                 created_at: Date
                 updated_at: Date
     AllUserResponseData:
@@ -432,6 +471,7 @@ components:
                   nickname: John
                   email: johndoe@example.com
                   avatar: <your-s3-url-here>
+                  version: 1
                   created_at: Date
                   updated_at: Date
     UserRequestData:
@@ -449,6 +489,7 @@ components:
                 last_name: Doe
                 nickname: John
                 email: johndoe@example.
+                version: 1
                 photo: <your-photo-path>
     UserError:
       allOf:
@@ -490,6 +531,18 @@ components:
                 detail: The user is not found.
                 source:
                   parameter: id
+    VersionConflict:
+      allOf:
+        - $ref: "#/components/schemas/Error"
+        - example:
+            errors:
+              - status: 409
+                title: Conflict
+                detail: >
+                  The resource has been modified by another request. Fetch the
+                  latest version and retry.
+                source:
+                  pointer: "/data/attributes/version"
   responses:
     UserNotFound:
       description: User not found, usually caused by invalid id parameter.
@@ -507,3 +560,40 @@ components:
                       detail: The user is not found.
                       source:
                         parameter: id
+    VersionConflict:
+      description: >
+        The supplied version is stale, or the idempotency key is already in use
+        or was reused with a different payload. Re-fetch the resource and retry
+        with its current version and a fresh key.
+      content:
+        "application/vnd.api+json":
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/Error"
+              - example:
+                  links:
+                    self: "/user/{id}"
+                  errors:
+                    - status: 409
+                      title: Conflict
+                      detail: >
+                        The resource has been modified by another request.
+                        Fetch the latest version and retry.
+                      source:
+                        pointer: "/data/attributes/version"
+    IdempotencyConflict:
+      description: >
+        The idempotency key is already being processed or was reused with a
+        different request payload.
+      content:
+        "application/vnd.api+json":
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/Error"
+              - example:
+                  errors:
+                    - status: 409
+                      title: Conflict
+                      detail: The idempotency key was already used with a different request payload.
+                      source:
+                        header: Idempotency-Key

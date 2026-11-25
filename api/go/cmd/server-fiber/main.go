@@ -57,7 +57,10 @@ func main() {
 		slog.Warn("openapi spec unavailable", "error", err)
 	}
 
-	service := &usecase.Service{Users: dal.NewUserRepository(db)}
+	service := &usecase.Service{
+		Users:       dal.NewUserRepository(db),
+		Idempotency: cache.NewIdempotency(redisCache),
+	}
 	app := fiberserver.New(cfg, service, doc)
 
 	go func() {

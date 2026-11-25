@@ -3,10 +3,12 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/heyhusen/playground/api/go/internal/domain"
 	"github.com/heyhusen/playground/api/go/internal/domain/entity"
+	"github.com/heyhusen/playground/api/go/internal/domain/idempotency"
 	"github.com/heyhusen/playground/api/go/internal/domain/repository"
 	"github.com/heyhusen/playground/api/go/internal/id"
 	"github.com/heyhusen/playground/api/go/internal/message"
@@ -22,20 +24,26 @@ type RequestInfo struct {
 // CreateInput is the command for creating a user.
 type CreateInput struct {
 	RequestInfo
-	ID         string
-	Attributes entity.BaseUserEntity
+	ID             string
+	Attributes     entity.BaseUserEntity
+	IdempotencyKey string
+	Fingerprint    string
 }
 
 // UpdateInput is the command for updating a user.
 type UpdateInput struct {
 	RequestInfo
-	ID         string
-	Attributes map[string]any
+	ID              string
+	Attributes      map[string]any
+	ExpectedVersion *int64
+	IdempotencyKey  string
+	Fingerprint     string
 }
 
 // Service holds the user use cases.
 type Service struct {
-	Users repository.UserRepository
+	Users       repository.UserRepository
+	Idempotency idempotency.Store
 }
 
 func internalError(err error) *domain.Error {
@@ -56,8 +64,42 @@ func (s *Service) UniqueEmail(ctx context.Context, email, excludeID string) *dom
 	return nil
 }
 
-// Create persists a new user.
+// Create persists a new user, replaying an idempotent request when possible.
 func (s *Service) Create(ctx context.Context, in CreateInput) (*entity.User, *domain.Error) {
+	if s.Idempotency == nil || in.IdempotencyKey == "" {
+		return s.create(ctx, in)
+	}
+
+	const scope = "create"
+	state, cached, err := s.Idempotency.Check(ctx, scope, in.IdempotencyKey, in.Fingerprint)
+	if err != nil {
+		return nil, internalError(err)
+	}
+
+	switch state {
+	case idempotency.Hit:
+		return cached, nil
+	case idempotency.Mismatch:
+		return nil, domain.NewError(409, message.Conflict, message.IdempotencyMismatch)
+	case idempotency.InProgress:
+		return nil, domain.NewError(409, message.Conflict, message.IdempotencyInProgress)
+	}
+
+	user, apiErr := s.create(ctx, in)
+	if apiErr != nil {
+		_ = s.Idempotency.Release(ctx, scope, in.IdempotencyKey)
+
+		return nil, apiErr
+	}
+
+	if err := s.Idempotency.Complete(ctx, scope, in.IdempotencyKey, in.Fingerprint, user); err != nil {
+		return nil, internalError(err)
+	}
+
+	return user, nil
+}
+
+func (s *Service) create(ctx context.Context, in CreateInput) (*entity.User, *domain.Error) {
 	if err := s.UniqueEmail(ctx, in.Attributes.Email, ""); err != nil {
 		return nil, err
 	}
@@ -122,8 +164,42 @@ func (s *Service) ReadAll(ctx context.Context, page, size int) ([]entity.User, i
 	return users, total, nil
 }
 
-// Update applies the supplied attributes to an existing user.
+// Update applies the supplied attributes, replaying an idempotent request.
 func (s *Service) Update(ctx context.Context, in UpdateInput) (*entity.User, *domain.Error) {
+	if s.Idempotency == nil || in.IdempotencyKey == "" {
+		return s.update(ctx, in)
+	}
+
+	scope := fmt.Sprintf("update:%s", in.ID)
+	state, cached, err := s.Idempotency.Check(ctx, scope, in.IdempotencyKey, in.Fingerprint)
+	if err != nil {
+		return nil, internalError(err)
+	}
+
+	switch state {
+	case idempotency.Hit:
+		return cached, nil
+	case idempotency.Mismatch:
+		return nil, domain.NewError(409, message.Conflict, message.IdempotencyMismatch)
+	case idempotency.InProgress:
+		return nil, domain.NewError(409, message.Conflict, message.IdempotencyInProgress)
+	}
+
+	user, apiErr := s.update(ctx, in)
+	if apiErr != nil {
+		_ = s.Idempotency.Release(ctx, scope, in.IdempotencyKey)
+
+		return nil, apiErr
+	}
+
+	if err := s.Idempotency.Complete(ctx, scope, in.IdempotencyKey, in.Fingerprint, user); err != nil {
+		return nil, internalError(err)
+	}
+
+	return user, nil
+}
+
+func (s *Service) update(ctx context.Context, in UpdateInput) (*entity.User, *domain.Error) {
 	user, err := s.Users.FindByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
@@ -168,8 +244,15 @@ func (s *Service) Update(ctx context.Context, in UpdateInput) (*entity.User, *do
 	user.UpdatedAtTimezoneName = in.TimezoneName
 	user.UpdatedAtTimezoneOffset = in.TimezoneOffset
 
-	updated, err := s.Users.Update(ctx, user)
+	updated, err := s.Users.Update(ctx, user, in.ExpectedVersion)
 	if err != nil {
+		if errors.Is(err, repository.ErrConflict) {
+			return nil, domain.NewError(409, message.Conflict, message.VersionConflict)
+		}
+		if errors.Is(err, repository.ErrNotFound) {
+			return nil, domain.NewError(404, message.NotFound, message.UserNotExist)
+		}
+
 		return nil, internalError(err)
 	}
 

@@ -5,6 +5,7 @@ export function defaultRequest() {
 		Object.assign(request.headers, {
 			timezone_name: request.headers.timezone_name ?? 'Asia/Jakarta',
 			timezone_offset: request.headers.timezone_offset ?? 7,
+			idempotency_key: request.headers['idempotency-key'],
 		});
 
 		done();

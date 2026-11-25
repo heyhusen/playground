@@ -8,10 +8,11 @@ import { UpdateUserUseCase } from './update-user.use-case.js';
 
 describe(UpdateUserUseCase.name, () => {
 	beforeEach(() => {
-		mockUserRepository.update = vi.fn((_id, data) => {
+		mockUserRepository.update = vi.fn((_id, expectedVersion, data) => {
 			return Promise.resolve<UserEntity>({
 				...mockedUser,
 				...data,
+				version: expectedVersion + 1,
 			});
 		});
 	});
@@ -26,6 +27,7 @@ describe(UpdateUserUseCase.name, () => {
 			mockUserRepository,
 			mockedRequest,
 			mockedUser.id,
+			mockedUser.version,
 			dto
 		);
 		const data = await useCase.execute();
@@ -33,6 +35,7 @@ describe(UpdateUserUseCase.name, () => {
 		expect<UserEntity>(data).toStrictEqual<UserEntity>({
 			...mockedUser,
 			...dto,
+			version: mockedUser.version + 1,
 			updated_at: data.updated_at,
 		});
 	});
@@ -46,6 +49,7 @@ describe(UpdateUserUseCase.name, () => {
 			mockUserRepository,
 			mockedRequest,
 			mockedUser.id,
+			mockedUser.version,
 			dto
 		);
 		const data = await useCase.execute();
@@ -53,6 +57,7 @@ describe(UpdateUserUseCase.name, () => {
 		expect<UserEntity>(data).toStrictEqual<UserEntity>({
 			...mockedUser,
 			...dto,
+			version: mockedUser.version + 1,
 			updated_at: data.updated_at,
 		});
 	});
@@ -66,6 +71,7 @@ describe(UpdateUserUseCase.name, () => {
 			mockUserRepository,
 			mockedRequest,
 			mockedUser.id,
+			mockedUser.version,
 			dto
 		);
 		const data = await useCase.execute();
@@ -73,7 +79,27 @@ describe(UpdateUserUseCase.name, () => {
 		expect<UserEntity>(data).toStrictEqual<UserEntity>({
 			...mockedUser,
 			...dto,
+			version: mockedUser.version + 1,
 			updated_at: data.updated_at,
 		});
+	});
+
+	test('should forward the expected version as a concurrency token', async () => {
+		const dto = { first_name: faker.person.firstName() };
+
+		const useCase = new UpdateUserUseCase(
+			mockUserRepository,
+			mockedRequest,
+			mockedUser.id,
+			mockedUser.version,
+			dto
+		);
+		await useCase.execute();
+
+		expect(mockUserRepository.update).toHaveBeenCalledWith(
+			mockedUser.id,
+			mockedUser.version,
+			expect.not.objectContaining({ version: expect.anything() })
+		);
 	});
 });

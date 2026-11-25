@@ -4,9 +4,12 @@ import (
 	"context"
 	"testing"
 
+	"github.com/heyhusen/playground/api/go/internal/config"
 	"github.com/heyhusen/playground/api/go/internal/domain/entity"
+	"github.com/heyhusen/playground/api/go/internal/domain/idempotency"
 	"github.com/heyhusen/playground/api/go/internal/domain/repository"
 	"github.com/heyhusen/playground/api/go/internal/domain/usecase"
+	"github.com/heyhusen/playground/api/go/internal/infrastructure/cache"
 	"github.com/heyhusen/playground/api/go/internal/message"
 )
 
@@ -71,7 +74,16 @@ func (f *fakeUsers) FindAll(_ context.Context, page, size int) ([]entity.User, i
 	return users[start:end], int64(len(users)), nil
 }
 
-func (f *fakeUsers) Update(_ context.Context, user *entity.User) (*entity.User, error) {
+func (f *fakeUsers) Update(_ context.Context, user *entity.User, expectedVersion *int64) (*entity.User, error) {
+	current, ok := f.rows[user.ID]
+	if !ok {
+		return nil, repository.ErrNotFound
+	}
+	if expectedVersion != nil && *expectedVersion != current.Version {
+		return nil, repository.ErrConflict
+	}
+
+	user.Version = current.Version + 1
 	f.rows[user.ID] = user
 
 	return user, nil
@@ -143,6 +155,143 @@ func TestCreateDuplicateEmail(t *testing.T) {
 	}
 }
 
+type unusedIdempotency struct{}
+
+func (unusedIdempotency) Check(context.Context, string, string, string) (idempotency.State, *entity.User, error) {
+	panic("idempotency store must not be used without a key")
+}
+
+func (unusedIdempotency) Complete(context.Context, string, string, string, *entity.User) error {
+	panic("idempotency store must not be used without a key")
+}
+
+func (unusedIdempotency) Release(context.Context, string, string) error {
+	panic("idempotency store must not be used without a key")
+}
+
+func TestWritesWithoutIdempotencyKey(t *testing.T) {
+	repo := newFakeUsers()
+	service := &usecase.Service{Users: repo, Idempotency: unusedIdempotency{}}
+
+	created, apiErr := service.Create(context.Background(), usecase.CreateInput{
+		RequestInfo: requestInfo(),
+		Attributes: entity.BaseUserEntity{
+			FirstName: "John",
+			Email:     "john@example.com",
+		},
+	})
+	if apiErr != nil {
+		t.Fatalf("unexpected error: %v", apiErr)
+	}
+
+	updated, apiErr := service.Update(context.Background(), usecase.UpdateInput{
+		RequestInfo:    requestInfo(),
+		ID:             created.ID,
+		Attributes:     map[string]any{"first_name": "Jane"},
+		IdempotencyKey: "",
+	})
+	if apiErr != nil {
+		t.Fatalf("unexpected error: %v", apiErr)
+	}
+	if updated.ID != created.ID || updated.Version != created.Version+1 {
+		t.Fatalf("unexpected result: %+v", updated)
+	}
+}
+
+func redisIdempotency(t *testing.T) idempotency.Store {
+	t.Helper()
+
+	redisCache := cache.New(config.Load())
+	if err := redisCache.Flush(context.Background()); err != nil {
+		t.Fatalf("flush redis: %v", err)
+	}
+	t.Cleanup(func() { _ = redisCache.Close() })
+
+	return cache.NewIdempotency(redisCache)
+}
+
+func TestCreateIdempotent(t *testing.T) {
+	repo := newFakeUsers()
+	store := redisIdempotency(t)
+	service := &usecase.Service{Users: repo, Idempotency: store}
+
+	in := usecase.CreateInput{
+		RequestInfo:    requestInfo(),
+		Attributes:     entity.BaseUserEntity{FirstName: "John", Email: "john@example.com"},
+		IdempotencyKey: "create-key",
+		Fingerprint:    "create-fingerprint",
+	}
+
+	first, apiErr := service.Create(context.Background(), in)
+	if apiErr != nil {
+		t.Fatalf("unexpected error: %v", apiErr)
+	}
+	second, apiErr := service.Create(context.Background(), in)
+	if apiErr != nil {
+		t.Fatalf("unexpected error: %v", apiErr)
+	}
+	if first.ID != second.ID || len(repo.rows) != 1 {
+		t.Fatalf("retry created a second user: %d rows", len(repo.rows))
+	}
+}
+
+func TestCreateIdempotencyMismatch(t *testing.T) {
+	repo := newFakeUsers()
+	service := &usecase.Service{
+		Users:       repo,
+		Idempotency: redisIdempotency(t),
+	}
+
+	in := usecase.CreateInput{
+		RequestInfo:    requestInfo(),
+		Attributes:     entity.BaseUserEntity{FirstName: "John", Email: "john@example.com"},
+		IdempotencyKey: "create-key",
+		Fingerprint:    "first-fingerprint",
+	}
+	if _, apiErr := service.Create(context.Background(), in); apiErr != nil {
+		t.Fatalf("unexpected error: %v", apiErr)
+	}
+
+	in.Fingerprint = "different-fingerprint"
+	_, apiErr := service.Create(context.Background(), in)
+	if apiErr == nil || apiErr.Status != 409 || apiErr.Detail != message.IdempotencyMismatch {
+		t.Fatalf("unexpected error: %+v", apiErr)
+	}
+}
+
+func TestUpdateIdempotent(t *testing.T) {
+	repo := newFakeUsers()
+	service := &usecase.Service{
+		Users:       repo,
+		Idempotency: redisIdempotency(t),
+	}
+
+	created, _ := service.Create(context.Background(), usecase.CreateInput{
+		RequestInfo: requestInfo(),
+		Attributes:  entity.BaseUserEntity{FirstName: "John", Email: "john@example.com"},
+	})
+
+	in := usecase.UpdateInput{
+		RequestInfo:    requestInfo(),
+		ID:             created.ID,
+		Attributes:     map[string]any{"first_name": "Jane"},
+		IdempotencyKey: "update-key",
+		Fingerprint:    "update-fingerprint",
+	}
+
+	first, apiErr := service.Update(context.Background(), in)
+	if apiErr != nil {
+		t.Fatalf("unexpected error: %v", apiErr)
+	}
+	second, apiErr := service.Update(context.Background(), in)
+	if apiErr != nil {
+		t.Fatalf("unexpected error: %v", apiErr)
+	}
+	if second.Version != first.Version || second.Version != created.Version+1 {
+		t.Fatalf("retry bumped the version twice: %d -> %d", first.Version, second.Version)
+	}
+}
+
 func TestReadNotFound(t *testing.T) {
 	service := &usecase.Service{Users: newFakeUsers()}
 
@@ -182,6 +331,59 @@ func TestUpdate(t *testing.T) {
 	if updated.FirstName != "Jane" || updated.Nickname == nil || *updated.Nickname != "Johnny" {
 		t.Fatalf("update not applied: %+v", updated)
 	}
+}
+
+func TestUpdateWithVersion(t *testing.T) {
+	repo := newFakeUsers()
+	service := &usecase.Service{Users: repo}
+
+	created, _ := service.Create(context.Background(), usecase.CreateInput{
+		RequestInfo: requestInfo(),
+		Attributes: entity.BaseUserEntity{
+			FirstName: "John",
+			Email:     "john@example.com",
+		},
+	})
+
+	updated, apiErr := service.Update(context.Background(), usecase.UpdateInput{
+		RequestInfo:     requestInfo(),
+		ID:              created.ID,
+		Attributes:      map[string]any{"first_name": "Jane"},
+		ExpectedVersion: int64Ptr(created.Version),
+	})
+	if apiErr != nil {
+		t.Fatalf("unexpected error: %v", apiErr)
+	}
+	if updated.Version != created.Version+1 {
+		t.Fatalf("expected version %d, got %d", created.Version+1, updated.Version)
+	}
+}
+
+func TestUpdateWithStaleVersion(t *testing.T) {
+	repo := newFakeUsers()
+	service := &usecase.Service{Users: repo}
+
+	created, _ := service.Create(context.Background(), usecase.CreateInput{
+		RequestInfo: requestInfo(),
+		Attributes: entity.BaseUserEntity{
+			FirstName: "John",
+			Email:     "john@example.com",
+		},
+	})
+
+	_, apiErr := service.Update(context.Background(), usecase.UpdateInput{
+		RequestInfo:     requestInfo(),
+		ID:              created.ID,
+		Attributes:      map[string]any{"first_name": "Jane"},
+		ExpectedVersion: int64Ptr(created.Version + 1),
+	})
+	if apiErr == nil || apiErr.Status != 409 || apiErr.Detail != message.VersionConflict {
+		t.Fatalf("unexpected error: %+v", apiErr)
+	}
+}
+
+func int64Ptr(value int64) *int64 {
+	return &value
 }
 
 func TestUpdateNotFound(t *testing.T) {

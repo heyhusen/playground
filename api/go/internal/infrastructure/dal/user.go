@@ -199,8 +199,15 @@ func (r *UserRepository) FindAll(ctx context.Context, page, size int) ([]entity.
 	return users, total, rows.Err()
 }
 
-// Update writes all mutable columns of a user.
-func (r *UserRepository) Update(ctx context.Context, user *entity.User) (*entity.User, error) {
+// Update writes all mutable columns and increments the version. When
+// expectedVersion is non-nil the UPDATE is guarded by it, so a stale writer
+// affects zero rows instead of overwriting a newer version.
+func (r *UserRepository) Update(ctx context.Context, user *entity.User, expectedVersion *int64) (*entity.User, error) {
+	condition := jet.Users.ID.EQ(uuidValue(user.ID))
+	if expectedVersion != nil {
+		condition = condition.AND(jet.Users.Version.EQ(postgres.Int64(*expectedVersion)))
+	}
+
 	stmt := jet.Users.UPDATE(
 		jet.Users.FirstName,
 		jet.Users.LastName,
@@ -209,6 +216,7 @@ func (r *UserRepository) Update(ctx context.Context, user *entity.User) (*entity
 		jet.Users.UpdatedAt,
 		jet.Users.UpdatedAtTimezoneName,
 		jet.Users.UpdatedAtTimezoneOffset,
+		jet.Users.Version,
 	).SET(
 		postgres.String(user.FirstName),
 		nullString(user.LastName),
@@ -217,10 +225,32 @@ func (r *UserRepository) Update(ctx context.Context, user *entity.User) (*entity
 		postgres.Int64(user.UpdatedAt),
 		postgres.String(user.UpdatedAtTimezoneName),
 		postgres.Int32(int32(user.UpdatedAtTimezoneOffset)),
-	).WHERE(jet.Users.ID.EQ(uuidValue(user.ID)))
+		jet.Users.Version.ADD(postgres.Int64(1)),
+	).WHERE(condition)
 
-	if err := r.exec(ctx, stmt); err != nil {
+	query, args := stmt.Sql()
+	result, err := r.db.ExecContext(ctx, query, args...)
+	if err != nil {
 		return nil, err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+
+	if affected == 0 {
+		if expectedVersion != nil {
+			found, err := r.FindByID(ctx, user.ID)
+			if err != nil {
+				return nil, err
+			}
+			if found != nil {
+				return nil, repository.ErrConflict
+			}
+		}
+
+		return nil, repository.ErrNotFound
 	}
 
 	return r.FindByID(ctx, user.ID)
