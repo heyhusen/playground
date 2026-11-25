@@ -389,7 +389,7 @@ describe('GET /users/{id}', () => {
 
 	test('should return error when user is not found', async () => {
 		const response: SupertestResponse<IJsonApiError> = await request
-			.get('/users/60677a98-a65e-4abc-831c-45dd76e8f990')
+			.get('/users/60677a98-a65e-7abc-831c-45dd76e8f990')
 			.set('Accept', 'application/vnd.api+json');
 
 		expect<number>(response.status).toStrictEqual<StatusCodes>(
@@ -476,7 +476,7 @@ describe('PATCH /users/{id}', () => {
 
 	test('should return error when user is not found', async () => {
 		const response: SupertestResponse<IJsonApiError> = await request
-			.patch('/users/60677a98-a65e-4abc-831c-45dd76e8f990')
+			.patch('/users/60677a98-a65e-7abc-831c-45dd76e8f990')
 			.set('Accept', 'application/vnd.api+json')
 			.send({
 				data: {

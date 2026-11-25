@@ -12,7 +12,7 @@ async function main() {
 		users: {
 			count: 1,
 			columns: {
-				id: f.default({ defaultValue: faker.string.uuid() }),
+				id: f.default({ defaultValue: faker.string.uuid({ version: 7 }) }),
 				version: f.default({ defaultValue: 1 }),
 				cursor: f.default({ defaultValue: undefined }),
 				first_name: f.default({ defaultValue: 'John' }),
@@ -36,7 +36,7 @@ async function main() {
 		users: {
 			count: 50,
 			columns: {
-				id: f.uuid(),
+				id: f.default({ defaultValue: undefined }),
 				version: f.default({ defaultValue: 1 }),
 				cursor: f.default({ defaultValue: undefined }),
 				first_name: f.firstName(),

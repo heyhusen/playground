@@ -157,7 +157,7 @@ paths:
       operationId: findOne
       parameters:
         - name: id
-          description: This parameter must be a valid UUID v4.
+          description: This parameter must be a valid UUID v7.
           in: path
           required: true
           schema:
@@ -203,7 +203,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: This parameter must be a valid UUID v4.
+          description: This parameter must be a valid UUID v7.
           required: true
           schema:
             type: string
@@ -258,7 +258,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: This parameter must be a valid UUID v4.
+          description: This parameter must be a valid UUID v7.
           required: true
           schema:
             type: string
@@ -354,7 +354,7 @@ components:
             errors:
               - status: 400
                 title: Bad Request
-                detail: Validation failed (uuid v4 is expected).
+                detail: Validation failed (uuid v7 is expected).
                 source:
                   parameter: id
     User:
@@ -404,7 +404,7 @@ components:
               $ref: "#/components/schemas/UserData"
         - example:
             data:
-              id: <your-uuid-v4-here>
+              id: <your-uuid-v7-here>
               type: users
               attributes:
                 first_name: John
@@ -424,7 +424,7 @@ components:
                 $ref: "#/components/schemas/UserData"
         - example:
             data:
-              - id: <your-uuid-v4-here>
+              - id: <your-uuid-v7-here>
                 type: users
                 attributes:
                   first_name: John
@@ -442,7 +442,7 @@ components:
               $ref: "#/components/schemas/UserData"
         - example:
             data:
-              id: <your-uuid-v4-here>
+              id: <your-uuid-v7-here>
               type: users
               attributes:
                 first_name: John

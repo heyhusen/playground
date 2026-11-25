@@ -2,11 +2,11 @@ version: "3"
 
 services:
   postgres:
-    image: docker.io/library/postgres:17-alpine
+    image: docker.io/library/postgres:19-alpine
     ports:
       - "5432:5432"
     volumes:
-      - "postgres-data:/var/lib/postgresql/data"
+      - "postgres-data:/var/lib/postgresql"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -26,7 +26,7 @@ services:
   redis:
     image: docker.io/library/redis:7.2.4-alpine
     ports:
-      - "6379:6379"
+      - "6380:6379"
     volumes:
       - "redis-data:/data"
     healthcheck:
@@ -81,7 +81,7 @@ services:
   #     - '${MAILHOG_PORT:-1025}:1025'
   #     - '${MAILHOG_DASHBOARD_PORT:-8025}:8025'
   #   volumes:
-  #     - ../config:/.config
+  #     - ./config:/.config
   #   environment:
   #     - MH_AUTH_FILE="/.config/mailhog/auth"
   #   networks:
@@ -94,11 +94,11 @@ services:
       - "4437:4437"
 
   postgres-kratos:
-    image: docker.io/library/postgres:17-alpine
+    image: docker.io/library/postgres:19-alpine
     ports:
       - "5431:5432"
     volumes:
-      - "kratos-postgres:/var/lib/postgresql/data"
+      - "kratos-postgres:/var/lib/postgresql"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -121,8 +121,10 @@ services:
       - DSN=postgres://postgres:postgres@postgres-kratos:5432/postgres?sslmode=disable&max_conns=20&max_idle_conns=4
     volumes:
       - type: bind
-        source: ../config/kratos/email-password
+        source: ./config/kratos/email-password
         target: /etc/config/kratos
+        bind:
+          selinux: z
     command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
     restart: on-failure
     depends_on:
@@ -142,8 +144,10 @@ services:
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     volumes:
       - type: bind
-        source: ../config/kratos/email-password
+        source: ./config/kratos/email-password
         target: /etc/config/kratos
+        bind:
+          selinux: z
     depends_on:
       - kratos-migrate
 
@@ -174,7 +178,7 @@ services:
       - LOG_LEVEL=debug
     restart: on-failure
     volumes:
-      - ../config/oathkeeper:/etc/config/oathkeeper
+      - ./config/oathkeeper:/etc/config/oathkeeper:z
     depends_on:
       - kratos
 
@@ -186,7 +190,7 @@ services:
       - -config.file=/etc/loki/loki.yml
     restart: on-failure
     volumes:
-      - ../config/loki:/etc/loki
+      - ./config/loki:/etc/loki:z
     healthcheck:
       test: wget --quiet --tries=1 --output-document=- http://localhost:3100/ready | grep -q -w ready || exit 1
       start_period: 20s
@@ -206,7 +210,7 @@ services:
       - -config.file=/etc/tempo/tempo.yml
     restart: on-failure
     volumes:
-      - ../config/tempo:/etc/tempo
+      - ./config/tempo:/etc/tempo:z
     depends_on:
       minio:
         condition: service_healthy
@@ -220,7 +224,7 @@ services:
       - --config.file=/etc/prometheus/prometheus.yml
     restart: on-failure
     volumes:
-      - ../config/prometheus:/etc/prometheus
+      - ./config/prometheus:/etc/prometheus:z
     ports:
       - 9090:9090
     depends_on:
@@ -234,7 +238,7 @@ services:
       - --storage.path=/var/lib/alloy/data
       - /etc/alloy/config.alloy
     volumes:
-      - ../config/alloy/config.alloy:/etc/alloy/config.alloy
+      - ./config/alloy/config.alloy:/etc/alloy/config.alloy:z
     ports:
       - 12345:12345
       - 4317:4317
@@ -252,7 +256,7 @@ services:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
     restart: on-failure
     volumes:
-      - ../config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:z
     ports:
       - 3030:3000
     depends_on:

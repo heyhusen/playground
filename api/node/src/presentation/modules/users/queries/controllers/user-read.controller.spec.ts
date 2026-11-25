@@ -71,7 +71,7 @@ describe(UserReadController.name, () => {
 			const data = await controller.read({
 				...request,
 				params: {
-					id: faker.string.uuid(),
+					id: faker.string.uuid({ version: 7 }),
 				},
 			});
 
