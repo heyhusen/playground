@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: docker.io/library/postgres:17-alpine
+        image: docker.io/library/postgres:19-alpine
         options: >-
           --health-cmd pg_isready
           --health-interval 10s

@@ -3,7 +3,7 @@ import { BaseUserEntity, UserEntity } from '../../entities/user.entity.js';
 import { ICreateUserDTO } from '../../interfaces/user-dto.interface.js';
 
 export const mockedDto: ICreateUserDTO = {
-	id: faker.string.uuid(),
+	id: faker.string.uuid({ version: 7 }),
 	version: 1,
 	cursor: 1,
 	first_name: faker.person.firstName(),
@@ -17,7 +17,7 @@ export const mockedDto: ICreateUserDTO = {
 };
 
 export const mockedUser: UserEntity = {
-	id: faker.string.uuid(),
+	id: faker.string.uuid({ version: 7 }),
 	version: 1,
 	cursor: 2,
 	first_name: mockedDto.first_name,

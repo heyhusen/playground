@@ -9,7 +9,7 @@ import { UnitOfWork } from '../src/infrastructure/dal/unit-of-work.js';
 import { db } from '../src/infrastructure/ports/database.js';
 
 export const user: UserEntity = {
-	id: faker.string.uuid(),
+	id: faker.string.uuid({ version: 7 }),
 	version: 1,
 	cursor: 1,
 	first_name: faker.person.firstName(),

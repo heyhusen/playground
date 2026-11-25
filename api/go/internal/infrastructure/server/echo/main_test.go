@@ -25,7 +25,7 @@ var (
 	testCfg config.Config
 )
 
-const seedID = "11111111-1111-4111-8111-111111111111"
+const seedID = "11111111-1111-7111-8111-111111111111"
 
 func TestMain(m *testing.M) {
 	for key, value := range map[string]string{

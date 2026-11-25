@@ -1,7 +1,11 @@
+import { sql } from 'drizzle-orm';
 import { bigint, bigserial, integer, uuid, varchar } from 'drizzle-orm/pg-core';
 
 export const baseSchema = {
-	id: uuid().primaryKey().defaultRandom().notNull(),
+	id: uuid()
+		.primaryKey()
+		.default(sql`uuidv7()`)
+		.notNull(),
 	version: bigint({ mode: 'number' }).default(1).notNull(),
 	cursor: bigserial({ mode: 'number' }).notNull(),
 	created_at: bigint({ mode: 'number' }).notNull(),

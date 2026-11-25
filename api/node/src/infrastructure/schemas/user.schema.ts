@@ -83,7 +83,12 @@ export const createUserSchema = z.object({
 				.optional(),
 			data: z.object(
 				{
-					id: z.uuid(getMessage('data.id.format')).optional(),
+					id: z
+						.uuid({
+							version: 'v7',
+							error: getMessage('data.id.format'),
+						})
+						.optional(),
 					type: z.string(getMessage('data.type.required')).includes('users', {
 						message: getMessage('data.type.pattern'),
 					}),
@@ -143,7 +148,12 @@ export const updateUserSchema = z.object({
 				.optional(),
 			data: z.object(
 				{
-					id: z.string().uuid(getMessage('data.id.format')).optional(),
+					id: z
+						.uuid({
+							version: 'v7',
+							error: getMessage('data.id.format'),
+						})
+						.optional(),
 					type: z.string(getMessage('data.type.required')).includes('users', {
 						message: getMessage('data.type.pattern'),
 					}),
@@ -210,6 +220,7 @@ export const compatUpdateUserSchema = z.object({
 			data: z.object(
 				{
 					id: z.uuid({
+						version: 'v7',
 						error: (issue) => {
 							if (issue.input === undefined) {
 								return getMessage('data.id.required');

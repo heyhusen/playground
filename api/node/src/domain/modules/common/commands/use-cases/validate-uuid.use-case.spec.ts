@@ -11,7 +11,7 @@ describe(validateUuid.name, () => {
 
 	test('should return true if uuid is valid', () => {
 		expect<ReturnType<typeof validateUuid>>(
-			validateUuid(faker.string.uuid())
+			validateUuid(faker.string.uuid({ version: 7 }))
 		).toStrictEqual<boolean>(true);
 	});
 });

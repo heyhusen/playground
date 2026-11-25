@@ -192,7 +192,7 @@ func TestFindOne(t *testing.T) {
 		detail string
 	}{
 		{"invalid id", "/users/invalid-id", http.StatusUnprocessableEntity, message.IDFormat},
-		{"not found", "/users/60677a98-a65e-4abc-831c-45dd76e8f990", http.StatusNotFound, message.UserNotExist},
+		{"not found", "/users/60677a98-a65e-7abc-831c-45dd76e8f990", http.StatusNotFound, message.UserNotExist},
 	}
 
 	for _, tt := range tests {

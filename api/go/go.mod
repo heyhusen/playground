@@ -6,6 +6,7 @@ require (
 	github.com/go-chi/chi/v5 v5.5.0
 	github.com/go-jet/jet/v2 v2.16.1
 	github.com/gofiber/fiber/v3 v3.7.0
+	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.13.0
 	github.com/labstack/echo/v4 v4.16.6
 	github.com/minio/minio-go/v7 v7.4.1
@@ -22,7 +23,6 @@ require (
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/gofiber/schema v1.9.3 // indirect
 	github.com/gofiber/utils/v2 v2.6.4 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.3 // indirect
