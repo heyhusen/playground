@@ -39,6 +39,7 @@ type CreatePayload struct {
 type UpdatePayload struct {
 	ID         string
 	Attributes map[string]any
+	Version    *int64
 }
 
 // Page is the validated pagination query.
@@ -340,6 +341,26 @@ func validateEmail(attributes map[string]any, details *[]string, compat bool) {
 	}
 }
 
+// versionOf extracts the optional optimistic-concurrency token. Invalid
+// values are reported as validation errors; absence means no version guard.
+func versionOf(attributes map[string]any, details *[]string) *int64 {
+	value, exists := attributes["version"]
+	if !exists {
+		return nil
+	}
+
+	number, ok := value.(float64)
+	if !ok || number <= 0 || float64(int64(number)) != number {
+		*details = append(*details, message.VersionType)
+
+		return nil
+	}
+
+	version := int64(number)
+
+	return &version
+}
+
 func attributesOf(data map[string]any) map[string]any {
 	attributes, ok := data["attributes"].(map[string]any)
 	if !ok {
@@ -429,6 +450,7 @@ func updateMiddleware(compat bool) func(echov4.HandlerFunc) echov4.HandlerFunc {
 			attributes := attributesOf(data)
 			validateFirstName(attributes, &details)
 			validateEmail(attributes, &details, compat)
+			version := versionOf(attributes, &details)
 
 			if len(details) > 0 {
 				return domain.NewValidationError(details...)
@@ -439,7 +461,7 @@ func updateMiddleware(compat bool) func(echov4.HandlerFunc) echov4.HandlerFunc {
 				userID, _ = data["id"].(string)
 			}
 
-			c.Set(keyUpdate, UpdatePayload{ID: userID, Attributes: attributes})
+			c.Set(keyUpdate, UpdatePayload{ID: userID, Attributes: attributes, Version: version})
 
 			return next(c)
 		}

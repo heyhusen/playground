@@ -24,6 +24,10 @@ const (
 	FirstNameType          = "The data.attributes.first_name must be a string."
 	FirstNameMinLength     = "The data.attributes.first_name field must have a value."
 	EmailType              = "The data.attributes.email must be a string."
+	VersionType            = "The data.attributes.version property must be a positive integer."
+	VersionConflict        = "The resource has been modified by another request. Fetch the latest version and retry."
+	IdempotencyInProgress  = "The request with this idempotency key is already being processed."
+	IdempotencyMismatch    = "The idempotency key was already used with a different request payload."
 	EmailUnique            = "The email has already been taken."
 	IDRequired             = "Validation failed (uuid v7 is expected)."
 	IDFormat               = "Validation failed (uuid v7 is expected)."
@@ -35,6 +39,7 @@ const (
 	NotFound               = "Not Found"
 	BadRequest             = "Bad Request"
 	UnprocessableEntity    = "Unprocessable Entity"
+	Conflict               = "Conflict"
 	InternalServerError    = "Internal Server Error"
 	ErrorTitle             = "Error"
 )

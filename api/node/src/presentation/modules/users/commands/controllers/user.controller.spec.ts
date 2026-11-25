@@ -87,6 +87,7 @@ describe(UserController.name, () => {
 
 		test("should only update user's name", async () => {
 			const body = {
+				version: mockedUser.version,
 				first_name: faker.person.firstName(),
 				last_name: faker.person.lastName(),
 			};
@@ -123,6 +124,7 @@ describe(UserController.name, () => {
 
 		test("should only update user's email", async () => {
 			const body = {
+				version: mockedUser.version,
 				email: faker.internet.email(),
 			};
 			mockUnitOfWork.transaction = vi.fn().mockReturnValue({

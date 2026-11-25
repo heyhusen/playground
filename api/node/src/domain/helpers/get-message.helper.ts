@@ -28,6 +28,16 @@ const errorMessage: MessageDictionaryEntity = {
 	'data.attributes.first_name.minLength':
 		'The data.attributes.first_name field must have a value.',
 	'data.attributes.email.type': 'The data.attributes.email must be a string.',
+	'data.attributes.version.required':
+		'The data.attributes.version property is required.',
+	'data.attributes.version.type':
+		'The data.attributes.version property must be a positive integer.',
+	'version.conflict':
+		'The resource has been modified by another request. Fetch the latest version and retry.',
+	'idempotency.in_progress':
+		'The request with this idempotency key is already being processed.',
+	'idempotency.mismatch':
+		'The idempotency key was already used with a different request payload.',
 	'email.unique': 'The email has already been taken.',
 	'id.required': 'Validation failed (uuid v7 is expected).',
 	'id.format': 'Validation failed (uuid v7 is expected).',

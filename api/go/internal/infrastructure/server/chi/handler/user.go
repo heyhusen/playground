@@ -7,6 +7,7 @@ import (
 	"github.com/heyhusen/playground/api/go/internal/domain/entity"
 	"github.com/heyhusen/playground/api/go/internal/domain/usecase"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/chi/middleware"
+	idem "github.com/heyhusen/playground/api/go/internal/infrastructure/server/shared/idempotency"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/server/shared/jsonapi"
 )
 
@@ -25,6 +26,7 @@ func resource(user *entity.User, baseURL string) jsonapi.Resource {
 			LastName:  user.LastName,
 			Nickname:  user.Nickname,
 			Email:     user.Email,
+			Version:   user.Version,
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 		},
@@ -52,6 +54,8 @@ func (h *User) Create(w http.ResponseWriter, r *http.Request) {
 			Nickname:  body.Nickname,
 			Email:     body.Email,
 		},
+		IdempotencyKey: r.Header.Get("Idempotency-Key"),
+		Fingerprint:    idem.Fingerprint(body),
 	})
 	if apiErr != nil {
 		jsonapi.WriteError(w, apiErr)
@@ -126,9 +130,12 @@ func (h *User) Update(w http.ResponseWriter, r *http.Request) {
 	body := middleware.UpdateBody(r)
 
 	user, apiErr := h.Service.Update(r.Context(), usecase.UpdateInput{
-		RequestInfo: middleware.RequestInfo(r),
-		ID:          body.ID,
-		Attributes:  body.Attributes,
+		RequestInfo:     middleware.RequestInfo(r),
+		ID:              body.ID,
+		Attributes:      body.Attributes,
+		ExpectedVersion: body.Version,
+		IdempotencyKey:  r.Header.Get("Idempotency-Key"),
+		Fingerprint:     idem.Fingerprint(body.Attributes),
 	})
 	if apiErr != nil {
 		jsonapi.WriteError(w, apiErr)

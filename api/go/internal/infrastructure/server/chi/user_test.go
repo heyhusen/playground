@@ -10,6 +10,7 @@ import (
 
 type userAttributes struct {
 	FirstName string  `json:"first_name"`
+	Version   int64   `json:"version"`
 	LastName  *string `json:"last_name"`
 	Nickname  *string `json:"nickname"`
 	Email     string  `json:"email"`
@@ -333,4 +334,102 @@ func TestDeleteUser(t *testing.T) {
 
 	resp = request(t, server, http.MethodDelete, "/users/"+seeded.ID, nil)
 	assertError(t, resp, http.StatusNotFound, message.UserNotExist)
+}
+
+func TestUpdateVersion(t *testing.T) {
+	server, seeded, _ := setupWithStore(t, nil)
+
+	resp := request(t, server, http.MethodPatch, "/users/"+seeded.ID, map[string]any{
+		"data": map[string]any{
+			"type": "users",
+			"attributes": map[string]any{
+				"version":    seeded.Version + 1,
+				"first_name": "Stale",
+			},
+		},
+	})
+	assertError(t, resp, http.StatusConflict, message.VersionConflict)
+
+	resp = request(t, server, http.MethodPatch, "/users/"+seeded.ID, map[string]any{
+		"data": map[string]any{
+			"type": "users",
+			"attributes": map[string]any{
+				"version":    seeded.Version,
+				"first_name": "Jane",
+			},
+		},
+	})
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected 200, got %d", resp.StatusCode)
+	}
+	if user := decodeUser(t, resp); user.Attributes.Version != seeded.Version+1 {
+		t.Fatalf("expected version %d, got %d", seeded.Version+1, user.Attributes.Version)
+	}
+}
+
+func TestUpdateWithoutVersion(t *testing.T) {
+	server, seeded, _ := setupWithStore(t, nil)
+
+	resp := request(t, server, http.MethodPatch, "/users/"+seeded.ID, map[string]any{
+		"data": map[string]any{
+			"type":       "users",
+			"attributes": map[string]any{"nickname": "unversioned"},
+		},
+	})
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected 200, got %d", resp.StatusCode)
+	}
+	if user := decodeUser(t, resp); user.Attributes.Version != seeded.Version+1 {
+		t.Fatalf("expected version %d, got %d", seeded.Version+1, user.Attributes.Version)
+	}
+}
+
+func TestCreateIdempotency(t *testing.T) {
+	server, _, _ := setupWithStore(t, nil)
+	payload := map[string]any{
+		"data": map[string]any{
+			"type": "users",
+			"attributes": map[string]any{
+				"first_name": "Idempotent",
+				"email":      "idempotent@example.com",
+			},
+		},
+	}
+
+	first := requestWithKey(t, server, http.MethodPost, "/users", payload, "create-key")
+	if first.StatusCode != http.StatusCreated {
+		t.Fatalf("expected 201, got %d", first.StatusCode)
+	}
+	second := requestWithKey(t, server, http.MethodPost, "/users", payload, "create-key")
+	if second.StatusCode != http.StatusCreated {
+		t.Fatalf("expected 201 on replay, got %d", second.StatusCode)
+	}
+	if firstUser, secondUser := decodeUser(t, first), decodeUser(t, second); firstUser.ID != secondUser.ID {
+		t.Fatalf("replay created a different user: %s != %s", firstUser.ID, secondUser.ID)
+	}
+}
+
+func TestUpdateIdempotency(t *testing.T) {
+	server, seeded, _ := setupWithStore(t, nil)
+	payload := map[string]any{
+		"data": map[string]any{
+			"type": "users",
+			"attributes": map[string]any{
+				"version":  seeded.Version,
+				"nickname": "idempotent",
+			},
+		},
+	}
+
+	first := requestWithKey(t, server, http.MethodPatch, "/users/"+seeded.ID, payload, "update-key")
+	if first.StatusCode != http.StatusOK {
+		t.Fatalf("expected 200, got %d", first.StatusCode)
+	}
+	second := requestWithKey(t, server, http.MethodPatch, "/users/"+seeded.ID, payload, "update-key")
+	if second.StatusCode != http.StatusOK {
+		t.Fatalf("expected 200 on replay, got %d", second.StatusCode)
+	}
+	if user := decodeUser(t, second); user.Attributes.Version != seeded.Version+1 {
+		t.Fatalf("replay bumped the version twice: %d", user.Attributes.Version)
+	}
 }

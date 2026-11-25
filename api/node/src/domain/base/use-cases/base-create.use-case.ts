@@ -17,6 +17,7 @@ export class BaseCreateUseCase<
 	async execute(): Promise<Entity> {
 		return this.repository.create({
 			...this.entity,
+			version: 1,
 			created_at: Number(new Date()),
 			created_at_timezone_name: this.request.timezone_name,
 			created_at_timezone_offset: this.request.timezone_offset,

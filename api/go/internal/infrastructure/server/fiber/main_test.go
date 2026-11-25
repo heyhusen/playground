@@ -14,7 +14,9 @@ import (
 
 	"github.com/heyhusen/playground/api/go/internal/config"
 	"github.com/heyhusen/playground/api/go/internal/domain/entity"
+	"github.com/heyhusen/playground/api/go/internal/domain/idempotency"
 	"github.com/heyhusen/playground/api/go/internal/domain/usecase"
+	"github.com/heyhusen/playground/api/go/internal/infrastructure/cache"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/dal"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/database"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/migration"
@@ -22,8 +24,9 @@ import (
 )
 
 var (
-	testDB  *sql.DB
-	testCfg config.Config
+	testDB    *sql.DB
+	testCfg   config.Config
+	testRedis *cache.Redis
 )
 
 const seedID = "11111111-1111-7111-8111-111111111111"
@@ -36,6 +39,8 @@ func TestMain(m *testing.M) {
 		"DB_PASSWORD": "postgres",
 		"DB_DATABASE": "postgres",
 		"APP_URL":     "http://localhost:3000",
+		"REDIS_HOST":  "localhost",
+		"REDIS_PORT":  "6379",
 	} {
 		if os.Getenv(key) == "" {
 			_ = os.Setenv(key, value)
@@ -43,6 +48,11 @@ func TestMain(m *testing.M) {
 	}
 
 	testCfg = config.Load()
+
+	testRedis = cache.New(testCfg)
+	if err := testRedis.Ping(context.Background()); err != nil {
+		panic(err)
+	}
 
 	var err error
 
@@ -68,6 +78,7 @@ func TestMain(m *testing.M) {
 
 	code := m.Run()
 
+	_ = testRedis.Close()
 	_ = testDB.Close()
 	os.Exit(code)
 }
@@ -75,6 +86,21 @@ func TestMain(m *testing.M) {
 // setup resets the database and returns a Fiber app with a seeded user.
 func setup(t *testing.T) (*fiberserver.App, entity.User) {
 	t.Helper()
+
+	server, seeded, _ := setupWithStore(t, nil)
+
+	return server, seeded
+}
+
+func setupWithStore(t *testing.T, store idempotency.Store) (*fiberserver.App, entity.User, idempotency.Store) {
+	t.Helper()
+
+	if store == nil {
+		store = cache.NewIdempotency(testRedis)
+	}
+	if err := testRedis.Flush(context.Background()); err != nil {
+		t.Fatalf("flush redis: %v", err)
+	}
 
 	if _, err := testDB.ExecContext(context.Background(), "TRUNCATE users RESTART IDENTITY"); err != nil {
 		t.Fatalf("truncate users: %v", err)
@@ -99,14 +125,14 @@ func setup(t *testing.T) (*fiberserver.App, entity.User) {
 		t.Fatalf("seed user: %v", err)
 	}
 
-	service := &usecase.Service{Users: repo}
+	service := &usecase.Service{Users: repo, Idempotency: store}
 
 	doc, err := openapi.Load(testCfg.OpenAPIPath)
 	if err != nil {
 		t.Fatalf("load openapi: %v", err)
 	}
 
-	return New(testCfg, service, doc), seeded
+	return New(testCfg, service, doc), seeded, store
 }
 
 func stringPtr(value string) *string {
@@ -131,6 +157,37 @@ func request(t *testing.T, app *fiberserver.App, method, path string, body any) 
 	}
 
 	req.Header.Set("Accept", "application/vnd.api+json")
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	resp, err := app.Test(req)
+	if err != nil {
+		t.Fatalf("test request: %v", err)
+	}
+
+	return resp
+}
+
+func requestWithKey(t *testing.T, app *fiberserver.App, method, path string, body any, key string) *http.Response {
+	t.Helper()
+
+	var payload io.Reader
+	if body != nil {
+		encoded, err := json.Marshal(body)
+		if err != nil {
+			t.Fatalf("encode body: %v", err)
+		}
+		payload = bytes.NewReader(encoded)
+	}
+
+	req, err := http.NewRequest(method, "http://localhost"+path, payload)
+	if err != nil {
+		t.Fatalf("new request: %v", err)
+	}
+
+	req.Header.Set("Accept", "application/vnd.api+json")
+	req.Header.Set("Idempotency-Key", key)
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}

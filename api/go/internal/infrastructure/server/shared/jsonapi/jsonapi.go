@@ -41,6 +41,7 @@ type UserAttributes struct {
 	LastName  *string `json:"last_name"`
 	Nickname  *string `json:"nickname"`
 	Email     string  `json:"email"`
+	Version   int64   `json:"version"`
 	CreatedAt int64   `json:"created_at"`
 	UpdatedAt int64   `json:"updated_at"`
 }

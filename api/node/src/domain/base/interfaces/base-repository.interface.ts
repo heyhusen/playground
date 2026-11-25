@@ -16,7 +16,18 @@ export interface IBaseRepository<
 > extends IBaseReadRepository<Entity> {
 	create: (data: Entity) => Promise<Entity>;
 
-	update: (entityId: string, data: Partial<Entity>) => Promise<Entity>;
+	/**
+	 * Increments the version by one on every update. When `expectedVersion` is
+	 * supplied the update is guarded by it and a stale value throws a conflict
+	 * error; when omitted the update is unconditional (no version check).
+	 *
+	 * Returns `undefined` when the entity does not exist.
+	 */
+	update: (
+		entityId: string,
+		expectedVersion: number | undefined,
+		data: Partial<Entity>
+	) => Promise<Entity>;
 
 	delete: (entityId: string) => Promise<Entity>;
 }

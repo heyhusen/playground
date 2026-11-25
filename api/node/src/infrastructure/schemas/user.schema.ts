@@ -1,6 +1,20 @@
 import z from 'zod';
 import { getMessage } from '../../domain/helpers/get-message.helper.js';
 
+/** Optimistic concurrency token required on every update. */
+const versionSchema = z
+	.number({
+		error: (issue) => {
+			if (issue.input === undefined) {
+				return getMessage('data.attributes.version.required');
+			}
+
+			return getMessage('data.attributes.version.type');
+		},
+	})
+	.int(getMessage('data.attributes.version.type'))
+	.positive(getMessage('data.attributes.version.type'));
+
 export const findAllUserSchema = z.object({
 	query: z.object({
 		page: z.object(
@@ -159,6 +173,7 @@ export const updateUserSchema = z.object({
 					}),
 					attributes: z
 						.object({
+							version: versionSchema.optional(),
 							first_name: z
 								.string(getMessage('data.attributes.first_name.type'))
 								.min(1, getMessage('data.attributes.first_name.minLength'))
@@ -234,6 +249,7 @@ export const compatUpdateUserSchema = z.object({
 					}),
 					attributes: z
 						.object({
+							version: versionSchema.optional(),
 							first_name: z
 								.string(getMessage('data.attributes.first_name.type'))
 								.min(1, getMessage('data.attributes.first_name.minLength'))

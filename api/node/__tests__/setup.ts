@@ -7,6 +7,7 @@ import {
 import * as schema from '../src/infrastructure/dal/schemas/index.js';
 import { UnitOfWork } from '../src/infrastructure/dal/unit-of-work.js';
 import { db } from '../src/infrastructure/ports/database.js';
+import { redis } from '../src/infrastructure/ports/redis.js';
 
 export const user: UserEntity = {
 	id: faker.string.uuid({ version: 7 }),
@@ -35,6 +36,8 @@ export const testUser: BaseUserEntity = {
 export async function setup() {
 	const uow = new UnitOfWork();
 
+	// Idempotency keys from a previous suite must never replay into this one.
+	await redis.flushdb();
 	await reset(db, schema);
 
 	await uow.transaction(async (trx) => {

@@ -8,6 +8,8 @@ export function defaultRequest() {
 		Object.assign(headers, {
 			timezone_name: headers.timezone_name ?? 'Asia/Jakarta',
 			timezone_offset: headers.timezone_offset ?? 7,
+			idempotency_key:
+				(headers as unknown as Headers).get('idempotency-key') ?? undefined,
 		});
 
 		await next();
