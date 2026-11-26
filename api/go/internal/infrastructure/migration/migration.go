@@ -13,7 +13,9 @@ var migrations embed.FS
 // Up applies all embedded migrations, replacing `pnpm db:migrate`.
 func Up(db *sql.DB) error {
 	goose.SetBaseFS(migrations)
-	goose.SetDialect("postgres")
+	if err := goose.SetDialect("postgres"); err != nil {
+		return err
+	}
 
 	return goose.Up(db, "migrations")
 }
@@ -21,7 +23,9 @@ func Up(db *sql.DB) error {
 // Down rolls back every migration.
 func Down(db *sql.DB) error {
 	goose.SetBaseFS(migrations)
-	goose.SetDialect("postgres")
+	if err := goose.SetDialect("postgres"); err != nil {
+		return err
+	}
 
 	return goose.Down(db, "migrations")
 }

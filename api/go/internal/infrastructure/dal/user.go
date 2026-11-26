@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
+	"math"
 
 	"github.com/go-jet/jet/v2/postgres"
 
@@ -70,6 +72,14 @@ func scanUser(row scanner) (*entity.User, error) {
 	return &user, nil
 }
 
+func offsetValue(offset int) (int32, error) {
+	if offset < math.MinInt32 || offset > math.MaxInt32 {
+		return 0, fmt.Errorf("timezone offset %d is outside the int32 range", offset)
+	}
+
+	return int32(offset), nil
+}
+
 func (r *UserRepository) exec(ctx context.Context, stmt postgres.Statement) error {
 	query, args := stmt.Sql()
 	_, err := r.db.ExecContext(ctx, query, args...)
@@ -79,6 +89,16 @@ func (r *UserRepository) exec(ctx context.Context, stmt postgres.Statement) erro
 
 // Create inserts a user.
 func (r *UserRepository) Create(ctx context.Context, user *entity.User) (*entity.User, error) {
+	createdOffset, err := offsetValue(user.CreatedAtTimezoneOffset)
+	if err != nil {
+		return nil, err
+	}
+
+	updatedOffset, err := offsetValue(user.UpdatedAtTimezoneOffset)
+	if err != nil {
+		return nil, err
+	}
+
 	stmt := jet.Users.INSERT(
 		jet.Users.ID,
 		jet.Users.Version,
@@ -102,12 +122,12 @@ func (r *UserRepository) Create(ctx context.Context, user *entity.User) (*entity
 		postgres.Int64(user.CreatedAt),
 		postgres.Int64(user.UpdatedAt),
 		postgres.String(user.CreatedAtTimezoneName),
-		postgres.Int32(int32(user.CreatedAtTimezoneOffset)),
+		postgres.Int32(createdOffset),
 		postgres.String(user.UpdatedAtTimezoneName),
-		postgres.Int32(int32(user.UpdatedAtTimezoneOffset)),
+		postgres.Int32(updatedOffset),
 	)
 
-	if err := r.exec(ctx, stmt); err != nil {
+	if err = r.exec(ctx, stmt); err != nil {
 		return nil, err
 	}
 
@@ -128,7 +148,21 @@ func nullString(value *string) postgres.Expression {
 
 // FindByID returns a user or repository.ErrNotFound.
 func (r *UserRepository) FindByID(ctx context.Context, userID string) (*entity.User, error) {
-	stmt := postgres.SELECT(jet.Users.AllColumns).
+	stmt := postgres.SELECT(
+		jet.Users.ID,
+		jet.Users.Version,
+		jet.Users.Cursor,
+		jet.Users.FirstName,
+		jet.Users.LastName,
+		jet.Users.Nickname,
+		jet.Users.Email,
+		jet.Users.CreatedAt,
+		jet.Users.UpdatedAt,
+		jet.Users.CreatedAtTimezoneName,
+		jet.Users.CreatedAtTimezoneOffset,
+		jet.Users.UpdatedAtTimezoneName,
+		jet.Users.UpdatedAtTimezoneOffset,
+	).
 		FROM(jet.Users).
 		WHERE(jet.Users.ID.EQ(uuidValue(userID))).
 		LIMIT(1)
@@ -149,7 +183,21 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email, excludeID strin
 		condition = condition.AND(jet.Users.ID.NOT_EQ(uuidValue(excludeID)))
 	}
 
-	stmt := postgres.SELECT(jet.Users.AllColumns).
+	stmt := postgres.SELECT(
+		jet.Users.ID,
+		jet.Users.Version,
+		jet.Users.Cursor,
+		jet.Users.FirstName,
+		jet.Users.LastName,
+		jet.Users.Nickname,
+		jet.Users.Email,
+		jet.Users.CreatedAt,
+		jet.Users.UpdatedAt,
+		jet.Users.CreatedAtTimezoneName,
+		jet.Users.CreatedAtTimezoneOffset,
+		jet.Users.UpdatedAtTimezoneName,
+		jet.Users.UpdatedAtTimezoneOffset,
+	).
 		FROM(jet.Users).
 		WHERE(condition).
 		LIMIT(1)
@@ -157,7 +205,7 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email, excludeID strin
 	query, args := stmt.Sql()
 	user, err := scanUser(r.db.QueryRowContext(ctx, query, args...))
 	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
+		return nil, repository.ErrNotFound
 	}
 
 	return user, err
@@ -173,7 +221,21 @@ func (r *UserRepository) FindAll(ctx context.Context, page, size int) ([]entity.
 		return nil, 0, err
 	}
 
-	stmt := postgres.SELECT(jet.Users.AllColumns).
+	stmt := postgres.SELECT(
+		jet.Users.ID,
+		jet.Users.Version,
+		jet.Users.Cursor,
+		jet.Users.FirstName,
+		jet.Users.LastName,
+		jet.Users.Nickname,
+		jet.Users.Email,
+		jet.Users.CreatedAt,
+		jet.Users.UpdatedAt,
+		jet.Users.CreatedAtTimezoneName,
+		jet.Users.CreatedAtTimezoneOffset,
+		jet.Users.UpdatedAtTimezoneName,
+		jet.Users.UpdatedAtTimezoneOffset,
+	).
 		FROM(jet.Users).
 		ORDER_BY(jet.Users.Cursor.ASC()).
 		LIMIT(int64(size)).
@@ -189,20 +251,39 @@ func (r *UserRepository) FindAll(ctx context.Context, page, size int) ([]entity.
 	users := make([]entity.User, 0)
 
 	for rows.Next() {
-		user, err := scanUser(rows)
-		if err != nil {
-			return nil, 0, err
+		scanned, scanErr := scanUser(rows)
+		if scanErr != nil {
+			return nil, 0, scanErr
 		}
-		users = append(users, *user)
+		users = append(users, *scanned)
 	}
 
 	return users, total, rows.Err()
+}
+
+// conflictResult reports whether a zero-row guarded update was a stale write
+// or a user that no longer exists.
+func (r *UserRepository) conflictResult(ctx context.Context, userID string) error {
+	found, err := r.FindByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	if found != nil {
+		return repository.ErrConflict
+	}
+
+	return repository.ErrNotFound
 }
 
 // Update writes all mutable columns and increments the version. When
 // expectedVersion is non-nil the UPDATE is guarded by it, so a stale writer
 // affects zero rows instead of overwriting a newer version.
 func (r *UserRepository) Update(ctx context.Context, user *entity.User, expectedVersion *int64) (*entity.User, error) {
+	offset, err := offsetValue(user.UpdatedAtTimezoneOffset)
+	if err != nil {
+		return nil, err
+	}
+
 	condition := jet.Users.ID.EQ(uuidValue(user.ID))
 	if expectedVersion != nil {
 		condition = condition.AND(jet.Users.Version.EQ(postgres.Int64(*expectedVersion)))
@@ -224,7 +305,7 @@ func (r *UserRepository) Update(ctx context.Context, user *entity.User, expected
 		postgres.String(user.Email),
 		postgres.Int64(user.UpdatedAt),
 		postgres.String(user.UpdatedAtTimezoneName),
-		postgres.Int32(int32(user.UpdatedAtTimezoneOffset)),
+		postgres.Int32(offset),
 		jet.Users.Version.ADD(postgres.Int64(1)),
 	).WHERE(condition)
 
@@ -241,13 +322,7 @@ func (r *UserRepository) Update(ctx context.Context, user *entity.User, expected
 
 	if affected == 0 {
 		if expectedVersion != nil {
-			found, err := r.FindByID(ctx, user.ID)
-			if err != nil {
-				return nil, err
-			}
-			if found != nil {
-				return nil, repository.ErrConflict
-			}
+			return nil, r.conflictResult(ctx, user.ID)
 		}
 
 		return nil, repository.ErrNotFound

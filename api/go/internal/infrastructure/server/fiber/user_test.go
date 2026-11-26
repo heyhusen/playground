@@ -1,3 +1,4 @@
+//nolint:paralleltest,testpackage // tests share one database and Redis through their fixtures, so they cannot run in parallel; tests intentionally exercise unexported helpers defined in the same package
 package fiber
 
 import (
@@ -291,7 +292,11 @@ func TestCompatUpdateUser(t *testing.T) {
 	}{
 		{"empty body", nil, []string{message.BodyRequired}},
 		{"empty object", map[string]any{}, []string{message.DataRequired}},
-		{"empty data", map[string]any{"data": map[string]any{}}, []string{message.DataIDRequired, message.DataTypeRequired}},
+		{
+			"empty data",
+			map[string]any{"data": map[string]any{}},
+			[]string{message.DataIDRequired, message.DataTypeRequired},
+		},
 		{"invalid type", map[string]any{
 			"data": map[string]any{"type": "user"},
 		}, []string{message.DataIDRequired, message.DataTypePattern}},
@@ -337,7 +342,7 @@ func TestDeleteUser(t *testing.T) {
 }
 
 func TestUpdateVersion(t *testing.T) {
-	server, seeded, _ := setupWithStore(t, nil)
+	server, seeded := setupWithStore(t)
 
 	resp := request(t, server, http.MethodPatch, "/users/"+seeded.ID, map[string]any{
 		"data": map[string]any{
@@ -368,7 +373,7 @@ func TestUpdateVersion(t *testing.T) {
 }
 
 func TestUpdateWithoutVersion(t *testing.T) {
-	server, seeded, _ := setupWithStore(t, nil)
+	server, seeded := setupWithStore(t)
 
 	resp := request(t, server, http.MethodPatch, "/users/"+seeded.ID, map[string]any{
 		"data": map[string]any{
@@ -385,7 +390,7 @@ func TestUpdateWithoutVersion(t *testing.T) {
 }
 
 func TestCreateIdempotency(t *testing.T) {
-	server, _, _ := setupWithStore(t, nil)
+	server, _ := setupWithStore(t)
 	payload := map[string]any{
 		"data": map[string]any{
 			"type": "users",
@@ -410,7 +415,7 @@ func TestCreateIdempotency(t *testing.T) {
 }
 
 func TestUpdateIdempotency(t *testing.T) {
-	server, seeded, _ := setupWithStore(t, nil)
+	server, seeded := setupWithStore(t)
 	payload := map[string]any{
 		"data": map[string]any{
 			"type": "users",

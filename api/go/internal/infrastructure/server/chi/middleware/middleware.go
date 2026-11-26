@@ -28,6 +28,11 @@ const (
 	keyUpdate
 )
 
+const (
+	maxBodySize     = 1 << 20
+	detailsCapacity = 2
+)
+
 // CreatePayload is the validated body of POST /users.
 type CreatePayload struct {
 	ID        string
@@ -199,7 +204,7 @@ func ValidateQuery(next http.Handler) http.Handler {
 			return
 		}
 
-		details := make([]string, 0, 2)
+		details := make([]string, 0, detailsCapacity)
 
 		number, ok := parsePageValue(pageMap["number"], message.PageNumberRequired, message.PageNumberType, &details)
 		if !ok {
@@ -241,13 +246,13 @@ func parsePageValue(value any, required, wrongType string, details *[]string) (i
 }
 
 func decodeBody(r *http.Request) (map[string]any, []string) {
-	body, err := io.ReadAll(io.LimitReader(r.Body, 1<<20))
+	body, err := io.ReadAll(io.LimitReader(r.Body, maxBodySize))
 	if err != nil || len(body) == 0 {
 		return nil, []string{message.BodyRequired}
 	}
 
 	var payload map[string]any
-	if err := json.Unmarshal(body, &payload); err != nil {
+	if decodeErr := json.Unmarshal(body, &payload); decodeErr != nil {
 		return nil, []string{message.BodyRequired}
 	}
 
@@ -290,6 +295,12 @@ func stringPointer(value any) *string {
 	}
 
 	return &str
+}
+
+func stringValue(value any) string {
+	str, _ := value.(string)
+
+	return str
 }
 
 func validateFirstName(attributes map[string]any, details *[]string) {
@@ -409,15 +420,48 @@ func ValidateCreate(next http.Handler) http.Handler {
 
 		payload := CreatePayload{
 			ID:        userID,
-			FirstName: attributes["first_name"].(string),
+			FirstName: stringValue(attributes["first_name"]),
 			LastName:  stringPointer(attributes["last_name"]),
 			Nickname:  stringPointer(attributes["nickname"]),
-			Email:     attributes["email"].(string),
+			Email:     stringValue(attributes["email"]),
 		}
 
 		ctx := context.WithValue(r.Context(), keyCreate, payload)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+type updateInput struct {
+	id         string
+	attributes map[string]any
+	version    *int64
+}
+
+func parseUpdate(data map[string]any, compat bool, details *[]string) updateInput {
+	idValue := ""
+	if compat {
+		value, ok := data["id"].(string)
+		switch {
+		case !ok:
+			*details = append(*details, message.DataIDRequired)
+		case !id.IsValid(value):
+			*details = append(*details, message.DataIDFormat)
+		default:
+			idValue = value
+		}
+	}
+
+	validateType(data, details)
+
+	attributes := attributesOf(data)
+	validateFirstName(attributes, details)
+	validateEmail(attributes, details, compat)
+
+	return updateInput{
+		id:         idValue,
+		attributes: attributes,
+		version:    versionOf(attributes, details),
+	}
 }
 
 func updateMiddleware(compat bool) func(http.Handler) http.Handler {
@@ -449,24 +493,7 @@ func updateMiddleware(compat bool) func(http.Handler) http.Handler {
 				return
 			}
 
-			details = []string{}
-
-			if compat {
-				value, ok := data["id"].(string)
-				if !ok {
-					details = append(details, message.DataIDRequired)
-				} else if !id.IsValid(value) {
-					details = append(details, message.DataIDFormat)
-				}
-			}
-
-			validateType(data, &details)
-
-			attributes := attributesOf(data)
-			validateFirstName(attributes, &details)
-			validateEmail(attributes, &details, compat)
-			version := versionOf(attributes, &details)
-
+			parsed := parseUpdate(data, compat, &details)
 			if len(details) > 0 {
 				jsonapi.WriteError(w, domain.NewValidationError(details...))
 
@@ -475,10 +502,10 @@ func updateMiddleware(compat bool) func(http.Handler) http.Handler {
 
 			userID := ID(r)
 			if compat {
-				userID, _ = data["id"].(string)
+				userID = parsed.id
 			}
 
-			payload := UpdatePayload{ID: userID, Attributes: attributes, Version: version}
+			payload := UpdatePayload{ID: userID, Attributes: parsed.attributes, Version: parsed.version}
 			ctx := context.WithValue(r.Context(), keyUpdate, payload)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})

@@ -2,6 +2,7 @@ package cache
 
 import (
 	"context"
+	"errors"
 	"strconv"
 	"time"
 
@@ -37,7 +38,7 @@ func (r *Redis) Ping(ctx context.Context) error {
 // Get returns a cached value or "" when the key is absent.
 func (r *Redis) Get(ctx context.Context, key string) (string, error) {
 	value, err := r.client.Get(ctx, key).Result()
-	if err == redis.Nil {
+	if errors.Is(err, redis.Nil) {
 		return "", nil
 	}
 

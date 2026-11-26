@@ -84,15 +84,13 @@ func UpdateBody(c fiber.Ctx) UpdatePayload {
 
 // ErrorHandler maps domain and Fiber errors to JSON:API documents.
 func ErrorHandler(c fiber.Ctx, err error) error {
-	var apiErr *domain.Error
-	if errors.As(err, &apiErr) {
+	if apiErr, ok := errors.AsType[*domain.Error](err); ok {
 		c.Set("Content-Type", "application/json")
 
 		return c.Status(apiErr.Status).Send(jsonapi.MarshalError(apiErr))
 	}
 
-	var fiberErr *fiber.Error
-	if errors.As(err, &fiberErr) {
+	if fiberErr, ok := errors.AsType[*fiber.Error](err); ok {
 		detail := fiberErr.Message
 		if detail == "" {
 			detail = http.StatusText(fiberErr.Code)
@@ -294,6 +292,12 @@ func stringPointer(value any) *string {
 	return &str
 }
 
+func stringValue(value any) string {
+	str, _ := value.(string)
+
+	return str
+}
+
 func validateFirstName(attributes map[string]any, details *[]string) {
 	value, exists := attributes["first_name"]
 	if !exists {
@@ -402,10 +406,10 @@ func ValidateCreate(c fiber.Ctx) error {
 
 	c.Locals(keyCreate, CreatePayload{
 		ID:        userID,
-		FirstName: attributes["first_name"].(string),
+		FirstName: stringValue(attributes["first_name"]),
 		LastName:  stringPointer(attributes["last_name"]),
 		Nickname:  stringPointer(attributes["nickname"]),
-		Email:     attributes["email"].(string),
+		Email:     stringValue(attributes["email"]),
 	})
 
 	return c.Next()

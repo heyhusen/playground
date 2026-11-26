@@ -63,13 +63,19 @@ jobs:
         working-directory: ${{ env.FOLDER }}
         run: go mod download
 
+      - name: Install golangci-lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.15.0
+          install-only: true
+
       - name: Check formatting
         working-directory: ${{ env.FOLDER }}
-        run: test -z "$(gofmt -l .)"
+        run: golangci-lint fmt --diff
 
-      - name: Run vet
+      - name: Run lint
         working-directory: ${{ env.FOLDER }}
-        run: go vet ./...
+        run: golangci-lint run
 
       - name: Run build
         working-directory: ${{ env.FOLDER }}

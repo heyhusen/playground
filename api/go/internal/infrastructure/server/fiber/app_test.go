@@ -1,3 +1,4 @@
+//nolint:paralleltest,testpackage // tests share one database and Redis through their fixtures, so they cannot run in parallel; tests intentionally exercise unexported helpers defined in the same package
 package fiber
 
 import (

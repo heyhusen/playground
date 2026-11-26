@@ -66,7 +66,8 @@ func (s *Idempotency) Check(
 	}
 
 	var record idempotencyRecord
-	if err := json.Unmarshal([]byte(raw), &record); err != nil {
+	err = json.Unmarshal([]byte(raw), &record)
+	if err != nil {
 		return idempotency.Miss, nil, err
 	}
 	if record.Fingerprint != fingerprint {

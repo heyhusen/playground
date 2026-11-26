@@ -24,6 +24,8 @@ const (
 	keyPage        = "page"
 	keyCreate      = "create"
 	keyUpdate      = "update"
+
+	maxBodySize = 1 << 20
 )
 
 // CreatePayload is the validated body of POST /users.
@@ -85,17 +87,15 @@ func UpdateBody(c echov4.Context) UpdatePayload {
 
 // ErrorHandler maps domain errors to JSON:API documents.
 func ErrorHandler(err error, c echov4.Context) {
-	var apiErr *domain.Error
-	if errors.As(err, &apiErr) {
+	if apiErr, ok := errors.AsType[*domain.Error](err); ok {
 		jsonapi.WriteError(c.Response().Writer, apiErr)
 
 		return
 	}
 
-	var httpErr *echov4.HTTPError
-	if errors.As(err, &httpErr) {
+	if httpErr, ok := errors.AsType[*echov4.HTTPError](err); ok {
 		message := http.StatusText(httpErr.Code)
-		if text, ok := httpErr.Message.(string); ok && text != "" {
+		if text, textOK := httpErr.Message.(string); textOK && text != "" {
 			message = text
 		}
 
@@ -244,13 +244,13 @@ func parsePageValue(value any, required, wrongType string, details *[]string) (i
 }
 
 func decodeBody(c echov4.Context) (map[string]any, []string) {
-	body, err := io.ReadAll(io.LimitReader(c.Request().Body, 1<<20))
+	body, err := io.ReadAll(io.LimitReader(c.Request().Body, maxBodySize))
 	if err != nil || len(body) == 0 {
 		return nil, []string{message.BodyRequired}
 	}
 
 	var payload map[string]any
-	if err := json.Unmarshal(body, &payload); err != nil {
+	if decodeErr := json.Unmarshal(body, &payload); decodeErr != nil {
 		return nil, []string{message.BodyRequired}
 	}
 
@@ -293,6 +293,12 @@ func stringPointer(value any) *string {
 	}
 
 	return &str
+}
+
+func stringValue(value any) string {
+	str, _ := value.(string)
+
+	return str
 }
 
 func validateFirstName(attributes map[string]any, details *[]string) {
@@ -404,13 +410,46 @@ func ValidateCreate(next echov4.HandlerFunc) echov4.HandlerFunc {
 
 		c.Set(keyCreate, CreatePayload{
 			ID:        userID,
-			FirstName: attributes["first_name"].(string),
+			FirstName: stringValue(attributes["first_name"]),
 			LastName:  stringPointer(attributes["last_name"]),
 			Nickname:  stringPointer(attributes["nickname"]),
-			Email:     attributes["email"].(string),
+			Email:     stringValue(attributes["email"]),
 		})
 
 		return next(c)
+	}
+}
+
+type updateInput struct {
+	id         string
+	attributes map[string]any
+	version    *int64
+}
+
+func parseUpdate(data map[string]any, compat bool, details *[]string) updateInput {
+	idValue := ""
+	if compat {
+		value, ok := data["id"].(string)
+		switch {
+		case !ok:
+			*details = append(*details, message.DataIDRequired)
+		case !id.IsValid(value):
+			*details = append(*details, message.DataIDFormat)
+		default:
+			idValue = value
+		}
+	}
+
+	validateType(data, details)
+
+	attributes := attributesOf(data)
+	validateFirstName(attributes, details)
+	validateEmail(attributes, details, compat)
+
+	return updateInput{
+		id:         idValue,
+		attributes: attributes,
+		version:    versionOf(attributes, details),
 	}
 }
 
@@ -434,34 +473,17 @@ func updateMiddleware(compat bool) func(echov4.HandlerFunc) echov4.HandlerFunc {
 				return domain.NewValidationError(details...)
 			}
 
-			details = []string{}
-
-			if compat {
-				value, ok := data["id"].(string)
-				if !ok {
-					details = append(details, message.DataIDRequired)
-				} else if !id.IsValid(value) {
-					details = append(details, message.DataIDFormat)
-				}
-			}
-
-			validateType(data, &details)
-
-			attributes := attributesOf(data)
-			validateFirstName(attributes, &details)
-			validateEmail(attributes, &details, compat)
-			version := versionOf(attributes, &details)
-
+			parsed := parseUpdate(data, compat, &details)
 			if len(details) > 0 {
 				return domain.NewValidationError(details...)
 			}
 
 			userID := ID(c)
 			if compat {
-				userID, _ = data["id"].(string)
+				userID = parsed.id
 			}
 
-			c.Set(keyUpdate, UpdatePayload{ID: userID, Attributes: attributes, Version: version})
+			c.Set(keyUpdate, UpdatePayload{ID: userID, Attributes: parsed.attributes, Version: parsed.version})
 
 			return next(c)
 		}
