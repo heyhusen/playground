@@ -1,6 +1,7 @@
 [tools]
 "aqua:grafana/jsonnet-language-server" = "latest"
 go = "1.27"
+"go:github.com/air-verse/air" = "latest"
 "go:golang.org/x/tools/gopls" = "latest"
 golangci-lint = "latest"
 marksman = "latest"
