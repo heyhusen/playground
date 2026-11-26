@@ -1,3 +1,4 @@
+//nolint:paralleltest // tests share one database and Redis through their fixtures, so they cannot run in parallel
 package usecase_test
 
 import (
@@ -14,9 +15,8 @@ import (
 )
 
 type fakeUsers struct {
-	rows    map[string]*entity.User
-	nextID  int64
-	failAll bool
+	rows   map[string]*entity.User
+	nextID int64
 }
 
 func newFakeUsers() *fakeUsers {
@@ -25,11 +25,11 @@ func newFakeUsers() *fakeUsers {
 
 func (f *fakeUsers) Create(_ context.Context, user *entity.User) (*entity.User, error) {
 	f.nextID++
-	copy := *user
-	copy.Cursor = f.nextID
-	f.rows[copy.ID] = &copy
+	cloned := *user
+	cloned.Cursor = f.nextID
+	f.rows[cloned.ID] = &cloned
 
-	return &copy, nil
+	return &cloned, nil
 }
 
 func (f *fakeUsers) FindByID(_ context.Context, userID string) (*entity.User, error) {
@@ -38,21 +38,21 @@ func (f *fakeUsers) FindByID(_ context.Context, userID string) (*entity.User, er
 		return nil, repository.ErrNotFound
 	}
 
-	copy := *user
+	cloned := *user
 
-	return &copy, nil
+	return &cloned, nil
 }
 
 func (f *fakeUsers) FindByEmail(_ context.Context, email, excludeID string) (*entity.User, error) {
 	for _, user := range f.rows {
 		if user.Email == email && user.ID != excludeID {
-			copy := *user
+			cloned := *user
 
-			return &copy, nil
+			return &cloned, nil
 		}
 	}
 
-	return nil, nil
+	return nil, repository.ErrNotFound
 }
 
 func (f *fakeUsers) FindAll(_ context.Context, page, size int) ([]entity.User, int64, error) {
@@ -66,10 +66,7 @@ func (f *fakeUsers) FindAll(_ context.Context, page, size int) ([]entity.User, i
 		return []entity.User{}, int64(len(users)), nil
 	}
 
-	end := start + size
-	if end > len(users) {
-		end = len(users)
-	}
+	end := min(start+size, len(users))
 
 	return users[start:end], int64(len(users)), nil
 }
@@ -349,7 +346,7 @@ func TestUpdateWithVersion(t *testing.T) {
 		RequestInfo:     requestInfo(),
 		ID:              created.ID,
 		Attributes:      map[string]any{"first_name": "Jane"},
-		ExpectedVersion: int64Ptr(created.Version),
+		ExpectedVersion: new(created.Version),
 	})
 	if apiErr != nil {
 		t.Fatalf("unexpected error: %v", apiErr)
@@ -375,15 +372,11 @@ func TestUpdateWithStaleVersion(t *testing.T) {
 		RequestInfo:     requestInfo(),
 		ID:              created.ID,
 		Attributes:      map[string]any{"first_name": "Jane"},
-		ExpectedVersion: int64Ptr(created.Version + 1),
+		ExpectedVersion: new(created.Version + 1),
 	})
 	if apiErr == nil || apiErr.Status != 409 || apiErr.Detail != message.VersionConflict {
 		t.Fatalf("unexpected error: %+v", apiErr)
 	}
-}
-
-func int64Ptr(value int64) *int64 {
-	return &value
 }
 
 func TestUpdateNotFound(t *testing.T) {
@@ -423,7 +416,7 @@ func TestReadAll(t *testing.T) {
 	repo := newFakeUsers()
 	service := &usecase.Service{Users: repo}
 
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		_, _ = service.Create(context.Background(), usecase.CreateInput{
 			RequestInfo: requestInfo(),
 			Attributes: entity.BaseUserEntity{

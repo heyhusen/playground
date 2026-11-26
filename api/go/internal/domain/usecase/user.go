@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/heyhusen/playground/api/go/internal/domain"
@@ -24,6 +25,7 @@ type RequestInfo struct {
 // CreateInput is the command for creating a user.
 type CreateInput struct {
 	RequestInfo
+
 	ID             string
 	Attributes     entity.BaseUserEntity
 	IdempotencyKey string
@@ -33,6 +35,7 @@ type CreateInput struct {
 // UpdateInput is the command for updating a user.
 type UpdateInput struct {
 	RequestInfo
+
 	ID              string
 	Attributes      map[string]any
 	ExpectedVersion *int64
@@ -47,18 +50,37 @@ type Service struct {
 }
 
 func internalError(err error) *domain.Error {
-	return domain.NewError(500, message.ErrorTitle, err.Error())
+	return domain.NewError(http.StatusInternalServerError, message.ErrorTitle, err.Error())
+}
+
+func userError(err error) *domain.Error {
+	if errors.Is(err, repository.ErrNotFound) {
+		return domain.NewError(http.StatusNotFound, message.NotFound, message.UserNotExist)
+	}
+
+	return internalError(err)
+}
+
+func updateError(err error) *domain.Error {
+	if errors.Is(err, repository.ErrConflict) {
+		return domain.NewError(http.StatusConflict, message.Conflict, message.VersionConflict)
+	}
+
+	return userError(err)
 }
 
 // UniqueEmail returns an error when email is already used by another user.
 func (s *Service) UniqueEmail(ctx context.Context, email, excludeID string) *domain.Error {
 	found, err := s.Users.FindByEmail(ctx, email, excludeID)
+	if errors.Is(err, repository.ErrNotFound) {
+		return nil
+	}
 	if err != nil {
 		return internalError(err)
 	}
 
 	if found != nil {
-		return domain.NewError(400, message.BadRequest, message.EmailUnique)
+		return domain.NewError(http.StatusBadRequest, message.BadRequest, message.EmailUnique)
 	}
 
 	return nil
@@ -80,9 +102,11 @@ func (s *Service) Create(ctx context.Context, in CreateInput) (*entity.User, *do
 	case idempotency.Hit:
 		return cached, nil
 	case idempotency.Mismatch:
-		return nil, domain.NewError(409, message.Conflict, message.IdempotencyMismatch)
+		return nil, domain.NewError(http.StatusConflict, message.Conflict, message.IdempotencyMismatch)
 	case idempotency.InProgress:
-		return nil, domain.NewError(409, message.Conflict, message.IdempotencyInProgress)
+		return nil, domain.NewError(http.StatusConflict, message.Conflict, message.IdempotencyInProgress)
+	case idempotency.Miss:
+		// No previous attempt: continue to the write below.
 	}
 
 	user, apiErr := s.create(ctx, in)
@@ -92,7 +116,8 @@ func (s *Service) Create(ctx context.Context, in CreateInput) (*entity.User, *do
 		return nil, apiErr
 	}
 
-	if err := s.Idempotency.Complete(ctx, scope, in.IdempotencyKey, in.Fingerprint, user); err != nil {
+	err = s.Idempotency.Complete(ctx, scope, in.IdempotencyKey, in.Fingerprint, user)
+	if err != nil {
 		return nil, internalError(err)
 	}
 
@@ -144,11 +169,7 @@ func (s *Service) create(ctx context.Context, in CreateInput) (*entity.User, *do
 func (s *Service) Read(ctx context.Context, userID string) (*entity.User, *domain.Error) {
 	user, err := s.Users.FindByID(ctx, userID)
 	if err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
-			return nil, domain.NewError(404, message.NotFound, message.UserNotExist)
-		}
-
-		return nil, internalError(err)
+		return nil, userError(err)
 	}
 
 	return user, nil
@@ -180,9 +201,11 @@ func (s *Service) Update(ctx context.Context, in UpdateInput) (*entity.User, *do
 	case idempotency.Hit:
 		return cached, nil
 	case idempotency.Mismatch:
-		return nil, domain.NewError(409, message.Conflict, message.IdempotencyMismatch)
+		return nil, domain.NewError(http.StatusConflict, message.Conflict, message.IdempotencyMismatch)
 	case idempotency.InProgress:
-		return nil, domain.NewError(409, message.Conflict, message.IdempotencyInProgress)
+		return nil, domain.NewError(http.StatusConflict, message.Conflict, message.IdempotencyInProgress)
+	case idempotency.Miss:
+		// No previous attempt: continue to the write below.
 	}
 
 	user, apiErr := s.update(ctx, in)
@@ -192,30 +215,15 @@ func (s *Service) Update(ctx context.Context, in UpdateInput) (*entity.User, *do
 		return nil, apiErr
 	}
 
-	if err := s.Idempotency.Complete(ctx, scope, in.IdempotencyKey, in.Fingerprint, user); err != nil {
+	err = s.Idempotency.Complete(ctx, scope, in.IdempotencyKey, in.Fingerprint, user)
+	if err != nil {
 		return nil, internalError(err)
 	}
 
 	return user, nil
 }
 
-func (s *Service) update(ctx context.Context, in UpdateInput) (*entity.User, *domain.Error) {
-	user, err := s.Users.FindByID(ctx, in.ID)
-	if err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
-			return nil, domain.NewError(404, message.NotFound, message.UserNotExist)
-		}
-
-		return nil, internalError(err)
-	}
-
-	// Only enforce uniqueness when the email actually changes.
-	if email, ok := in.Attributes["email"].(string); ok && email != user.Email {
-		if err := s.UniqueEmail(ctx, email, in.ID); err != nil {
-			return nil, err
-		}
-	}
-
+func applyAttributes(user *entity.User, in UpdateInput) {
 	if value, ok := in.Attributes["first_name"].(string); ok {
 		user.FirstName = value
 	}
@@ -243,17 +251,26 @@ func (s *Service) update(ctx context.Context, in UpdateInput) (*entity.User, *do
 	user.UpdatedAt = time.Now().UnixMilli()
 	user.UpdatedAtTimezoneName = in.TimezoneName
 	user.UpdatedAtTimezoneOffset = in.TimezoneOffset
+}
+
+func (s *Service) update(ctx context.Context, in UpdateInput) (*entity.User, *domain.Error) {
+	user, err := s.Users.FindByID(ctx, in.ID)
+	if err != nil {
+		return nil, userError(err)
+	}
+
+	// Only enforce uniqueness when the email actually changes.
+	if email, ok := in.Attributes["email"].(string); ok && email != user.Email {
+		if apiErr := s.UniqueEmail(ctx, email, in.ID); apiErr != nil {
+			return nil, apiErr
+		}
+	}
+
+	applyAttributes(user, in)
 
 	updated, err := s.Users.Update(ctx, user, in.ExpectedVersion)
 	if err != nil {
-		if errors.Is(err, repository.ErrConflict) {
-			return nil, domain.NewError(409, message.Conflict, message.VersionConflict)
-		}
-		if errors.Is(err, repository.ErrNotFound) {
-			return nil, domain.NewError(404, message.NotFound, message.UserNotExist)
-		}
-
-		return nil, internalError(err)
+		return nil, updateError(err)
 	}
 
 	return updated, nil
@@ -262,11 +279,7 @@ func (s *Service) update(ctx context.Context, in UpdateInput) (*entity.User, *do
 // Delete removes a user by id.
 func (s *Service) Delete(ctx context.Context, userID string) *domain.Error {
 	if err := s.Users.Delete(ctx, userID); err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
-			return domain.NewError(404, message.NotFound, message.UserNotExist)
-		}
-
-		return internalError(err)
+		return userError(err)
 	}
 
 	return nil

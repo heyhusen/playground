@@ -2,6 +2,7 @@ package chi
 
 import (
 	"net/http"
+	"slices"
 
 	chirouter "github.com/go-chi/chi/v5"
 
@@ -48,8 +49,8 @@ func New(cfg config.Config, service *usecase.Service, doc *openapi.Document) htt
 func chain(handler http.HandlerFunc, middlewares ...func(http.Handler) http.Handler) http.HandlerFunc {
 	var next http.Handler = handler
 
-	for i := len(middlewares) - 1; i >= 0; i-- {
-		next = middlewares[i](next)
+	for _, middleware := range slices.Backward(middlewares) {
+		next = middleware(next)
 	}
 
 	return next.ServeHTTP

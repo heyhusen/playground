@@ -4,7 +4,7 @@ import (
 	"github.com/go-jet/jet/v2/postgres"
 )
 
-// Users is a hand-written Jet table definition matching the users migration.
+// UsersTable is a hand-written Jet table definition matching the users migration.
 // It is the Go equivalent of api/node's drizzle users schema.
 type UsersTable struct {
 	postgres.Table
@@ -66,4 +66,6 @@ func newUsersTable() UsersTable {
 }
 
 // Users is the singleton table descriptor.
+//
+//nolint:gochecknoglobals // Jet table descriptors are package-level singletons by design.
 var Users = newUsersTable()

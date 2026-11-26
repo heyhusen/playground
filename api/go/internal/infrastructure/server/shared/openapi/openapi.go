@@ -30,9 +30,9 @@ func resolvePath(path string) string {
 		return path
 	}
 
-	for i := 0; i < 8; i++ {
+	for range 8 {
 		candidate := filepath.Join(dir, path)
-		if _, err := os.Stat(candidate); err == nil {
+		if _, statErr := os.Stat(candidate); statErr == nil {
 			return candidate
 		}
 
@@ -48,6 +48,7 @@ func resolvePath(path string) string {
 
 // Load parses openapi.yaml with speakeasy-api/openapi.
 func Load(path string) (*Document, error) {
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 	path = resolvePath(path)
 
 	file, err := os.Open(path)
@@ -62,7 +63,7 @@ func Load(path string) (*Document, error) {
 	}
 
 	for _, warning := range warnings {
-		slog.Warn("openapi validation", "detail", warning.Error())
+		logger.Warn("openapi validation", "detail", warning.Error())
 	}
 
 	raw, err := os.ReadFile(path)
@@ -107,7 +108,7 @@ func (d *Document) Docs(w http.ResponseWriter, _ *http.Request) {
 	_, _ = io.WriteString(w, d.HTML())
 }
 
-// YAML serves the raw OpenAPI document.
+// YAMLHandler serves the raw OpenAPI document.
 func (d *Document) YAMLHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/yaml")
 

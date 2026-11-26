@@ -45,7 +45,7 @@ func New(cfg config.Config, service *usecase.Service, doc *openapi.Document) *fi
 	app.Put("/users", middleware.ValidatePut, users.Update)
 	app.Delete("/users/:id", middleware.ValidateID, users.Delete)
 
-	app.Use(func(c fiberserver.Ctx) error {
+	app.Use(func(_ fiberserver.Ctx) error {
 		return domain.NewError(http.StatusNotFound, "Not Found", "Not Found")
 	})
 

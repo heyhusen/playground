@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
 
@@ -10,15 +11,22 @@ import (
 )
 
 func main() {
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	if err := run(os.Args[1:]); err != nil {
+		logger.Error("migration failed", "error", err)
+		os.Exit(1)
+	}
+}
+
+func run(args []string) error {
 	direction := "up"
-	if len(os.Args) > 1 {
-		direction = os.Args[1]
+	if len(args) > 0 {
+		direction = args[0]
 	}
 
 	db, err := database.Open(config.Load())
 	if err != nil {
-		slog.Error("open database", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("open database: %w", err)
 	}
 	defer db.Close()
 
@@ -28,12 +36,12 @@ func main() {
 	case "down":
 		err = migration.Down(db)
 	default:
-		slog.Error("unknown direction", "direction", direction)
-		os.Exit(1)
+		return fmt.Errorf("unknown direction: %q", direction)
 	}
 
 	if err != nil {
-		slog.Error("migrate", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("migrate: %w", err)
 	}
+
+	return nil
 }

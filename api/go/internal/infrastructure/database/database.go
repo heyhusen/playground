@@ -4,9 +4,15 @@ import (
 	"database/sql"
 	"fmt"
 
+	// Register the pgx driver referenced by sql.Open("pgx", ...) below.
 	_ "github.com/jackc/pgx/v5/stdlib"
 
 	"github.com/heyhusen/playground/api/go/internal/config"
+)
+
+const (
+	maxOpenConns = 30
+	maxIdleConns = 5
 )
 
 // Open creates a database/sql pool backed by the pgx driver.
@@ -21,8 +27,8 @@ func Open(cfg config.Config) (*sql.DB, error) {
 		return nil, err
 	}
 
-	db.SetMaxOpenConns(30)
-	db.SetMaxIdleConns(5)
+	db.SetMaxOpenConns(maxOpenConns)
+	db.SetMaxIdleConns(maxIdleConns)
 
 	return db, nil
 }

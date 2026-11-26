@@ -1,3 +1,4 @@
+//nolint:gochecknoglobals,testpackage // test fixtures are initialised once in TestMain and shared by helpers across files; tests intentionally exercise unexported helpers defined in the same package
 package fiber
 
 import (
@@ -14,7 +15,6 @@ import (
 
 	"github.com/heyhusen/playground/api/go/internal/config"
 	"github.com/heyhusen/playground/api/go/internal/domain/entity"
-	"github.com/heyhusen/playground/api/go/internal/domain/idempotency"
 	"github.com/heyhusen/playground/api/go/internal/domain/usecase"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/cache"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/dal"
@@ -67,13 +67,13 @@ func TestMain(m *testing.M) {
 		"DROP TABLE IF EXISTS users",
 		"DROP TABLE IF EXISTS goose_db_version",
 	} {
-		if _, err := testDB.ExecContext(context.Background(), statement); err != nil {
-			panic(err)
+		if _, execErr := testDB.ExecContext(context.Background(), statement); execErr != nil {
+			panic(execErr)
 		}
 	}
 
-	if err := migration.Up(testDB); err != nil {
-		panic(err)
+	if migrateErr := migration.Up(testDB); migrateErr != nil {
+		panic(migrateErr)
 	}
 
 	code := m.Run()
@@ -87,17 +87,15 @@ func TestMain(m *testing.M) {
 func setup(t *testing.T) (*fiberserver.App, entity.User) {
 	t.Helper()
 
-	server, seeded, _ := setupWithStore(t, nil)
+	server, seeded := setupWithStore(t)
 
 	return server, seeded
 }
 
-func setupWithStore(t *testing.T, store idempotency.Store) (*fiberserver.App, entity.User, idempotency.Store) {
+func setupWithStore(t *testing.T) (*fiberserver.App, entity.User) {
 	t.Helper()
 
-	if store == nil {
-		store = cache.NewIdempotency(testRedis)
-	}
+	store := cache.NewIdempotency(testRedis)
 	if err := testRedis.Flush(context.Background()); err != nil {
 		t.Fatalf("flush redis: %v", err)
 	}
@@ -110,7 +108,7 @@ func setupWithStore(t *testing.T, store idempotency.Store) (*fiberserver.App, en
 		ID:                      seedID,
 		Version:                 1,
 		FirstName:               "John",
-		LastName:                stringPtr("Doe"),
+		LastName:                new("Doe"),
 		Email:                   "john@example.com",
 		CreatedAt:               1,
 		UpdatedAt:               1,
@@ -132,11 +130,7 @@ func setupWithStore(t *testing.T, store idempotency.Store) (*fiberserver.App, en
 		t.Fatalf("load openapi: %v", err)
 	}
 
-	return New(testCfg, service, doc), seeded, store
-}
-
-func stringPtr(value string) *string {
-	return &value
+	return New(testCfg, service, doc), seeded
 }
 
 func request(t *testing.T, app *fiberserver.App, method, path string, body any) *http.Response {

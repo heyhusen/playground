@@ -7,6 +7,13 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	defaultAppPort   = 3000
+	defaultDBPort    = 5432
+	defaultRedisPort = 6379
+	defaultS3Port    = 9000
+)
+
 // Config holds every runtime setting, loaded from the environment (and an
 // optional .env file) through viper.
 type Config struct {
@@ -38,17 +45,17 @@ func Load() Config {
 	v := viper.New()
 
 	v.SetDefault("APP_NAME", "playground")
-	v.SetDefault("APP_PORT", 3000)
+	v.SetDefault("APP_PORT", defaultAppPort)
 	v.SetDefault("APP_URL", "http://localhost:3000")
 	v.SetDefault("DB_HOST", "postgres")
-	v.SetDefault("DB_PORT", 5432)
+	v.SetDefault("DB_PORT", defaultDBPort)
 	v.SetDefault("DB_USERNAME", "postgres")
 	v.SetDefault("DB_PASSWORD", "postgres")
 	v.SetDefault("DB_DATABASE", "postgres")
 	v.SetDefault("REDIS_HOST", "redis")
-	v.SetDefault("REDIS_PORT", 6379)
+	v.SetDefault("REDIS_PORT", defaultRedisPort)
 	v.SetDefault("S3_ENDPOINT", "minio")
-	v.SetDefault("S3_PORT", 9000)
+	v.SetDefault("S3_PORT", defaultS3Port)
 	v.SetDefault("S3_DEFAULT_REGION", "ap-southeast-1")
 	v.SetDefault("S3_ACCESS_KEY_ID", "miniosudo")
 	v.SetDefault("S3_SECRET_ACCESS_KEY", "miniosudo")

@@ -1,3 +1,4 @@
+//nolint:gochecknoglobals,testpackage // test fixtures are initialised once in TestMain and shared by helpers across files; tests intentionally exercise unexported helpers defined in the same package
 package echo
 
 import (
@@ -13,7 +14,6 @@ import (
 
 	"github.com/heyhusen/playground/api/go/internal/config"
 	"github.com/heyhusen/playground/api/go/internal/domain/entity"
-	"github.com/heyhusen/playground/api/go/internal/domain/idempotency"
 	"github.com/heyhusen/playground/api/go/internal/domain/usecase"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/cache"
 	"github.com/heyhusen/playground/api/go/internal/infrastructure/dal"
@@ -66,13 +66,13 @@ func TestMain(m *testing.M) {
 		"DROP TABLE IF EXISTS users",
 		"DROP TABLE IF EXISTS goose_db_version",
 	} {
-		if _, err := testDB.ExecContext(context.Background(), statement); err != nil {
-			panic(err)
+		if _, execErr := testDB.ExecContext(context.Background(), statement); execErr != nil {
+			panic(execErr)
 		}
 	}
 
-	if err := migration.Up(testDB); err != nil {
-		panic(err)
+	if migrateErr := migration.Up(testDB); migrateErr != nil {
+		panic(migrateErr)
 	}
 
 	code := m.Run()
@@ -86,17 +86,15 @@ func TestMain(m *testing.M) {
 func setup(t *testing.T) (*httptest.Server, entity.User) {
 	t.Helper()
 
-	server, seeded, _ := setupWithStore(t, nil)
+	server, seeded := setupWithStore(t)
 
 	return server, seeded
 }
 
-func setupWithStore(t *testing.T, store idempotency.Store) (*httptest.Server, entity.User, idempotency.Store) {
+func setupWithStore(t *testing.T) (*httptest.Server, entity.User) {
 	t.Helper()
 
-	if store == nil {
-		store = cache.NewIdempotency(testRedis)
-	}
+	store := cache.NewIdempotency(testRedis)
 	if err := testRedis.Flush(context.Background()); err != nil {
 		t.Fatalf("flush redis: %v", err)
 	}
@@ -108,7 +106,7 @@ func setupWithStore(t *testing.T, store idempotency.Store) (*httptest.Server, en
 		ID:                      seedID,
 		Version:                 1,
 		FirstName:               "John",
-		LastName:                stringPtr("Doe"),
+		LastName:                new("Doe"),
 		Email:                   "john@example.com",
 		CreatedAt:               1,
 		UpdatedAt:               1,
@@ -133,11 +131,7 @@ func setupWithStore(t *testing.T, store idempotency.Store) (*httptest.Server, en
 	server := httptest.NewServer(New(testCfg, service, doc))
 	t.Cleanup(server.Close)
 
-	return server, seeded, store
-}
-
-func stringPtr(value string) *string {
-	return &value
+	return server, seeded
 }
 
 func request(t *testing.T, server *httptest.Server, method, path string, body any) *http.Response {

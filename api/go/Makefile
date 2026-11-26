@@ -16,10 +16,10 @@ test:
 	go test -p 1 ./...
 
 vet:
-	go vet ./...
+	golangci-lint run
 
 fmt:
-	gofmt -w .
+	golangci-lint fmt
 
 check: fmt vet test
 
