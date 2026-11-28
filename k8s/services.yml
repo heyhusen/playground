@@ -1,0 +1,503 @@
+# Kubernetes-compatible spec for `podman kube play`, converted from docker-compose.yml.
+#
+# Usage (run from the repository root so the relative hostPath mounts resolve):
+#   podman kube play k8s/services.yml
+#   podman kube play --down k8s/services.yml
+#
+# All compose services run as containers of ONE Pod, so they share a network
+# namespace. That requires a few adaptations:
+#
+#   * hostAliases maps every compose service name to 127.0.0.1 so bare names
+#     such as `minio:9000`, `kratos:4433`, `tempo:4317` still resolve.
+#   * Listeners that would collide inside a shared netns:
+#       - postgres and postgres-kratos both use 5432 -> postgres-kratos gets
+#         PGPORT=5431, and the kratos DSNs are updated to :5431 accordingly.
+#       - tempo and alloy both use 4317 -> alloy's OTLP/gRPC receiver is
+#         rewritten to 4319 by an initContainer (host 4317 still reaches it,
+#         tempo keeps 4317 internally and is published on host 4327).
+#       - minio and oathkeeper's metrics server both use 9000 -> Oathkeeper's
+#         Prometheus port is moved to 9091 via SERVE_PROMETHEUS_PORT.
+#       - loki and tempo's internal gRPC server both use 9095 -> Tempo's is
+#         moved to 9096 in its patched config.
+#     The Tempo config is also rewritten to bind 0.0.0.0:4317 instead of
+#     `tempo:4317` so its published port works from outside the pod.
+#     Config rewrites happen at startup from the original bind-mounted files
+#     into emptyDir volumes; the files in ./config are not modified.
+#   * The object store is PGSTY Silo, a maintained, API/on-disk-compatible
+#     continuation of MinIO. The `minio` service name and `MINIO_*` variables
+#     are kept so all existing configs and credentials keep working.
+#   * Kubernetes has no `depends_on`. Since initContainers cannot wait for
+#     other containers of the same pod (that would deadlock), ordering is
+#     handled by pod-level `restartPolicy: OnFailure` (the closest equivalent
+#     to compose's on-failure/unless-stopped) plus an explicit readiness loop
+#     in minio-client.
+#   * Compose `command` maps to `args`; compose `entrypoint` maps to `command`.
+#   * Compose healthchecks map to `livenessProbe` (the only probe supported by
+#     podman kube play); named volumes map to PVCs, bind mounts to hostPath
+#     volumes (Podman applies the SELinux `z` relabel automatically).
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minio-data
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kratos-postgres
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: playground
+  labels:
+    app: playground
+spec:
+  restartPolicy: OnFailure
+  hostAliases:
+    - ip: 127.0.0.1
+      hostnames:
+        - postgres
+        - redis
+        - minio
+        - minio-client
+        - mailslurper
+        - postgres-kratos
+        - kratos-migrate
+        - kratos
+        - kratos-selfservice-ui-node
+        - oathkeeper
+        - loki
+        - tempo
+        - prometheus
+        - alloy
+        - grafana
+  initContainers:
+    # Rewrite Tempo's OTLP endpoint from `tempo:4317` to `0.0.0.0:4317` so it
+    # binds every interface (a loopback-only bind is unreachable via hostPort).
+    - name: patch-tempo-config
+      image: docker.io/library/alpine:3.21
+      command:
+        - /bin/sh
+        - -c
+        - |
+          cp -a /src/. /out/
+          sed -i 's|endpoint: "tempo:4317"|endpoint: "0.0.0.0:4317"|' /out/tempo.yml
+          # Loki owns 9095, so move Tempo's internal gRPC server off it.
+          sed -i 's|  http_listen_port: 3200|  http_listen_port: 3200\n  grpc_listen_port: 9096|' /out/tempo.yml
+      volumeMounts:
+        - name: tempo-config-src
+          mountPath: /src
+        - name: tempo-config
+          mountPath: /out
+    # Move Alloy's own OTLP/gRPC receiver off 4317 (Tempo uses it) to 4319.
+    # The host still publishes 4317, mapped to container port 4319.
+    - name: patch-alloy-config
+      image: docker.io/library/alpine:3.21
+      command:
+        - /bin/sh
+        - -c
+        - |
+          cp /src/config.alloy /out/config.alloy
+          sed -i 's|0.0.0.0:4317|0.0.0.0:4319|' /out/config.alloy
+      volumeMounts:
+        - name: alloy-config-src
+          mountPath: /src/config.alloy
+        - name: alloy-config
+          mountPath: /out
+  containers:
+    - name: postgres
+      image: docker.io/library/postgres:19-alpine
+      ports:
+        - name: postgres
+          containerPort: 5432
+          hostPort: 5432
+      env:
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        - name: POSTGRES_DB
+          value: postgres
+      volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql
+      livenessProbe:
+        exec:
+          command: [pg_isready, -q, -d, postgres, -U, postgres]
+        periodSeconds: 30
+        timeoutSeconds: 5
+        failureThreshold: 3
+
+    - name: redis
+      image: docker.io/library/redis:7.2.4-alpine
+      ports:
+        - name: redis
+          containerPort: 6379
+          hostPort: 6380
+      volumeMounts:
+        - name: redis-data
+          mountPath: /data
+      livenessProbe:
+        exec:
+          command: [redis-cli, ping]
+        periodSeconds: 30
+        timeoutSeconds: 5
+        failureThreshold: 3
+
+    - name: minio
+      image: docker.io/pgsty/silo:RELEASE.2026-11-12T00-00-00Z
+      ports:
+        - name: api
+          containerPort: 9000
+          hostPort: 9000
+        - name: console
+          containerPort: 8900
+          hostPort: 8900
+      env:
+        - name: MINIO_ROOT_USER
+          value: miniosudo
+        - name: MINIO_ROOT_PASSWORD
+          value: miniosudo
+      args:
+        - minio
+        - server
+        - /data/minio
+        - --console-address
+        - ":8900"
+      volumeMounts:
+        - name: minio-data
+          mountPath: /data/minio
+      livenessProbe:
+        exec:
+          command:
+            - curl
+            - -f
+            - http://127.0.0.1:9000/minio/health/live
+        periodSeconds: 30
+        timeoutSeconds: 5
+        failureThreshold: 3
+
+    - name: minio-client
+      image: docker.io/pgsty/silo:RELEASE.2026-11-12T00-00-00Z
+      command:
+        - /bin/sh
+        - -c
+        - |
+          # No depends_on in a Kubernetes pod spec: wait for MinIO ourselves.
+          until /usr/bin/mc alias set s3 http://minio:9000 miniosudo miniosudo; do
+            echo "waiting for minio..."
+            sleep 2
+          done
+          /usr/bin/mc rm -r --force s3/local
+          /usr/bin/mc mb s3/local
+          /usr/bin/mc rm -r --force s3/loki
+          /usr/bin/mc mb s3/loki
+          /usr/bin/mc rm -r --force s3/tempo
+          /usr/bin/mc mb s3/tempo
+          exit 0
+
+    - name: mailslurper
+      image: docker.io/oryd/mailslurper:latest-smtps
+      ports:
+        - name: smtp
+          containerPort: 4436
+          hostPort: 4436
+        - name: ui
+          containerPort: 4437
+          hostPort: 4437
+
+    # postgres-kratos listens on 5431 instead of 5432: postgres is already
+    # using 5432 in this shared network namespace.
+    - name: postgres-kratos
+      image: docker.io/library/postgres:19-alpine
+      ports:
+        - name: postgres
+          containerPort: 5431
+          hostPort: 5431
+      env:
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        - name: POSTGRES_DB
+          value: postgres
+        - name: PGPORT
+          value: "5431"
+      volumeMounts:
+        - name: kratos-postgres
+          mountPath: /var/lib/postgresql
+      livenessProbe:
+        exec:
+          command: [pg_isready, -q, -d, postgres, -U, postgres]
+        periodSeconds: 30
+        timeoutSeconds: 5
+        failureThreshold: 3
+
+    - name: kratos-migrate
+      image: docker.io/oryd/kratos:v1
+      env:
+        - name: DSN
+          value: "postgres://postgres:postgres@postgres-kratos:5431/postgres?sslmode=disable&max_conns=20&max_idle_conns=4"
+      args:
+        - -c
+        - /etc/config/kratos/kratos.yml
+        - migrate
+        - sql
+        - -e
+        - --yes
+      volumeMounts:
+        - name: kratos-config
+          mountPath: /etc/config/kratos
+
+    - name: kratos
+      image: docker.io/oryd/kratos:v1
+      ports:
+        - name: public
+          containerPort: 4433
+          hostPort: 4433
+        - name: admin
+          containerPort: 4434
+          hostPort: 4434
+      env:
+        - name: DSN
+          value: "postgres://postgres:postgres@postgres-kratos:5431/postgres?sslmode=disable&max_conns=20&max_idle_conns=4"
+        - name: LOG_LEVEL
+          value: trace
+        - name: SERVE_PUBLIC_BASE_URL
+          value: http://127.0.0.1:4455/.ory/kratos/public/
+      args:
+        - serve
+        - -c
+        - /etc/config/kratos/kratos.yml
+        - --dev
+        - --watch-courier
+      volumeMounts:
+        - name: kratos-config
+          mountPath: /etc/config/kratos
+
+    - name: kratos-selfservice-ui-node
+      image: docker.io/oryd/kratos-selfservice-ui-node:v0.13.0-20
+      ports:
+        - name: http
+          containerPort: 4435
+          hostPort: 4435
+      env:
+        - name: PORT
+          value: "4435"
+        - name: KRATOS_BROWSER_URL
+          value: http://127.0.0.1:4455/.ory/kratos/public
+        - name: JWKS_URL
+          value: http://oathkeeper:4456/.well-known/jwks.json
+        - name: SECURITY_MODE
+          value: jwks
+        - name: COOKIE_SECRET
+          value: playground12345
+        - name: CSRF_COOKIE_NAME
+          value: __locahost-example.com-x-csrf-token
+        - name: CSRF_COOKIE_SECRET
+          value: playground12345
+        - name: KRATOS_PUBLIC_URL
+          value: http://kratos:4433/
+
+    - name: oathkeeper
+      image: docker.io/oryd/oathkeeper:v0
+      ports:
+        - name: proxy
+          containerPort: 4455
+          hostPort: 4455
+        - name: api
+          containerPort: 4456
+          hostPort: 4456
+      args:
+        - serve
+        - proxy
+        - -c
+        - /etc/config/oathkeeper/oathkeeper.yml
+      env:
+        - name: LOG_LEVEL
+          value: debug
+        # Oathkeeper's Prometheus server defaults to 9000, which MinIO uses
+        # in this shared network namespace.
+        - name: SERVE_PROMETHEUS_PORT
+          value: "9091"
+      volumeMounts:
+        - name: oathkeeper-config
+          mountPath: /etc/config/oathkeeper
+
+    - name: loki
+      image: docker.io/grafana/loki:3.3.2
+      ports:
+        - name: http
+          containerPort: 3100
+          hostPort: 3100
+      args:
+        - -config.file=/etc/loki/loki.yml
+      volumeMounts:
+        - name: loki-config
+          mountPath: /etc/loki
+      livenessProbe:
+        exec:
+          command:
+            - /bin/sh
+            - -c
+            - wget --quiet --tries=1 --output-document=- http://localhost:3100/ready | grep -q -w ready || exit 1
+        initialDelaySeconds: 20
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 3
+
+    - name: tempo
+      image: docker.io/grafana/tempo:2.7.0
+      ports:
+        - name: http
+          containerPort: 3200
+          hostPort: 3200
+        - name: otlp-grpc
+          containerPort: 4317
+          hostPort: 4327
+      # Tempo needs the S3 bucket at startup; wait for MinIO instead of
+      # crash-looping while it comes up.
+      command:
+        - /bin/sh
+        - -c
+        - |
+          until wget -q -O- http://minio:9000/minio/health/live >/dev/null; do
+            echo "waiting for minio..."
+            sleep 2
+          done
+          exec /tempo -config.file=/etc/tempo/tempo.yml
+      volumeMounts:
+        # Patched copy from the initContainer binds 0.0.0.0:4317.
+        - name: tempo-config
+          mountPath: /etc/tempo
+
+    - name: prometheus
+      image: docker.io/prom/prometheus:v3.1.0
+      ports:
+        - name: web
+          containerPort: 9090
+          hostPort: 9090
+      args:
+        - --enable-feature=native-histograms
+        - --web.enable-otlp-receiver
+        - --web.enable-remote-write-receiver
+        - --config.file=/etc/prometheus/prometheus.yml
+      volumeMounts:
+        - name: prometheus-config
+          mountPath: /etc/prometheus
+
+    - name: alloy
+      image: docker.io/grafana/alloy:v1.6.1
+      ports:
+        - name: http
+          containerPort: 12345
+          hostPort: 12345
+        # Patched config moves the receiver to 4319; host 4317 maps to it.
+        - name: otlp-grpc
+          containerPort: 4319
+          hostPort: 4317
+        - name: otlp-http
+          containerPort: 4318
+          hostPort: 4318
+      args:
+        - run
+        - --server.http.listen-addr=0.0.0.0:12345
+        - --storage.path=/var/lib/alloy/data
+        - /etc/alloy/config.alloy
+      volumeMounts:
+        - name: alloy-config
+          mountPath: /etc/alloy
+
+    - name: grafana
+      image: docker.io/grafana/grafana:11.5.0
+      ports:
+        - name: http
+          containerPort: 3000
+          hostPort: 3030
+      env:
+        - name: GF_PATHS_PROVISIONING
+          value: /etc/grafana/provisioning
+        - name: GF_AUTH_ANONYMOUS_ENABLED
+          value: "true"
+        - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+          value: Admin
+      volumeMounts:
+        - name: grafana-datasources
+          mountPath: /etc/grafana/provisioning/datasources
+
+  volumes:
+    - name: postgres-data
+      persistentVolumeClaim:
+        claimName: postgres-data
+    - name: redis-data
+      persistentVolumeClaim:
+        claimName: redis-data
+    - name: minio-data
+      persistentVolumeClaim:
+        claimName: minio-data
+    - name: kratos-postgres
+      persistentVolumeClaim:
+        claimName: kratos-postgres
+    - name: kratos-config
+      hostPath:
+        path: ./config/kratos/email-password
+        type: Directory
+    - name: oathkeeper-config
+      hostPath:
+        path: ./config/oathkeeper
+        type: Directory
+    - name: loki-config
+      hostPath:
+        path: ./config/loki
+        type: Directory
+    - name: tempo-config-src
+      hostPath:
+        path: ./config/tempo
+        type: Directory
+    - name: tempo-config
+      emptyDir: {}
+    - name: prometheus-config
+      hostPath:
+        path: ./config/prometheus
+        type: Directory
+    - name: alloy-config-src
+      hostPath:
+        path: ./config/alloy/config.alloy
+        type: File
+    - name: alloy-config
+      emptyDir: {}
+    - name: grafana-datasources
+      hostPath:
+        path: ./config/grafana/provisioning/datasources
+        type: Directory
